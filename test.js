@@ -14,6 +14,8 @@ describe('API',() => {
   let api = null;
   let user = null;
   let review = null;
+  let token = null;
+  const password = randomstring.generate();
   const Submission = require('./lib/models/submission');
   const User = require('./lib/models/user');
   const Review = require('./lib/models/review');
@@ -37,8 +39,9 @@ describe('API',() => {
       .then(() => {
         user = new User({
           'email': randomstring.generate(),
-          'password': randomstring.generate()
+          'role': 'admin'
         });
+        user.setPassword(password)
         return user.save();
       })
       .then(() => {
@@ -69,13 +72,33 @@ describe('API',() => {
         review = submission.related('reviews').at(0);
         review.set('score',10);
         return review.save();
-      });
+      })
+      .then(() => {
+        return new Promise((resolve,reject) => {
+          chai.request(api)
+            .post('/api/user/login')
+            .send({
+              'email': user.get('email'),
+              'password': password
+            })
+            .end((err,res) => {
+              if (err || res.body.error) {
+                reject(err || new Error(res.body.error));
+              } else {
+                token = res.body.token;
+                resolve();
+              }
+            })
+        })
+      })
   });
 
   describe('User',() => {
+    //TODO additional props
     it('GET /api/user/:user',(done) => {
       chai.request(api)
         .get('/api/user/' + user.get('id'))
+        .set('Authorization','JWT ' + token)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
@@ -90,6 +113,7 @@ describe('API',() => {
       const newPass = randomstring.generate();
       chai.request(api)
         .post('/api/user/' + user.get('id'))
+        .set('Authorization','JWT ' + token)
         .send({
           'password': newPass
         })
@@ -98,7 +122,7 @@ describe('API',() => {
           res.body.should.be.a('object');
           res.body.id.should.be.eql(user.get('id'));
           res.body.email.should.be.eql(user.get('email'));
-          res.body.password.should.be.eql(newPass);
+          res.body.password.should.be.not.eql(user.get('password'));
           done();
         });
     });
@@ -109,6 +133,7 @@ describe('API',() => {
     it('GET /api/submission',(done) => {
       chai.request(api)
         .get('/api/submission')
+        .set('Authorization','JWT ' + token)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('array');
@@ -120,6 +145,7 @@ describe('API',() => {
     it('GET /api/submission?reviewed=false',(done) => {
       chai.request(api)
         .get('/api/submission?reviewed=false')
+        .set('Authorization','JWT ' + token)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('array');
@@ -131,6 +157,7 @@ describe('API',() => {
     it('GET /api/submission?reviewed=true',(done) => {
       chai.request(api)
         .get('/api/submission?reviewed=true')
+        .set('Authorization','JWT ' + token)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('array');
@@ -142,6 +169,7 @@ describe('API',() => {
     it('GET /api/submission/:submission',(done) => {
       chai.request(api)
         .get('/api/submission/' + submissions[0].get('id'))
+        .set('Authorization','JWT ' + token)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
@@ -157,6 +185,7 @@ describe('API',() => {
     it('GET /api/submission/:submission/reviews',(done) => {
       chai.request(api)
         .get('/api/submission/' + submissions[0].get('id') + '/reviews')
+        .set('Authorization','JWT ' + token)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('array');
@@ -174,6 +203,7 @@ describe('API',() => {
       }
       chai.request(api)
         .put('/api/submission')
+        .set('Authorization','JWT ' + token)
         .send(newSubmission)
         .end((err, res) => {
           res.should.have.status(200);
@@ -196,6 +226,7 @@ describe('API',() => {
       }
       chai.request(api)
         .post('/api/submission/' + submissions[0].get('id'))
+        .set('Authorization','JWT ' + token)
         .send(updatedSubmission)
         .end((err, res) => {
           res.should.have.status(200);
@@ -214,6 +245,7 @@ describe('API',() => {
     it('GET /api/review/:review',(done) => {
       chai.request(api)
         .get('/api/review/' + review.get('id'))
+        .set('Authorization','JWT ' + token)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
@@ -245,6 +277,7 @@ describe('API',() => {
         }
         chai.request(api)
           .put('/api/review')
+          .set('Authorization','JWT ' + token)
           .send(newReview)
           .end((err, res) => {
             res.should.have.status(200);
@@ -275,11 +308,12 @@ describe('API',() => {
       }
       chai.request(api)
         .put('/api/review')
+        .set('Authorization','JWT ' + token)
         .send(newReview)
         .end((err, res) => {
           res.should.have.status(400);
           res.body.should.be.a('object');
-          res.body.message.should.be.a('string');
+          res.body.error.should.be.a('string');
           done();
         });
     });
@@ -293,6 +327,7 @@ describe('API',() => {
       }
       chai.request(api)
         .post('/api/review/' + review.get('id'))
+        .set('Authorization','JWT ' + token)
         .send(updatedReview)
         .end((err, res) => {
           res.should.have.status(200);
