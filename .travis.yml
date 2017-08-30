@@ -8,12 +8,12 @@ install:
   - cd $TRAVIS_BUILD_DIR/client
   - npm install
 script:
-- cd $TRAVIS_BUILD_DIR/server
-- npm test
-- npm run coverage
-- codecov
-- cd $TRAVIS_BUILD_DIR/client
-- npm build
+  - cd $TRAVIS_BUILD_DIR/server
+  - npm test
+  - npm run coverage
+  - codecov
+  - cd $TRAVIS_BUILD_DIR/client
+  - npm build
 env:
   matrix:
   global:
