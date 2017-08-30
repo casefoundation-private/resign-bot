@@ -3,3 +3,6 @@ config.json
 database.sqlite
 run.sh
 build
+coverage
+.nyc_output
+coverage.lcov
