@@ -3,8 +3,9 @@ const bookshelf = require('bookshelf')(knex);
 const bcrypt = require('bcrypt');
 const uuidv4 = require('uuid/v4');
 const Notification = require('./notification');
+const randomstring = require('randomstring');
 
-module.exports = bookshelf.Model.extend({
+const User = module.exports = bookshelf.Model.extend({
   'tableName': 'users',
   'hasTimestamps': true,
   'reviews': function() {
@@ -99,6 +100,24 @@ module.exports = bookshelf.Model.extend({
           return this.byId(users[0].id);
         } else {
           return null;
+        }
+      });
+  },
+  'seedAdmin': function() {
+    return this.forge()
+      .query({'where':{'role':'admin'}})
+      .fetchAll()
+      .then((users) => {
+        if (!users || users.length == 0) {
+          const user = new User({
+            'email': 'admin@localhost',
+            'role': 'admin'
+          });
+          const password = randomstring.generate();
+          user.setPassword(password)
+          return user.save().then(() => {
+            console.log('Seeded an admin user:\nEmail: ' + user.get('email') + '\nPassword: ' + password);
+          });
         }
       });
   }
