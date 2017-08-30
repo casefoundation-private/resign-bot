@@ -15,26 +15,31 @@ describe('API',() => {
   let user = null;
   let review = null;
   let token = null;
+  let submissions = null;
   const password = randomstring.generate();
   const Submission = require('./lib/models/submission');
   const User = require('./lib/models/user');
   const Review = require('./lib/models/review');
-  const submissions = [];
+  const Notification = require('./lib/models/notification');
 
   before(() => {
     return database.init()
-      .then(() => {
-        return database.knex('reviews').delete();
+      .then(() => web.init())
+      .then((_api) => {
+        api = _api;
       })
+  });
+
+  beforeEach(() => {
+    return database.knex('reviews').delete()
       .then(() => {
         return database.knex('submissions').delete();
       })
       .then(() => {
         return database.knex('users').delete();
       })
-      .then(() => web.init())
-      .then((_api) => {
-        api = _api;
+      .then(() => {
+        return database.knex('notifications').delete();
       })
       .then(() => {
         user = new User({
@@ -45,6 +50,7 @@ describe('API',() => {
         return user.save();
       })
       .then(() => {
+        submissions = [];
         for(var i = 0; i < 10; i++) {
           const object = new Submission({
             'source': randomstring.generate(),
@@ -126,6 +132,68 @@ describe('API',() => {
           res.body.password.should.be.not.eql(user.get('password'));
           done();
         });
+    });
+
+    it('POST /api/user/reset',(done) => {
+      chai.request(api)
+        .post('/api/user/reset')
+        .set('Authorization','JWT ' + token)
+        .send({
+          'email': user.get('email')
+        })
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.message.should.be.a('string');
+
+          user.fetch()
+            .then((user) => {
+              assert(user.get('resetCode'));
+              assert(user.get('resetExpiration'));
+            })
+            .then(() => {
+              return Notification.forge().fetchAll();
+            })
+            .then((notifications) => {
+              assert.equal(notifications.length,11);
+            })
+            .then(() => {
+              done();
+            })
+            .catch((err) => done(err));
+        });
+    });
+
+    it('GET /api/user/reset/:code (Accept)',(done) => {
+      user.set('resetCode',randomstring.generate());
+      user.set('resetExpiration',new Date(new Date().getTime() + 1000000000));
+      user.save().then(() => {
+        chai.request(api)
+          .get('/api/user/reset/' + user.get('resetCode'))
+          .set('Authorization','JWT ' + token)
+          .end((err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.message.should.be.eq('ok');
+            res.body.token.should.be.a('string');
+            done();
+          });
+      }).catch((err) => done(err));
+    });
+
+    it('GET /api/user/reset/:code (Reject)',(done) => {
+      user.set('resetCode',randomstring.generate());
+      user.set('resetExpiration',new Date(new Date().getTime() - 1000000000));
+      user.save().then(() => {
+        chai.request(api)
+          .get('/api/user/reset/' + user.get('resetCode'))
+          .set('Authorization','JWT ' + token)
+          .end((err, res) => {
+            res.should.have.status(404);
+            res.body.should.be.a('object');
+            done();
+          });
+      }).catch((err) => done(err));
     });
   });
 
@@ -214,7 +282,22 @@ describe('API',() => {
           res.body.ip.should.be.eq('::ffff:127.0.0.1');
           res.body.data.field1.should.be.eq(newSubmission.data.field1);
           res.body.data.field2.should.be.eq(newSubmission.data.field2);
-          done();
+
+          Review.forSubmission(res.body.id)
+            .then((reviews) => {
+              assert(reviews);
+              assert.equal(reviews.length,1);
+            })
+            .then(() => {
+              return Notification.forge().fetchAll();
+            })
+            .then((notifications) => {
+              assert.equal(notifications.length,11);
+            })
+            .then(() => {
+              done();
+            })
+            .catch((err) => done(err));
         });
     });
 
@@ -314,7 +397,7 @@ describe('API',() => {
         .end((err, res) => {
           res.should.have.status(400);
           res.body.should.be.a('object');
-          res.body.error.should.be.a('string');
+          res.body.message.should.be.a('string');
           done();
         });
     });
