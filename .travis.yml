@@ -1,0 +1,20 @@
+language: node_js
+node_js:
+- '6'
+install:
+  - npm install -g codecov nyc mocha
+  - cd $TRAVIS_BUILD_DIR/server
+  - npm install
+  - cd $TRAVIS_BUILD_DIR/client
+  - npm install
+script:
+- cd $TRAVIS_BUILD_DIR/server
+- npm test
+- npm run coverage
+- codecov
+- cd $TRAVIS_BUILD_DIR/client
+- npm build
+env:
+  matrix:
+  global:
+    - TZ=America/New_York
