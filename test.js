@@ -94,7 +94,6 @@ describe('API',() => {
   });
 
   describe('User',() => {
-    //TODO additional props
     it('GET /api/user/:user',(done) => {
       chai.request(api)
         .get('/api/user/' + user.get('id'))
@@ -104,6 +103,7 @@ describe('API',() => {
           res.body.should.be.a('object');
           res.body.id.should.be.eql(user.get('id'));
           res.body.email.should.be.eql(user.get('email'));
+          res.body.role.should.be.eql(user.get('role'));
           res.body.password.should.be.eql(user.get('password'));
           done();
         });
@@ -122,6 +122,7 @@ describe('API',() => {
           res.body.should.be.a('object');
           res.body.id.should.be.eql(user.get('id'));
           res.body.email.should.be.eql(user.get('email'));
+          res.body.role.should.be.eql(user.get('role'));
           res.body.password.should.be.not.eql(user.get('password'));
           done();
         });
