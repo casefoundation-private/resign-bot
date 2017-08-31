@@ -38,7 +38,6 @@ const Notification = module.exports = bookshelf.Model.extend({
         }
       })
       .orderBy('created_at','ASC')
-      .limit(1)
       .fetch({
         'withRelated': ['user']
       })

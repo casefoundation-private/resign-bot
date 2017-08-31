@@ -30,8 +30,9 @@ exports.init = () => {
       if (!exists) {
         return knex.schema.createTable('submissions', function(table) {
           table.increments('id').primary().notNullable();
+          table.string('external_id',128).index();
           table.string('source',255).notNullable();
-          table.string('ip',64).notNullable();
+          table.string('ip',64).notNullable().defaultTo('localhost');
           table.json('data').notNullable();
           table.timestamps();
         });

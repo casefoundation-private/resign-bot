@@ -29,7 +29,8 @@ module.exports = bookshelf.Model.extend({
   },
   'virtuals': {
     'score': function() {
-      const reviews = this.get('reviews');
+      //TODO make this a join
+      const reviews = this.related('reviews');
       if (reviews && reviews.length > 0) {
         return reviews.reduce((last,current) => {
           return last + current.score;
@@ -88,5 +89,16 @@ module.exports = bookshelf.Model.extend({
     }).fetch({
       'withRelated': ['reviews']
     });
+  },
+  'bySourceAndExternalId': function(source,externalId) {
+    return this
+      .forge()
+      .query({
+        'where': {
+          'source': source,
+          'external_id': externalId
+        }
+      })
+      .fetch()
   }
 });
