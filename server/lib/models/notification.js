@@ -7,6 +7,7 @@ const Notification = module.exports = bookshelf.Model.extend({
   'tableName': 'notifications',
   'hasTimestamps': true,
   'user': function() {
+    const User = require('./user');
     return this.belongsTo(User);
   },
 },{
@@ -34,7 +35,7 @@ const Notification = module.exports = bookshelf.Model.extend({
       .forge()
       .query({
         'where': {
-          'queued': false,
+          'queued': true,
         }
       })
       .orderBy('created_at','ASC')

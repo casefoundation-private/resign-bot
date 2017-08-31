@@ -1,5 +1,7 @@
 const Review = require('../models/review');
 
+//TODO scrub users
+
 exports.getReview = (req,res,next) => {
   if (req.review) {
     if (req.user.getReviewPermissions(req.review).view) {
@@ -16,6 +18,11 @@ exports.saveReview = (req,res,next) => {
   const save = (review) => {
     review.set('score',req.body.score);
     review.set('data',req.body.data);
+    if (req.user.isAdmin()) {
+      if (req.body.user_id) {
+        review.set('user_id',req.body.user_id);
+      }
+    }
     review
       .save()
       .then(() => review.fetch({'withRelated':['user','submission']}))

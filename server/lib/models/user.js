@@ -86,12 +86,16 @@ const User = module.exports = bookshelf.Model.extend({
   'byId': function(id) {
     return this.forge().query({where:{ id: id }}).fetch()
   },
+  'all': function() {
+    return this.forge().fetchAll();
+  },
   'nextAvailableUser': function() {
     const userIdent = knex.raw('??', ['users.id']);
     const subquery = knex('reviews').count('*').where('user',userIdent).whereNull('score');
     const query = knex
       .select('*',subquery.as('queueSize'))
       .from('users')
+      .where('active',true) //TODO test
       .orderBy('queueSize')
       .limit(1);
     return query
@@ -110,8 +114,9 @@ const User = module.exports = bookshelf.Model.extend({
       .then((users) => {
         if (!users || users.length == 0) {
           const user = new User({
-            'email': 'admin@localhost',
-            'role': 'admin'
+            'email': 'johnj@casefoundation.org',
+            'role': 'admin',
+            'active': true
           });
           const password = randomstring.generate();
           user.setPassword(password)

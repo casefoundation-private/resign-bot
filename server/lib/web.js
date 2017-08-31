@@ -62,7 +62,9 @@ exports.init = (serve) => {
   app.post('/api/user/login',routes.user.login);
   app.post('/api/user/reset',routes.user.startReset);
   app.get('/api/user/reset/:code',routes.user.completeReset);
+  app.get('/api/user',authenticate,routes.user.getUsers); //TODO test
   app.get('/api/user/:user',authenticate,routes.user.getUser);
+  app.put('/api/user',authenticate,routes.user.saveUser); //TODO test
   app.post('/api/user/:user',authenticate,routes.user.saveUser);
 
   app.get('/api/submission',authenticate,routes.submission.getSubmissions);
@@ -78,7 +80,7 @@ exports.init = (serve) => {
   app.use((err,req,res,next) => {
     if (err) {
       res.json({
-        'message': err.message || err
+        'error': err.message || err
       });
     } else {
       next();

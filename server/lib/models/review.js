@@ -20,13 +20,6 @@ module.exports = bookshelf.Model.extend({
   'submission': function() {
     const Submission = require('./submission');
     return this.belongsTo(Submission);
-  },
-  'reassign': function(user) {
-    if (typeof user === 'object') {
-      user = user.id
-    }
-    this.user = user
-    return this;
   }
 }, {
   'jsonColumns': ['data'],

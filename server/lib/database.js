@@ -22,6 +22,7 @@ exports.init = () => {
         table.string('role',16).notNullable().defaultTo('user');
         table.string('resetCode',36);
         table.datetime('resetExpiration');
+        table.boolean('active').notNullable().defaultTo(true); //TODO test
         table.timestamps();
       });
     }

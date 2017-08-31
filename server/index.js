@@ -5,7 +5,7 @@ const notifications = require('./lib/notifications');
 const importer = require('./lib/importer');
 
 database.init()
-  .then(() => web.init())
+  .then(() => web.init(true))
   .then(() => notifications.init())
   .then(() => importer.init())
   .then(() => User.seedAdmin())

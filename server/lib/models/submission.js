@@ -46,7 +46,9 @@ module.exports = bookshelf.Model.extend({
     return this
       .forge()
       .orderBy('created_at','DESC')
-      .fetchAll();
+      .fetchAll({
+        'withRelated': 'reviews'
+      });
   },
   'reviewed': function(email) {
     return this
@@ -87,7 +89,7 @@ module.exports = bookshelf.Model.extend({
     return this.forge().query((qb) => {
       qb.where('id',id);
     }).fetch({
-      'withRelated': ['reviews']
+      'withRelated': ['reviews','reviews.user']
     });
   },
   'bySourceAndExternalId': function(source,externalId) {

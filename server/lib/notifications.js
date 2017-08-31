@@ -26,6 +26,7 @@ exports.init = () => {
       setInterval(() => {
         handleNextNotification();
       },(parseInt(process.env.NOTIFICATION_INTERVAL) || 30000));
+      return handleNextNotification();
     });
 }
 
@@ -46,14 +47,10 @@ const loadTemplates = () => {
 const handleNextNotification = () => {
   if (!notificationLock) {
     notificationLock = true;
-    Notification.nextNotification()
+    return Notification.nextNotification()
       .then((notification) => {
         if (notification) {
-          return processNotification(notification)
-            .then(() => {
-              notification.set('queued',false);
-              return notification.save();
-            })
+          return processNotification(notification);
         }
       })
       .then(() => {
@@ -66,37 +63,42 @@ const handleNextNotification = () => {
 }
 
 const processNotification = (notification) => {
+  console.log('Handling notification: ' + notification.get('type'))
   return generateEmailDetails(notification)
     .then((emailDetails) => {
       const mailOptions = {
         'from': process.env.MAIL_FROM,
-        'to': notification.user.email,
-        'subject': mailOptions.subject,
-        'text': mailOptions.body
+        'to': notification.related('user').get('email'),
+        'subject': emailDetails.subject,
+        'html': emailDetails.body
       };
       return transporter.sendMail(mailOptions);
+    })
+    .then(() => {
+      notification.set('queued',false);
+      return notification.save();
     });
 }
 
 const generateEmailDetails = (notification) => {
-  switch (notification.type) {
+  switch (notification.get('type')) {
     case 'account_reset':
       return new Promise((resolve,reject) => {
         resolve({
           'subject': 'Account Reset Instructions',
           'body': templates.account_reset({
-            'url': (process.env.URL_ROOT || 'http://localhost:8000') + '/api/user/reset/' + notification.user.resetCode //TODO front end url
+            'url': (process.env.URL_ROOT || 'http://localhost:3000') + '/#/reset/' + notification.related('user').get('resetCode')
           })
         });
       })
     case 'review_assigned':
-      return Review.byId(notification.data.review_id)
+      return Review.byId(notification.get('data').review_id)
         .then((review) => {
           if (review) {
             return {
               'subject': 'Subission Assigned For Your Review',
               'body': templates.review_assigned({
-                'url': (process.env.URL_ROOT || 'http://localhost:8000') //TODO front end url
+                'url': (process.env.URL_ROOT || 'http://localhost:3000') //TODO front end url
               })
             };
           } else {
@@ -104,6 +106,6 @@ const generateEmailDetails = (notification) => {
           }
         })
     default:
-      return null;
+      throw new Error('Notification type is invlaid');
   }
 }

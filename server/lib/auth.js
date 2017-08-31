@@ -14,7 +14,7 @@ exports.init = (app) => {
   passport.use(new JwtStrategy(jwtOptions,(jwtPayload, done) => {
     User.byId(jwtPayload.id)
       .then((user) => {
-        if (user) {
+        if (user && user.get('active')) {
           done(null,user);
         } else {
           done(null,false);

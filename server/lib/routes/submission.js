@@ -1,10 +1,13 @@
 const Submission = require('../models/submission');
 
+//TODO scrub users
+
 exports.getSubmissions = (req,res,next) => {
   const respond = (values) => {
     res.json(values.filter((submission) => {
       return req.user.getSubmissionPermissions(submission).view;
     }).map((object) => {
+      object.related('reviews'); //TODO test
       return object.toJSON();
     }));
   }
