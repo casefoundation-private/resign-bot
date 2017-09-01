@@ -6,7 +6,7 @@ import {
   loadSubmission
 } from '../../actions/submissions';
 import {
-  loadReviews,
+  loadReviewsForSubmission,
   updateReview,
   setActiveReview
 } from '../../actions/reviews';
@@ -17,13 +17,13 @@ import PageWrapper from '../../PageWrapper';
 import { Link } from 'react-router-dom';
 import {
   summarizeSubmission
-} from './utils';
+} from '../../misc/utils';
 
 class Submissions extends Component {
   componentDidMount() {
     const submissionId = parseInt(this.props.match.params.submissionId,10);
     this.props.loadSubmission(submissionId);
-    this.props.loadReviews(submissionId);
+    this.props.loadReviewsForSubmission(submissionId);
     this.props.loadUsers();
   }
 
@@ -86,7 +86,7 @@ const dispatchToProps = (dispatch) => {
   return bindActionCreators({
     loadSubmission,
     loadUsers,
-    loadReviews,
+    loadReviewsForSubmission,
     setActiveReview,
     updateReview
   }, dispatch);

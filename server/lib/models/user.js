@@ -84,7 +84,9 @@ const User = module.exports = bookshelf.Model.extend({
       .fetch()
   },
   'byId': function(id) {
-    return this.forge().query({where:{ id: id }}).fetch()
+    return this.forge().query({where:{ id: id }}).fetch({
+      'withRelated': ['reviews','reviews.submission'] //TODO toggle extras
+    })
   },
   'all': function() {
     return this.forge().fetchAll();
@@ -105,7 +107,7 @@ const User = module.exports = bookshelf.Model.extend({
         } else {
           return null;
         }
-      });
+      }); //TODO not sorting
   },
   'seedAdmin': function() {
     return this.forge()

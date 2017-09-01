@@ -98,7 +98,7 @@ const generateEmailDetails = (notification) => {
             return {
               'subject': 'Subission Assigned For Your Review',
               'body': templates.review_assigned({
-                'url': (process.env.URL_ROOT || 'http://localhost:3000') //TODO front end url
+                'url': (process.env.URL_ROOT || 'http://localhost:3000') + '#/reviews/' + review.id
               })
             };
           } else {

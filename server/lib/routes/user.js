@@ -95,6 +95,18 @@ exports.getUser = (req,res,next) => {
   }
 }
 
+exports.getUserReviews = (req,res,next) => {
+  if (req.user.getUserPermissions(req._user).view) {
+    res.json(req._user.related('reviews').filter((review) => {
+      return req.user.getReviewPermissions(review).view;
+    }).map((object) => {
+      return object.toJSON();
+    }));
+  } else {
+    res.sendStatus(401);
+  }
+}
+
 exports.saveUser = (req,res,next) => {
   const saveUser = (user) => {
     if (req.body.password && req.body.password.trim().length > 0) {

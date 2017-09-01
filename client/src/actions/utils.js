@@ -1,6 +1,6 @@
 import {
   ACTION
-} from '../constants';
+} from '../misc/constants';
 
 export const authenticatedRequest = (dispatch,getState,action,method,payload,complete,errored) => {
   if (getState().user.token) {

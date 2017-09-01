@@ -1,6 +1,6 @@
 import {
   ACTION
-} from '../constants';
+} from '../misc/constants';
 
 const initialUserState = {
   review: null,
@@ -15,6 +15,8 @@ const reviews = (state = initialUserState, action) => {
         'reviews': action.reviews || state.reviews
       });
     //TODO other action
+    case ACTION.USER.LOGOUT:
+      return initialUserState;
     default:
       return state;
   }

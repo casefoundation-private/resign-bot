@@ -1,6 +1,6 @@
 import {
   ACTION
-} from '../constants';
+} from '../misc/constants';
 
 const initialUserState = {
   token: null,

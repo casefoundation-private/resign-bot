@@ -1,12 +1,16 @@
 import {
   ACTION
-} from '../constants';
+} from '../misc/constants';
 import {
   authenticatedRequest
 } from './utils';
 
 export const loadSubmissions = () => {
   return (dispatch,getState) => {
+    dispatch({
+      type: ACTION.SUBMISSIONS.SET,
+      submissions: []
+    });
     authenticatedRequest(dispatch,getState,'/api/submission','GET',null,(submissions) => {
       dispatch({
         type: ACTION.SUBMISSIONS.SET,
@@ -27,12 +31,16 @@ export const loadSubmission = (submissionId) => {
         submission
       });
     } else {
-      authenticatedRequest(dispatch,getState,'/api/submission/'+submissionId,'GET',null,(submission) => {
-        dispatch({
-          type: ACTION.SUBMISSIONS.SET,
-          submission
-        });
+      dispatch({
+        type: ACTION.SUBMISSIONS.SET,
+        submission: []
       });
     }
+    authenticatedRequest(dispatch,getState,'/api/submission/'+submissionId,'GET',null,(submission) => {
+      dispatch({
+        type: ACTION.SUBMISSIONS.SET,
+        submission
+      });
+    });
   }
 }

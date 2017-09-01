@@ -5,12 +5,14 @@ import ResetPassword from './features/login/ResetPassword';
 import Home from './Home';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import Logout from './Logout';
+import Logout from './misc/Logout';
 import Users from './features/userManagement/Users';
 import User from './features/userManagement/User';
 import Submissions from './features/submissions/Submissions';
 import SubmissionReviews from './features/submissions/SubmissionReviews';
 import FinishResetPassword from './features/login/FinishResetPassword';
+import MyReviews from './features/reviews/MyReviews';
+import Review from './features/reviews/Review';
 
 class App extends Component {
   render() {
@@ -23,6 +25,8 @@ class App extends Component {
           <Route path="/users/:userId" exact={true} component={User} />
           <Route path="/submissions" exact={true} component={Submissions} />
           <Route path="/submissions/:submissionId/reviews" exact={true} component={SubmissionReviews} />
+          <Route path="/reviews" exact={true} component={MyReviews} />
+          <Route path="/reviews/:reviewId" exact={true} component={Review} />
           <Route path="/" component={Home} />
         </Switch>
       </HashRouter> )

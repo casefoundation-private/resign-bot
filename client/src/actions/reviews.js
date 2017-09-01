@@ -1,13 +1,32 @@
 import {
   ACTION
-} from '../constants';
+} from '../misc/constants';
 import {
   authenticatedRequest
 } from './utils';
 
-export const loadReviews = (submissionId) => {
+export const loadReviewsForSubmission = (submissionId) => {
   return (dispatch,getState) => {
+    dispatch({
+      type: ACTION.REVIEWS.SET,
+      reviews: []
+    });
     authenticatedRequest(dispatch,getState,'/api/submission/'+submissionId+'/reviews','GET',null,(reviews) => {
+      dispatch({
+        type: ACTION.REVIEWS.SET,
+        reviews
+      });
+    });
+  }
+}
+
+export const loadReviewsForUser = (userId) => {
+  return (dispatch,getState) => {
+    dispatch({
+      type: ACTION.REVIEWS.SET,
+      reviews: []
+    });
+    authenticatedRequest(dispatch,getState,'/api/user/'+userId+'/reviews','GET',null,(reviews) => {
       dispatch({
         type: ACTION.REVIEWS.SET,
         reviews
@@ -25,7 +44,7 @@ export const setActiveReview = (review) => {
 
 export const loadReview = (reviewId) => {
   return (dispatch,getState) => {
-    const review = getState().reviews.reviews && getState().reviews.reviews.find((reviews) => {
+    const review = getState().reviews.reviews && getState().reviews.reviews.find((review) => {
       return review.id === reviewId;
     });
     if (review) {
@@ -34,13 +53,17 @@ export const loadReview = (reviewId) => {
         review
       });
     } else {
-      authenticatedRequest(dispatch,getState,'/api/review/'+reviewId,'GET',null,(review) => {
-        dispatch({
-          type: ACTION.REVIEWS.SET,
-          review
-        });
+      dispatch({
+        type: ACTION.REVIEWS.SET,
+        review: null
       });
     }
+    authenticatedRequest(dispatch,getState,'/api/review/'+reviewId,'GET',null,(review) => {
+      dispatch({
+        type: ACTION.REVIEWS.SET,
+        review
+      });
+    });
   }
 }
 

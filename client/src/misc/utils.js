@@ -1,3 +1,4 @@
+const _ = require('lodash');
 
 export const summarizeSubmission = (submission) => {
   if (!submission || !submission.data) {
@@ -15,4 +16,8 @@ export const completedReviews = (submission) => {
 
 export const incompletedReviews = (submission) => {
   return submission.reviews.filter((review) => review.score === null);
+}
+
+export const getSubmissionFields = (submission) => {
+  return submission && submission.data ? _.keys(submission.data) : [];
 }

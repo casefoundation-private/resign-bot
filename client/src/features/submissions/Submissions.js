@@ -10,7 +10,7 @@ import {
   summarizeSubmission,
   completedReviews,
   incompletedReviews
-} from './utils';
+} from '../../misc/utils';
 import { Link } from 'react-router-dom';
 
 class Submissions extends Component {

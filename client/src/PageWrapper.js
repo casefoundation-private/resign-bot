@@ -40,7 +40,7 @@ class PageWrapper extends Component {
                 </NavItem>
             ) }
             <NavItem>
-              <Link to="/account" className="nav-link">My Review Queue</Link>
+              <Link to="/reviews" className="nav-link">My Review Queue</Link>
             </NavItem>
             <NavItem>
               <Link to={'/users/'+this.props.user.user.id} className="nav-link">My Account</Link>

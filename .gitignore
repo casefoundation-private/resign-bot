@@ -6,3 +6,4 @@ build
 coverage
 .nyc_output
 coverage.lcov
+npm-debug.log

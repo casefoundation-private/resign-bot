@@ -1,13 +1,13 @@
 import {
   ACTION
-} from '../constants';
+} from '../misc/constants';
 
-const initialUserState = {
+const initialUsersState = {
   user: null,
   users: null,
 };
 
-const users = (state = initialUserState, action) => {
+const users = (state = initialUsersState, action) => {
   switch (action.type) {
     case ACTION.USERS.SET:
       return Object.assign({},state,{
@@ -18,6 +18,8 @@ const users = (state = initialUserState, action) => {
       return Object.assign({},state,{
         'user': Object.assign({},state.user,action.updates)
       });
+    case ACTION.USER.LOGOUT:
+      return initialUsersState;
     default:
       return state;
   }

@@ -64,6 +64,7 @@ exports.init = (serve) => {
   app.get('/api/user/reset/:code',routes.user.completeReset);
   app.get('/api/user',authenticate,routes.user.getUsers); //TODO test
   app.get('/api/user/:user',authenticate,routes.user.getUser);
+  app.get('/api/user/:user/reviews',authenticate,routes.user.getUserReviews); //TODO test
   app.put('/api/user',authenticate,routes.user.saveUser); //TODO test
   app.post('/api/user/:user',authenticate,routes.user.saveUser);
 

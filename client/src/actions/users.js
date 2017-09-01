@@ -1,12 +1,16 @@
 import {
   ACTION
-} from '../constants';
+} from '../misc/constants';
 import {
   authenticatedRequest
 } from './utils';
 
 export const loadUsers = () => {
   return (dispatch,getState) => {
+    dispatch({
+      type: ACTION.USERS.SET,
+      users: []
+    });
     authenticatedRequest(dispatch,getState,'/api/user','GET',null,(users) => {
       dispatch({
         type: ACTION.USERS.SET,
@@ -27,13 +31,17 @@ export const loadUser = (userId) => {
         user
       });
     } else {
-      authenticatedRequest(dispatch,getState,'/api/user/'+userId,'GET',null,(user) => {
-        dispatch({
-          type: ACTION.USERS.SET,
-          user
-        });
+      dispatch({
+        type: ACTION.USERS.SET,
+        user: []
       });
     }
+    authenticatedRequest(dispatch,getState,'/api/user/'+userId,'GET',null,(user) => {
+      dispatch({
+        type: ACTION.USERS.SET,
+        user
+      });
+    });
   }
 }
 

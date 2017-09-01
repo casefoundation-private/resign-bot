@@ -1,6 +1,6 @@
 import {
   ACTION
-} from '../constants';
+} from '../misc/constants';
 
 export const clearMessage = () => {
   return {

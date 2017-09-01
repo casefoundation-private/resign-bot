@@ -5,6 +5,13 @@ module.exports = () => {
     .then((fieldMap) => getEntries(fieldMap));
 }
 
+const ignoreFields = [
+  'Entry Id',
+  'Date Created',
+  'Created By',
+  'Updated By'
+];
+
 const wufooRequest = (method,qs) => {
   return request({
     'uri': 'https://' + process.env.WUFOO_SUBDOMAIN + '.wufoo.com/api/v3/' + method + '.json',
@@ -25,7 +32,9 @@ const getFormFields = () => {
       if (body.Fields) {
         const fieldMap = {};
         body.Fields.forEach((field) => {
-          fieldMap[field.ID] = field.Title;
+          if (ignoreFields.indexOf(field.Title) < 0) {
+            fieldMap[field.ID] = field.Title;
+          }
         });
         return fieldMap;
       } else {

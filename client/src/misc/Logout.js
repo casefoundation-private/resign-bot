@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import {
   userLogout
-} from './actions/user';
+} from '../actions/user';
 
 class Logout extends Component {
 
