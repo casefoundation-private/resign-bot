@@ -5,7 +5,7 @@ const importers = [];
 exports.init = () => {
   setupImporters();
   setInterval(() => {
-    runImporters();
+    runImporters().catch((err) => console.log(err))
   },(parseInt(process.env.IMPORT_INTERVAL) || (1000 * 60 * 60)));
   return runImporters();
 }
