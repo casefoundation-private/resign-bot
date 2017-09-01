@@ -6,7 +6,7 @@ exports.init = () => {
   setupImporters();
   setInterval(() => {
     runImporters();
-  },(parseInt(process.env.IMPORT_INTERVAL) || (1000 * 60 * 60 * 12)));
+  },(parseInt(process.env.IMPORT_INTERVAL) || (1000 * 60 * 60)));
   return runImporters();
 }
 
