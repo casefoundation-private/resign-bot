@@ -13,8 +13,15 @@ import SubmissionReviews from './features/submissions/SubmissionReviews';
 import FinishResetPassword from './features/login/FinishResetPassword';
 import MyReviews from './features/reviews/MyReviews';
 import Review from './features/reviews/Review';
+import {
+  loadUserDetails
+} from './actions/user';
 
 class App extends Component {
+  componentDidMount() {
+    this.props.loadUserDetails();
+  }
+
   render() {
     return this.props.user.token ?
       ( <HashRouter>
@@ -48,7 +55,9 @@ const stateToProps = (state) => {
 }
 
 const dispatchToProps = (dispatch) => {
-  return bindActionCreators({}, dispatch);
+  return bindActionCreators({
+    loadUserDetails
+  }, dispatch);
 }
 
 export default connect(stateToProps, dispatchToProps)(App);

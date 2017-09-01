@@ -12,6 +12,11 @@ module.exports = bookshelf.Model.extend({
     this.on('created',function() {
       return Notification.reviewAssigned(this).save();
     },this);
+    this.on('updating',function() {
+      if (this.get('user_id') != this.previous('user_id')) {
+        return Notification.reviewAssigned(this).save();
+      }
+    },this);
     bookshelf.Model.prototype.initialize.apply(this, arguments);
   },
   'user': function() {
@@ -62,9 +67,7 @@ module.exports = bookshelf.Model.extend({
           'submission_id': submissionId
         }
       })
-      .fetchAll({
-        'withRelated': ['user','submission']
-      });
+      .fetchAll();
   },
   'getQueueForUser': function(user) {
     if (typeof user == 'object') {

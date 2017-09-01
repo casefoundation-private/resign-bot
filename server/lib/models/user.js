@@ -70,6 +70,13 @@ const User = module.exports = bookshelf.Model.extend({
         'edit': false
       };
     }
+  },
+  'toJSON': function(options) {
+    const json = this.serialize(options);
+    delete json.password;
+    delete json.resetCode;
+    delete json.resetExpiration;
+    return json;
   }
 }, {
   'byEmail': function(email) {
@@ -84,30 +91,35 @@ const User = module.exports = bookshelf.Model.extend({
       .fetch()
   },
   'byId': function(id) {
-    return this.forge().query({where:{ id: id }}).fetch({
-      'withRelated': ['reviews','reviews.submission'] //TODO toggle extras
-    })
+    return this.forge().query({where:{ id: id }}).fetch();
   },
   'all': function() {
     return this.forge().fetchAll();
   },
   'nextAvailableUser': function() {
-    const userIdent = knex.raw('??', ['users.id']);
-    const subquery = knex('reviews').count('*').where('user',userIdent).whereNull('score');
-    const query = knex
-      .select('*',subquery.as('queueSize'))
-      .from('users')
-      .where('active',true) //TODO test
-      .orderBy('queueSize')
-      .limit(1);
-    return query
-      .then((users) => {
-        if (users && users.length > 0) {
-          return this.byId(users[0].id);
+    return User.forge()
+      .query((qb) => {
+        qb.whereNotIn('id',knex.select('user_id').from('reviews').whereNull('reviews.score'));
+      })
+      .fetch()
+      .then((user) => {
+        if (user) {
+          return user;
         } else {
-          return null;
+          return knex.select(knex.raw('users.id, sum(reviews.user_id) as totalReviews'))
+            .from('users')
+            .leftJoin('reviews','users.id','reviews.user_id')
+            .whereNull('reviews.score')
+            .groupBy('reviews.user_id')
+            .orderBy('totalReviews')
+            .limit(1)
+            .then((result) => {
+              if (result && result.length > 0) {
+                return User.byId(result[0].id);
+              }
+            });
         }
-      }); //TODO not sorting
+      });
   },
   'seedAdmin': function() {
     return this.forge()

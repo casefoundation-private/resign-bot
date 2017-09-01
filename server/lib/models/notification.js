@@ -36,6 +36,7 @@ const Notification = module.exports = bookshelf.Model.extend({
       .query({
         'where': {
           'queued': true,
+          'errored': false
         }
       })
       .orderBy('created_at','ASC')

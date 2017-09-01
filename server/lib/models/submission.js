@@ -22,6 +22,8 @@ module.exports = bookshelf.Model.extend({
               'user_id': user.get('id'),
               'submission_id': this.get('id')
             }).save();
+          } else {
+            throw new Error('No users ready!');
           }
         })
     },this);
@@ -50,47 +52,10 @@ module.exports = bookshelf.Model.extend({
         'withRelated': 'reviews'
       });
   },
-  'reviewed': function(email) {
-    return this
-      .forge()
-      .query((query) => {
-        const subquery = knex
-          .select(['submission_id'])
-          .from('reviews')
-          .whereNotNull('score');
-        query.whereIn('id',subquery);
-      })
-      .orderBy('created_at','DESC')
-      .fetchAll({
-        'withRelated': 'reviews'
-      })
-  },
-  'unreviewed': function(email) {
-    return this
-      .forge()
-      .query((query) => {
-        const subquery1 = knex
-          .select(['submission_id'])
-          .from('reviews')
-          .whereNull('score');
-        const subquery2 = knex
-          .select(['submission_id'])
-          .from('reviews')
-        query
-          .whereIn('id',subquery1)
-          .orWhereNotIn('id',subquery2);
-      })
-      .orderBy('created_at','DESC')
-      .fetchAll({
-        'withRelated': 'reviews'
-      })
-  },
   'byId': function(id) {
     return this.forge().query((qb) => {
       qb.where('id',id);
-    }).fetch({
-      'withRelated': ['reviews','reviews.user']
-    });
+    }).fetch();
   },
   'bySourceAndExternalId': function(source,externalId) {
     return this

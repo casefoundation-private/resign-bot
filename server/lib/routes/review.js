@@ -1,7 +1,5 @@
 const Review = require('../models/review');
 
-//TODO scrub users
-
 exports.getReview = (req,res,next) => {
   if (req.review) {
     if (req.user.getReviewPermissions(req.review).view) {

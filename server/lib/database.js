@@ -6,9 +6,13 @@ const sqliteConfig = {
   'filename': './database.sqlite'
 }
 
+const testSqliteConfig = {
+  'filename': './database_test.sqlite'
+}
+
 const knex = exports.knex = require('knex')({
   'client': process.env.NODE_ENV === 'test' || process.env.DB === 'sqlite' ? 'sqlite3' : 'pg',
-  'connection': process.env.NODE_ENV === 'test' || process.env.DB === 'sqlite' ? sqliteConfig : pgConfig,
+  'connection': process.env.NODE_ENV === 'test' ? testSqliteConfig : (process.env.DB === 'sqlite' ? sqliteConfig : pgConfig),
   'useNullAsDefault': true
 });
 
@@ -22,7 +26,7 @@ exports.init = () => {
         table.string('role',16).notNullable().defaultTo('user');
         table.string('resetCode',36);
         table.datetime('resetExpiration');
-        table.boolean('active').notNullable().defaultTo(true); //TODO test
+        table.boolean('active').notNullable().defaultTo(true);
         table.timestamps();
       });
     }
@@ -61,6 +65,7 @@ exports.init = () => {
           table.integer('user_id').references('id').inTable('users').notNullable();
           table.boolean('queued').notNullable().defaultTo(true);
           table.string('type',32).notNullable();
+          table.boolean('errored').notNullable().defaultTo(false);
           table.json('data').notNullable().defaultTo('{}');
           table.timestamps();
         });

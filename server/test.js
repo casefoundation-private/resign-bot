@@ -75,6 +75,11 @@ describe('API',() => {
         return Submission.byId(submissions[0].get('id'));
       })
       .then((submission) => {
+        return submission.fetch({'withRelated':['reviews']}).then(() => {
+          return submission;
+        });
+      })
+      .then((submission) => {
         review = submission.related('reviews').at(0);
         review.set('score',10);
         return review.save();
@@ -100,6 +105,48 @@ describe('API',() => {
   });
 
   describe('User',() => {
+    it('GET /api/user (Inactive)',(done) => {
+      user.set('active',false);
+      user.save().then(() => {
+        chai.request(api)
+          .get('/api/user')
+          .set('Authorization','JWT ' + token)
+          .end((err, res) => {
+            res.should.have.status(401);
+            done();
+          });
+      }).catch((err) => console.log(err));
+    });
+
+    it('GET /api/user/login (Inactive)',(done) => {
+      user.set('active',false);
+      user.save().then(() => {
+        chai.request(api)
+          .post('/api/user/login')
+          .send({
+            'email': user.get('email'),
+            'password': password
+          })
+          .end((err,res) => {
+            res.should.have.status(401);
+            done();
+          })
+      }).catch((err) => console.log(err));
+    });
+
+    it('GET /api/user (Inactive)',(done) => {
+      user.set('active',false);
+      user.save().then(() => {
+        chai.request(api)
+          .get('/api/user')
+          .set('Authorization','JWT ' + token)
+          .end((err, res) => {
+            res.should.have.status(401);
+            done();
+          });
+      }).catch((err) => console.log(err));
+    });
+
     it('GET /api/user/:user',(done) => {
       chai.request(api)
         .get('/api/user/' + user.get('id'))
@@ -110,26 +157,61 @@ describe('API',() => {
           res.body.id.should.be.eql(user.get('id'));
           res.body.email.should.be.eql(user.get('email'));
           res.body.role.should.be.eql(user.get('role'));
-          res.body.password.should.be.eql(user.get('password'));
+          done();
+        });
+    });
+
+    it('GET /api/user/:user/reviews',(done) => {
+      chai.request(api)
+        .get('/api/user/' + user.get('id') + '/reviews')
+        .set('Authorization','JWT ' + token)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('array');
+          res.body.length.should.be.eq(10);
           done();
         });
     });
 
     it('POST /api/user/:user',(done) => {
-      const newPass = randomstring.generate();
+      const update = {
+        'password': randomstring.generate(),
+        'email': randomstring.generate(),
+        'role': randomstring.generate(),
+        'active': false
+      };
       chai.request(api)
         .post('/api/user/' + user.get('id'))
         .set('Authorization','JWT ' + token)
-        .send({
-          'password': newPass
-        })
+        .send(update)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
           res.body.id.should.be.eql(user.get('id'));
-          res.body.email.should.be.eql(user.get('email'));
-          res.body.role.should.be.eql(user.get('role'));
-          res.body.password.should.be.not.eql(user.get('password'));
+          res.body.email.should.be.eql(update.email);
+          res.body.role.should.be.eql(update.role);
+          res.body.active.should.be.eql(update.active);
+          done();
+        });
+    });
+
+    it('PUT /api/user/:user',(done) => {
+      const update = {
+        'password': randomstring.generate(),
+        'email': randomstring.generate(),
+        'role': randomstring.generate()
+      };
+      chai.request(api)
+        .put('/api/user')
+        .set('Authorization','JWT ' + token)
+        .send(update)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.id.should.be.a('number');
+          res.body.email.should.be.eql(update.email);
+          res.body.role.should.be.eql(update.role);
+          res.body.active.should.be.eql(true);
           done();
         });
     });
@@ -207,30 +289,8 @@ describe('API',() => {
           res.should.have.status(200);
           res.body.should.be.a('array');
           res.body.length.should.be.eql(submissions.length);
-          done();
-        });
-    });
-
-    it('GET /api/submission?reviewed=false',(done) => {
-      chai.request(api)
-        .get('/api/submission?reviewed=false')
-        .set('Authorization','JWT ' + token)
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.body.should.be.a('array');
-          res.body.length.should.be.eql(submissions.length - 1);
-          done();
-        });
-    });
-
-    it('GET /api/submission?reviewed=true',(done) => {
-      chai.request(api)
-        .get('/api/submission?reviewed=true')
-        .set('Authorization','JWT ' + token)
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.body.should.be.a('array');
-          res.body.length.should.be.eql(1);
+          res.body[0].reviews.should.be.a('array');
+          res.body[0].reviews.length.should.be.eq(1);
           done();
         });
     });
@@ -397,7 +457,7 @@ describe('API',() => {
         .end((err, res) => {
           res.should.have.status(400);
           res.body.should.be.a('object');
-          res.body.message.should.be.a('string');
+          res.body.error.should.be.a('string');
           done();
         });
     });

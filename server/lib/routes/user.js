@@ -14,16 +14,6 @@ const finishLogin = (user,res) => {
   });
 }
 
-const scrubUser = (user) => {
-  if (user.toJSON) {
-    user = user.toJSON();
-  }
-  delete user.password;
-  delete user.resetCode;
-  delete user.resetExpiration;
-  return user;
-}
-
 exports.login = (req,res,next) => {
   User.byEmail(req.body.email)
     .then((user) => {
@@ -82,14 +72,14 @@ exports.getUsers = (req,res,next) => {
       res.json(users.filter((user) => {
         return req.user.getUserPermissions(user).view;
       }).map((object) => {
-        return scrubUser(object);
+        return object.toJSON();
       }));
     });
 }
 
 exports.getUser = (req,res,next) => {
   if (req.user.getUserPermissions(req._user).view) {
-    res.json(scrubUser(req._user));
+    res.json(req._user.toJSON());
   } else {
     res.sendStatus(401);
   }
@@ -97,11 +87,13 @@ exports.getUser = (req,res,next) => {
 
 exports.getUserReviews = (req,res,next) => {
   if (req.user.getUserPermissions(req._user).view) {
-    res.json(req._user.related('reviews').filter((review) => {
-      return req.user.getReviewPermissions(review).view;
-    }).map((object) => {
-      return object.toJSON();
-    }));
+    req._user.fetch({'withRelated':['reviews','reviews.submission']}).then(() => {
+      res.json(req._user.related('reviews').filter((review) => {
+        return req.user.getReviewPermissions(review).view;
+      }).map((object) => {
+        return object.toJSON();
+      }));
+    }).catch((err) => next(err));
   } else {
     res.sendStatus(401);
   }
@@ -114,7 +106,7 @@ exports.saveUser = (req,res,next) => {
     }
     user.save()
       .then(() => {
-        res.json(scrubUser(user));
+        res.json(user.toJSON());
       })
       .catch((err) => {
         next(err);
@@ -129,7 +121,6 @@ exports.saveUser = (req,res,next) => {
     });
     saveUser(user);
   } else if (req._user && req.user.getUserPermissions(req._user).edit) {
-    //TODO test
     if (req.user.isAdmin()) {
       if (req.body.email) {
         req._user.set('email',req.body.email);

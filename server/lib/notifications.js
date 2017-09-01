@@ -50,13 +50,18 @@ const handleNextNotification = () => {
     return Notification.nextNotification()
       .then((notification) => {
         if (notification) {
-          return processNotification(notification);
+          return processNotification(notification).catch((err) => {
+            console.error(err);
+            notification.set('errored',true);
+          })
+          .then(() => {
+            notificationLock = false;
+            return notification.save();
+          });
         }
       })
-      .then(() => {
-        notificationLock = false;
-      })
       .catch((err) => {
+        notificationLock = false;
         console.error(err);
       })
   }
@@ -72,11 +77,9 @@ const processNotification = (notification) => {
         'subject': emailDetails.subject,
         'html': emailDetails.body
       };
-      return transporter.sendMail(mailOptions);
-    })
-    .then(() => {
-      notification.set('queued',false);
-      return notification.save();
+      return transporter.sendMail(mailOptions).then(() => {
+        notification.set('queued',false);
+      });
     });
 }
 

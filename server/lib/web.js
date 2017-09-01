@@ -62,10 +62,10 @@ exports.init = (serve) => {
   app.post('/api/user/login',routes.user.login);
   app.post('/api/user/reset',routes.user.startReset);
   app.get('/api/user/reset/:code',routes.user.completeReset);
-  app.get('/api/user',authenticate,routes.user.getUsers); //TODO test
+  app.get('/api/user',authenticate,routes.user.getUsers);
   app.get('/api/user/:user',authenticate,routes.user.getUser);
-  app.get('/api/user/:user/reviews',authenticate,routes.user.getUserReviews); //TODO test
-  app.put('/api/user',authenticate,routes.user.saveUser); //TODO test
+  app.get('/api/user/:user/reviews',authenticate,routes.user.getUserReviews);
+  app.put('/api/user',authenticate,routes.user.saveUser);
   app.post('/api/user/:user',authenticate,routes.user.saveUser);
 
   app.get('/api/submission',authenticate,routes.submission.getSubmissions);
