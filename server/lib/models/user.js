@@ -77,7 +77,7 @@ const User = module.exports = bookshelf.Model.extend({
       };
     }
   },
-  'recuseAllReviews': function() { //TODO test
+  'recuseAllReviews': function() {
     const nextRecusal = (i) => {
       if (i < this.related('reviews').length) {
         const review = this.related('reviews').at(i);
@@ -88,7 +88,7 @@ const User = module.exports = bookshelf.Model.extend({
           })
           .then(() => {
             return nextRecusal(i+1);
-          });
+          })
       }
     }
     return nextRecusal(0)
@@ -99,6 +99,8 @@ const User = module.exports = bookshelf.Model.extend({
   'toJSON': function(options) {
     const sendOpts = options ? Object.assign(options,{'virtuals': true}) : {'virtuals': true};
     const json = bookshelf.Model.prototype.toJSON.apply(this,sendOpts);
+    json.active = json.active === true || json.active === 1;
+    json.ready = json.ready === true || json.ready === 1;
     delete json.password;
     delete json.resetCode;
     delete json.resetExpiration;
@@ -159,20 +161,25 @@ const User = module.exports = bookshelf.Model.extend({
       .query((qb) => {
         qb.whereNotIn('id',knex.select('user_id').from('reviews').whereNull('reviews.score'));
         if (blacklist && blacklist.length > 0) qb.whereNotIn('id',blacklist);
-        qb.where({'ready':true});
+        qb.where({
+          'ready': true,
+          'active': true
+        });
         qb.limit(i);
       })
       .fetchAll()
       .then((users) => {
         if (users.length == i) {
-          users.at(0).get('email');
           return users;
         } else {
           const query = knex.select(knex.raw('users.id, count(reviews.user_id) as totalReviews'))
             .from('users')
             .leftJoin('reviews','users.id','reviews.user_id')
             .whereNull('reviews.score')
-            .where({'users.ready':true})
+            .where({
+              'users.ready': true,
+              'users.active': true
+            })
             .groupBy('reviews.user_id')
             .orderBy('totalReviews')
             .limit(i - users.length);

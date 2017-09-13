@@ -36,6 +36,8 @@ module.exports = bookshelf.Model.extend({
   'toJSON': function(options) {
     const sendOpts = options ? Object.assign(options,{'virtuals': true}) : {'virtuals': true};
     const json = bookshelf.Model.prototype.toJSON.apply(this,sendOpts);
+    json.flagged = json.flagged === true || json.flagged === 1;
+    json.pinned = json.pinned === true || json.pinned === 1;
     return json;
   },
   'virtuals': {
