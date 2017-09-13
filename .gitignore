@@ -8,3 +8,4 @@ coverage
 coverage.lcov
 npm-debug.log
 .DS_Store
+clearSubmissions.sh

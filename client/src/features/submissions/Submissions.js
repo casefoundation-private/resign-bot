@@ -1,15 +1,22 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Table,ButtonGroup } from 'reactstrap';
+import { Table,ButtonGroup,Button } from 'reactstrap';
 import {
-  loadSubmissions
+  loadSubmissions,
+  toggleFlagSubmission,
+  togglePinSubmission
 } from '../../actions/submissions';
+import {
+  makeFavorite,
+  deleteFavorite
+} from '../../actions/user';
 import PageWrapper from '../../PageWrapper';
 import {
   summarizeSubmission,
   completedReviews,
-  incompletedReviews
+  incompletedReviews,
+  getFavorite
 } from '../../misc/utils';
 import { Link } from 'react-router-dom';
 
@@ -26,6 +33,7 @@ class Submissions extends Component {
             <tr>
               <th>Summary</th>
               <th>Score</th>
+              <th>Std Deviation</th>
               <th>Completed Reviews</th>
               <th>Assigned Reviews</th>
               <th>Created</th>
@@ -35,15 +43,27 @@ class Submissions extends Component {
           <tbody>
             {
               this.props.submissions.submissions && this.props.submissions.submissions.map((submission) => {
+                const favorite = getFavorite(this.props.user.favorites,submission);
                 return (
                   <tr key={submission.id}>
                     <td>{summarizeSubmission(submission)}</td>
-                    <td>{submission.score}</td>
+                    <td>{submission.score === null ? 'N/A' : submission.score}</td>
+                    <td>{submission.deviation === null ? 'N/A' : submission.deviation}</td>
                     <td>{completedReviews(submission).length}</td>
                     <td>{incompletedReviews(submission).length}</td>
                     <td>{new Date(submission.created_at).toLocaleDateString()}</td>
                     <td className="text-right">
                       <ButtonGroup>
+                        <Button size="sm" color="danger" onClick={() => this.props.toggleFlagSubmission(submission)}>
+                          { !submission.flagged ? 'Flag as Inappropriate' : 'Clear Inappropriate Flag' }
+                        </Button>
+                        <Button size="sm" color="success" onClick={() => this.props.togglePinSubmission(submission)}>
+                          { !submission.pinned ? 'Pin to Top' : 'Unpin' }
+                        </Button>
+                        { !favorite ?
+                          ( <Button size="sm" color="success" onClick={() => this.props.makeFavorite(submission)}>Favorite</Button> )
+                          : ( <Button size="sm" color="success" onClick={() => this.props.deleteFavorite(favorite)}>Unfavorite</Button> )
+                        }
                         <Link to={'/submissions/'+submission.id+'/reviews'} className="btn btn-primary btn-sm">Manage Reviews</Link>
                       </ButtonGroup>
                     </td>
@@ -60,13 +80,18 @@ class Submissions extends Component {
 
 const stateToProps = (state) => {
   return {
-    submissions: state.submissions
+    submissions: state.submissions,
+    user: state.user
   }
 }
 
 const dispatchToProps = (dispatch) => {
   return bindActionCreators({
-    loadSubmissions
+    loadSubmissions,
+    toggleFlagSubmission,
+    togglePinSubmission,
+    makeFavorite,
+    deleteFavorite
   }, dispatch);
 }
 

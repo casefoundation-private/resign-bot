@@ -1,4 +1,5 @@
 const Submission = require('../models/submission');
+const Favorite = require('../models/favorite');
 
 exports.getSubmissions = (req,res,next) => {
   Submission.all()
@@ -45,6 +46,8 @@ exports.getSubmissionReviews = (req,res,next) => {
 exports.saveSubmission = (req,res,next) => {
   const save = (submission) => {
     submission.set('data',req.body.data);
+    submission.set('flagged',req.body.flagged); //TODO test
+    submission.set('pinned',req.body.pinned); //TODO test
     submission.save()
       .then(() => {
         res.json(submission.toJSON());
@@ -64,4 +67,33 @@ exports.saveSubmission = (req,res,next) => {
     });
     save(submission);
   }
+}
+
+exports.saveFavorite = (req,res,next) => {
+  const favorite = new Favorite({
+    'user_id': req.user.id,
+    'submission_id': req.submission.id
+  });
+  favorite.save()
+    .then(() => {
+      res.send(favorite.toJSON());
+    })
+    .catch((err) => next(err));
+}
+
+exports.deleteFavorite = (req,res,next) => {
+  Favorite.bySubmissionAndUser(req.submission.id,req.user.id)
+    .then((favorite) => {
+      if (favorite) {
+        return favorite.destroy();
+      } else {
+        throw new Error('Favorite does not exist.');
+      }
+    })
+    .then(() => {
+      res.send({
+        'message': 'Deleted'
+      });
+    })
+    .catch((err) => next(err));
 }

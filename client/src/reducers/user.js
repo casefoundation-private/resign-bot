@@ -4,7 +4,8 @@ import {
 
 const initialUserState = {
   token: null,
-  user: null
+  user: null,
+  favorites: null
 };
 
 const user = (state = initialUserState, action) => {
@@ -28,6 +29,18 @@ const user = (state = initialUserState, action) => {
       } else {
         return state;
       }
+    case ACTION.USER.FAVORITES:
+      return Object.assign({},state,{
+        'favorites': action.favorites
+      });
+    case ACTION.USER.ADD_FAVORITE:
+      return Object.assign({},state,{
+        'favorites': (state.favorites || []).concat([action.submission])
+      });
+    case ACTION.USER.DELETE_FAVORITE:
+      return Object.assign({},state,{
+        'favorites': (state.favorites || []).filter((submission) => submission.id !== action.submission_id)
+      });
     case ACTION.USER.LOGIN:
     case ACTION.USER.LOGOUT:
       return Object.assign({},initialUserState);

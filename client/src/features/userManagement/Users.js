@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Table,ButtonGroup } from 'reactstrap';
+import { Table,ButtonGroup,Button } from 'reactstrap';
 import {
-  loadUsers
+  loadUsers,
+  reassignUserReviews
 } from '../../actions/users';
 import PageWrapper from '../../PageWrapper';
 import { Link } from 'react-router-dom';
@@ -23,7 +24,11 @@ class Users extends Component {
           <thead>
             <tr>
               <th>Email</th>
-              <th>Active</th>
+              <th>Pending Reviews</th>
+              <th>Completed Reviews</th>
+              <th>Average Score Given</th>
+              <th>Active (Can Log In)</th>
+              <th>Review Queue is Open</th>
               <th>Role</th>
               <th>Created</th>
               <th className="text-right">Options</th>
@@ -35,12 +40,17 @@ class Users extends Component {
                 return (
                   <tr key={user.id}>
                     <td>{user.email}</td>
+                    <td>{user.pendingReviews}</td>
+                    <td>{user.completedReviews}</td>
+                    <td>{user.averageScore === null ? 'N/A' : user.averageScore}</td>
                     <td>{user.active ? 'Yes' : 'No'}</td>
+                    <td>{user.ready ? 'Yes' : 'No'}</td>
                     <td>{user.role}</td>
                     <td>{new Date(user.created_at).toLocaleDateString()}</td>
                     <td className="text-right">
                       <ButtonGroup>
                         <Link to={'/users/'+user.id} className="btn btn-primary btn-sm">Edit User Profile</Link>
+                        <Button size="sm" color="warning" onClick={() => this.props.reassignUserReviews(user)}>Reassign Reviews</Button>
                       </ButtonGroup>
                     </td>
                   </tr>
@@ -63,7 +73,8 @@ const stateToProps = (state) => {
 
 const dispatchToProps = (dispatch) => {
   return bindActionCreators({
-    loadUsers
+    loadUsers,
+    reassignUserReviews
   }, dispatch);
 }
 

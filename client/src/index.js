@@ -9,6 +9,7 @@ import thunk from 'redux-thunk';
 import rootReducer from './reducers';
 import {persistStore, autoRehydrate} from 'redux-persist';
 import 'bootstrap/dist/css/bootstrap.css';
+import './index.css'
 
 const logger = createLogger();
 

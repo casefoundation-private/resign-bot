@@ -53,7 +53,14 @@ class User extends Component {
             <Label check>
               <Input type="checkbox" name="active" id="active" checked={this.props.users.user.active} disabled={this.props.user.user.role!=='admin'} onChange={(event) => this.props.setActiveUserProp('active',event.target.checked)} />
               {' '}
-              Active
+              Active (Can Log In)
+            </Label>
+          </FormGroup>
+          <FormGroup check>
+            <Label check>
+              <Input type="checkbox" name="ready" id="ready" checked={this.props.users.user.ready} disabled={this.props.user.user.role!=='admin'} onChange={(event) => this.props.setActiveUserProp('ready',event.target.checked)} />
+              {' '}
+              Review Queue is Open
             </Label>
           </FormGroup>
           <br/>

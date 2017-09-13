@@ -44,3 +44,38 @@ export const loadSubmission = (submissionId) => {
     });
   }
 }
+
+export const toggleFlagSubmission = (submission) => {
+  return (dispatch,getState) => {
+    submission.flagged = !submission.flagged;
+    authenticatedRequest(dispatch,getState,'/api/submission/' + submission.id,'POST',submission,(submission) => {
+      dispatch({
+        type: ACTION.SUBMISSIONS.SET,
+        submission
+      });
+      dispatch({
+        type: ACTION.MESSAGE.SET,
+        message: 'Submission flagged as inappropriate.',
+        messageType: 'info'
+      });
+    });
+  }
+}
+
+export const togglePinSubmission = (submission) => {
+  return (dispatch,getState) => {
+    submission.pinned = !submission.pinned;
+    authenticatedRequest(dispatch,getState,'/api/submission/' + submission.id,'POST',submission,(submission) => {
+      dispatch({
+        type: ACTION.SUBMISSIONS.SET,
+        submission
+      });
+      dispatch({
+        type: ACTION.MESSAGE.SET,
+        message: 'Submission pinned to top.',
+        messageType: 'info'
+      });
+      dispatch(loadSubmissions());
+    });
+  }
+}

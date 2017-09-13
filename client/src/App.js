@@ -19,7 +19,9 @@ import {
 
 class App extends Component {
   componentDidMount() {
-    this.props.loadUserDetails();
+    if (this.props.user.token) {
+      this.props.loadUserDetails();
+    }
   }
 
   render() {
@@ -28,7 +30,7 @@ class App extends Component {
         <Switch>
           <Redirect from="/login" exact={true} to="/" />
           <Route path="/logout" exact={true} component={Logout} />
-          { this.props.user.user.role === 'admin' && (<Route path="/users" exact={true} component={Users} />) }
+          { this.props.user.user && this.props.user.user.role === 'admin' && (<Route path="/users" exact={true} component={Users} />) }
           <Route path="/users/:userId" exact={true} component={User} />
           <Route path="/submissions" exact={true} component={Submissions} />
           <Route path="/submissions/:submissionId/reviews" exact={true} component={SubmissionReviews} />

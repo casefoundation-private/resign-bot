@@ -15,28 +15,63 @@ module.exports = bookshelf.Model.extend({
     this.on('created',function() {
       const User = require('./user');
       const Review = require('./review');
-      return User.nextAvailableUser()
-        .then((user) => {
-          if (user) {
-            return new Review({
-              'user_id': user.get('id'),
-              'submission_id': this.get('id')
-            }).save();
+      return User.nextAvailableUsers(process.env.REVIEWS_PER_SUBMISSION || 1,[]) //TODO test
+        .then((users) => {
+          if (users && users.length > 0) {
+            return Promise.all(
+              users.map((user) => {
+                return new Review({
+                  'user_id': user.get('id'),
+                  'submission_id': this.get('id')
+                }).save();
+              })
+            );
           } else {
             throw new Error('No users ready!');
           }
-        })
+        });
     },this);
     bookshelf.Model.prototype.initialize.apply(this, arguments);
   },
+  'toJSON': function(options) {
+    const sendOpts = options ? Object.assign(options,{'virtuals': true}) : {'virtuals': true};
+    const json = bookshelf.Model.prototype.toJSON.apply(this,sendOpts);
+    return json;
+  },
   'virtuals': {
     'score': function() {
-      //TODO make this a join
       const reviews = this.related('reviews');
       if (reviews && reviews.length > 0) {
         return reviews.reduce((last,current) => {
           return last + current.score;
         },0) / reviews.length;
+      } else {
+        return null;
+      }
+    },
+    'deviation': function() {
+      const reviews = this.related('reviews');
+      if (reviews && reviews.length > 0) {
+        const avg = reviews.reduce((last,review) => {
+          return last + review.score;
+        },0) / reviews.length;
+
+        const diffs = reviews.map((review) => {
+          const diff = review.score - avg;
+          return diff;
+        });
+
+        const squareDiffs = reviews.map((review) => {
+          const diff = review.score - avg;
+          const sqr = diff * diff;
+          return sqr;
+        });
+
+        const avgSquareDiff = squareDiffs.reduce((last,current) => {
+          return last + current;
+        },0) / squareDiffs.length;
+
+        return Math.sqrt(avgSquareDiff);
       } else {
         return null;
       }
@@ -47,6 +82,7 @@ module.exports = bookshelf.Model.extend({
   'all': function() {
     return this
       .forge()
+      .orderBy('pinned','DESC')
       .orderBy('created_at','DESC')
       .fetchAll({
         'withRelated': 'reviews'

@@ -21,3 +21,7 @@ export const incompletedReviews = (submission) => {
 export const getSubmissionFields = (submission) => {
   return submission && submission.data ? _.keys(submission.data) : [];
 }
+
+export const getFavorite = (favorites,submission) => {
+  return favorites.find((_submission) => _submission.id === submission.id);
+}

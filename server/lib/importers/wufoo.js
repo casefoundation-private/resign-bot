@@ -66,7 +66,7 @@ const getEntries = (fieldMap) => {
         });
         return makeRequest(page+1);
       } else {
-        console.log('Got back ' + allEntries.length + ' fields from Wufoo');
+        console.log('Got back ' + allEntries.length + ' entries from Wufoo');
         return allEntries;
       }
     })

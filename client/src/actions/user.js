@@ -46,6 +46,12 @@ export const loadUserDetails = () => {
         user
       });
     });
+    authenticatedRequest(dispatch,getState,'/api/favorite','GET',null,(favorites) => {
+      dispatch({
+        type: ACTION.USER.FAVORITES,
+        favorites
+      });
+    });
   }
 }
 
@@ -106,5 +112,27 @@ export const completePasswordReset = (resetCode) => {
     .catch((error) => {
       dispatch({type: ACTION.MESSAGE.SET, message: error.message, messageType: 'danger'})
     })
+  }
+}
+
+export const makeFavorite = (submission) => {
+  return (dispatch,getState) => {
+    authenticatedRequest(dispatch,getState,'/api/submission/' + submission.id + '/favorite','PUT',null,() => {
+      dispatch({
+        type: ACTION.USER.ADD_FAVORITE,
+        submission: submission
+      });
+    });
+  }
+}
+
+export const deleteFavorite = (submission) => {
+  return (dispatch,getState) => {
+    authenticatedRequest(dispatch,getState,'/api/submission/'+submission.id+'/favorite','DELETE',null,() => {
+      dispatch({
+        type: ACTION.USER.DELETE_FAVORITE,
+        submission_id: submission.id
+      });
+    });
   }
 }

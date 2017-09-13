@@ -10,7 +10,6 @@ import {
   summarizeSubmission,
   getSubmissionFields
 } from '../../misc/utils';
-import { Link } from 'react-router-dom';
 import url from 'url';
 import getVideoId from 'get-video-id';
 import './Review.css';

@@ -10,8 +10,13 @@ const initialUsersState = {
 const users = (state = initialUsersState, action) => {
   switch (action.type) {
     case ACTION.USERS.SET:
+      const userList = action.users || state.users;
+      if (action.user && userList) {
+        const userIndex = userList.find((_user) => _user.id === action.user.id);
+        userList[userIndex] = action.user;
+      }
       return Object.assign({},state,{
-        'users': action.users || state.users,
+        'users': userList,
         'user': action.user || state.user
       });
     case ACTION.USERS.SET_USER_PROP:

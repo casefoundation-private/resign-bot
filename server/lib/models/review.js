@@ -25,6 +25,16 @@ module.exports = bookshelf.Model.extend({
   'submission': function() {
     const Submission = require('./submission');
     return this.belongsTo(Submission);
+  },
+  'recuse': function() { //TODO test
+    return User.nextAvailableUsers(1,[this.get('user_id')])
+      .then((users) => {
+        if (users && users.length > 0) {
+          this.set('user_id',users.at(0).get('id'));
+        } else {
+          throw new Error('No users ready!');
+        }
+      });
   }
 }, {
   'jsonColumns': ['data'],

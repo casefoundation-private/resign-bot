@@ -65,6 +65,7 @@ exports.init = (serve) => {
   app.get('/api/user',authenticate,routes.user.getUsers);
   app.get('/api/user/:user',authenticate,routes.user.getUser);
   app.get('/api/user/:user/reviews',authenticate,routes.user.getUserReviews);
+  app.get('/api/user/:user/reassign',authenticate,routes.user.reassignUserReviews);
   app.put('/api/user',authenticate,routes.user.saveUser);
   app.post('/api/user/:user',authenticate,routes.user.saveUser);
 
@@ -73,10 +74,14 @@ exports.init = (serve) => {
   app.get('/api/submission/:submission/reviews',authenticate,routes.submission.getSubmissionReviews);
   app.put('/api/submission',authenticate,routes.submission.saveSubmission);
   app.post('/api/submission/:submission',authenticate,routes.submission.saveSubmission);
+  app.put('/api/submission/:submission/favorite',authenticate,routes.submission.saveFavorite); //TODO test
+  app.delete('/api/submission/:submission/favorite',authenticate,routes.submission.deleteFavorite); //TODO test
 
   app.get('/api/review/:review',authenticate,routes.review.getReview);
   app.put('/api/review',authenticate,routes.review.saveReview);
   app.post('/api/review/:review',authenticate,routes.review.saveReview);
+
+  app.get('/api/favorite',authenticate,routes.favorite.getFavorites); //TODO test
 
   app.use((err,req,res,next) => {
     if (err) {

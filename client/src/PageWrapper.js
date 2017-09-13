@@ -29,22 +29,26 @@ class PageWrapper extends Component {
         <Navbar color="inverse" inverse toggleable>
           <NavbarBrand href="#/">Review-O-Matic</NavbarBrand>
           <Nav className="ml-auto" navbar>
-            { this.props.user.user.role === 'admin' && (
+            { this.props.user.user && this.props.user.user.role === 'admin' && (
                 <NavItem>
                   <Link to="/users" className="nav-link">Users</Link>
                 </NavItem>
             ) }
-            { this.props.user.user.role === 'admin' && (
+            { this.props.user.user && this.props.user.user.role === 'admin' && (
                 <NavItem>
                   <Link to="/submissions" className="nav-link">Submissions</Link>
                 </NavItem>
             ) }
-            <NavItem>
-              <Link to="/reviews" className="nav-link">My Review Queue</Link>
-            </NavItem>
-            <NavItem>
-              <Link to={'/users/'+this.props.user.user.id} className="nav-link">My Account</Link>
-            </NavItem>
+            { this.props.user.user && (
+                <NavItem>
+                  <Link to="/reviews" className="nav-link">My Review Queue</Link>
+                </NavItem>
+            ) }
+            { this.props.user.user && (
+                <NavItem>
+                  <Link to={'/users/'+this.props.user.user.id} className="nav-link">My Account</Link>
+                </NavItem>
+            ) }
           </Nav>
           <Form className="form-inline">
             <Link to="/logout" className="btn btn-danger">Logout</Link>

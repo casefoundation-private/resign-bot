@@ -27,6 +27,7 @@ exports.init = () => {
         table.string('resetCode',36);
         table.datetime('resetExpiration');
         table.boolean('active').notNullable().defaultTo(true);
+        table.boolean('ready').notNullable().defaultTo(true); //TODO test
         table.timestamps();
       });
     }
@@ -39,6 +40,8 @@ exports.init = () => {
           table.string('source',255).notNullable();
           table.string('ip',64).notNullable().defaultTo('localhost');
           table.json('data').notNullable();
+          table.boolean('pinned').notNullable().defaultTo(false); //TODO test
+          table.boolean('flagged').notNullable().defaultTo(false); //TODO test
           table.timestamps();
         });
       }
@@ -68,6 +71,18 @@ exports.init = () => {
           table.boolean('errored').notNullable().defaultTo(false);
           table.json('data').notNullable().defaultTo('{}');
           table.timestamps();
+        });
+      }
+    })
+  }).then(() => {
+    return knex.schema.hasTable('favorites').then(function(exists) {
+      if (!exists) {
+        return knex.schema.createTable('favorites', function(table) {
+          table.increments('id').primary().notNullable();
+          table.integer('user_id').references('id').inTable('users').notNullable();
+          table.integer('submission_id').references('id').inTable('submissions').notNullable();
+          table.timestamps();
+          table.unique(['user_id','submission_id']);
         });
       }
     })

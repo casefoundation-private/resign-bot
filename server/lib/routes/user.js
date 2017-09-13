@@ -72,6 +72,7 @@ exports.getUsers = (req,res,next) => {
       res.json(users.filter((user) => {
         return req.user.getUserPermissions(user).view;
       }).map((object) => {
+        object.related('reviews');
         return object.toJSON();
       }));
     });
@@ -79,6 +80,7 @@ exports.getUsers = (req,res,next) => {
 
 exports.getUser = (req,res,next) => {
   if (req.user.getUserPermissions(req._user).view) {
+    req._user.related('reviews');
     res.json(req._user.toJSON());
   } else {
     res.sendStatus(401);
@@ -117,7 +119,8 @@ exports.saveUser = (req,res,next) => {
       'email': req.body.email,
       'role': req.body.role,
       'password': randomstring.generate(),
-      'active': true
+      'active': true,
+      'ready': true
     });
     saveUser(user);
   } else if (req._user && req.user.getUserPermissions(req._user).edit) {
@@ -131,8 +134,23 @@ exports.saveUser = (req,res,next) => {
       if (req.body.active === true || req.body.active === false) {
         req._user.set('active',req.body.active);
       }
+      if (req.body.ready === true || req.body.ready === false) {
+        req._user.set('ready',req.body.ready); //TODO test
+      }
     }
     saveUser(req._user);
+  } else {
+    res.send(401);
+  }
+}
+
+exports.reassignUserReviews = (req,res,next) => { //TODO test
+  if (req._user && req.user.isAdmin()) {
+    req._user.recuseAllReviews()
+      .then((user) => {
+        res.json(req._user.toJSON());
+      })
+      .catch((err) => next(err));
   } else {
     res.send(401);
   }

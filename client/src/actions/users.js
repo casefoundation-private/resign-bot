@@ -79,7 +79,26 @@ export const newUser = () => {
       'email': '',
       'password': '',
       'role': 'user',
-      'active': true
+      'active': true,
+      'ready': true
     }
   };
+}
+
+export const reassignUserReviews = (user) => {
+  return (dispatch,getState) => {
+    const url = '/api/user/'+user.id+'/reassign';
+    authenticatedRequest(dispatch,getState,url,'GET',null,(user) => {
+      dispatch({
+        type: ACTION.USERS.SET,
+        user
+      });
+      dispatch({
+        type: ACTION.MESSAGE.SET,
+        message: 'Reviews reassigned',
+        messageType: 'info'
+      });
+      dispatch(loadUsers());
+    });
+  }
 }

@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const uuidv4 = require('uuid/v4');
 const Notification = require('./notification');
 const randomstring = require('randomstring');
+bookshelf.plugin('virtuals');
 
 const User = module.exports = bookshelf.Model.extend({
   'tableName': 'users',
@@ -14,6 +15,11 @@ const User = module.exports = bookshelf.Model.extend({
   },
   'notifications': function() {
     return this.hasMany(Notification);
+  },
+  'favorites': function() {
+    const Submission = require('./submission');
+    const Favorite = require('./favorite');
+    return this.belongsToMany(Submission).through(Favorite);
   },
   'verifyPassword': function(password) {
     return bcrypt.compareSync(password,this.get('password'));
@@ -71,16 +77,65 @@ const User = module.exports = bookshelf.Model.extend({
       };
     }
   },
+  'recuseAllReviews': function() { //TODO test
+    const nextRecusal = (i) => {
+      if (i < this.related('reviews').length) {
+        const review = this.related('reviews').at(i);
+        return review
+          .recuse()
+          .then(() => {
+            return review.save();
+          })
+          .then(() => {
+            return nextRecusal(i+1);
+          });
+      }
+    }
+    return nextRecusal(0)
+      .then(() => {
+        return this.fetch({'withRelated':'reviews'})
+      })
+  },
   'toJSON': function(options) {
-    const json = this.serialize(options);
+    const sendOpts = options ? Object.assign(options,{'virtuals': true}) : {'virtuals': true};
+    const json = bookshelf.Model.prototype.toJSON.apply(this,sendOpts);
     delete json.password;
     delete json.resetCode;
     delete json.resetExpiration;
+    delete json.reviews;
     return json;
+  },
+  'virtuals': {
+    'pendingReviews': function() {
+      const reviews = this.related('reviews');
+      if (reviews && reviews.length > 0) {
+        return reviews.filter((review) => review.get('score') === null).length;
+      } else {
+        return 0;
+      }
+    },
+    'completedReviews': function() {
+      const reviews = this.related('reviews');
+      if (reviews && reviews.length > 0) {
+        return reviews.filter((review) => review.get('score') !== null).length;
+      } else {
+        return 0;
+      }
+    },
+    'averageScore': function() {
+      const reviews = this.related('reviews');
+      if (reviews && reviews.length > 0) {
+        return reviews.reduce((last,current) => {
+          return last + current.score;
+        },0) / reviews.length;
+      } else {
+        return null;
+      }
+    }
   }
 }, {
   'byEmail': function(email) {
-    return this.forge().query({where:{ email: email }}).fetch()
+    return this.forge().query({where:{ email: email }}).fetch({'withRelated':'reviews'});
   },
   'byCode': function(code) {
     return this.forge()
@@ -91,32 +146,52 @@ const User = module.exports = bookshelf.Model.extend({
       .fetch()
   },
   'byId': function(id) {
-    return this.forge().query({where:{ id: id }}).fetch();
+    return this.forge().query({where:{ id: id }}).fetch({'withRelated':['reviews']});
+  },
+  'byIds': function(ids) {
+    return this.forge().query((qb) => qb.whereIn('id',ids)).fetchAll({'withRelated':'reviews'});
   },
   'all': function() {
-    return this.forge().fetchAll();
+    return this.forge().fetchAll({'withRelated':'reviews'});
   },
-  'nextAvailableUser': function() {
+  'nextAvailableUsers': function(i,blacklist) {
     return User.forge()
       .query((qb) => {
         qb.whereNotIn('id',knex.select('user_id').from('reviews').whereNull('reviews.score'));
+        if (blacklist && blacklist.length > 0) qb.whereNotIn('id',blacklist);
+        qb.where({'ready':true});
+        qb.limit(i);
       })
-      .fetch()
-      .then((user) => {
-        if (user) {
-          return user;
+      .fetchAll()
+      .then((users) => {
+        if (users.length == i) {
+          users.at(0).get('email');
+          return users;
         } else {
-          return knex.select(knex.raw('users.id, sum(reviews.user_id) as totalReviews'))
+          const query = knex.select(knex.raw('users.id, count(reviews.user_id) as totalReviews'))
             .from('users')
             .leftJoin('reviews','users.id','reviews.user_id')
             .whereNull('reviews.score')
+            .where({'users.ready':true})
             .groupBy('reviews.user_id')
             .orderBy('totalReviews')
-            .limit(1)
+            .limit(i - users.length);
+          if (blacklist && blacklist.length > 0) query.whereNotIn('users.id',blacklist);
+          return query
             .then((result) => {
               if (result && result.length > 0) {
-                return User.byId(result[0].id);
+                return User.byIds(result.map((row) => row.id));
+              } else {
+                return null;
               }
+            })
+            .then((additionalUsers) => {
+              if (additionalUsers) {
+                additionalUsers.forEach((user) => {
+                  users.add(user);
+                });
+              }
+              return users;
             });
         }
       });
