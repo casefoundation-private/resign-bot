@@ -6,9 +6,13 @@ const importer = require('./lib/importer');
 
 database.init()
   .then(() => User.seedAdmin())
-  .then(() => notifications.init())
-  .then(() => importer.init())
-  .then(() => web.init(true))
+  .then(() => {
+    return Promise.all([
+      notifications.init(),
+      importer.init(),
+      web.init(true)
+    ])
+  })
   .then(() => {
     console.log('Running');
   })
