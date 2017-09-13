@@ -366,7 +366,7 @@ describe('API',() => {
           done();
         })
         .catch((err) => done(err));
-    });
+    }).timeout(5000);
 
     it('GET /api/user/:user/favorites',(done) => {
       new Favorite({
