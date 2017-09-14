@@ -46,13 +46,13 @@ exports.getSubmissionReviews = (req,res,next) => {
 exports.saveSubmission = (req,res,next) => {
   const save = (submission) => {
     submission.set('data',req.body.data);
-    submission.set('flagged',req.body.flagged); //TODO test
-    submission.set('pinned',req.body.pinned); //TODO test
+    submission.set('flagged',req.body.flagged || false);
+    submission.set('pinned',req.body.pinned || false);
     submission.save()
       .then(() => {
         res.json(submission.toJSON());
       })
-      .catch((err) => next(err));
+      .catch((err) => next(err) );
   }
   if (req.submission) {
     if (req.user.getSubmissionPermissions(req.submission).edit) {

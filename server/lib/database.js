@@ -27,7 +27,7 @@ exports.init = () => {
         table.string('resetCode',36);
         table.datetime('resetExpiration');
         table.boolean('active').notNullable().defaultTo(true);
-        table.boolean('ready').notNullable().defaultTo(true); //TODO test
+        table.boolean('ready').notNullable().defaultTo(true);
         table.timestamps();
       });
     }
@@ -40,8 +40,8 @@ exports.init = () => {
           table.string('source',255).notNullable();
           table.string('ip',64).notNullable().defaultTo('localhost');
           table.json('data').notNullable();
-          table.boolean('pinned').notNullable().defaultTo(false); //TODO test
-          table.boolean('flagged').notNullable().defaultTo(false); //TODO test
+          table.boolean('pinned').notNullable().defaultTo(false);
+          table.boolean('flagged').notNullable().defaultTo(false);
           table.timestamps();
         });
       }

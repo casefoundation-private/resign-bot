@@ -119,24 +119,16 @@ exports.saveUser = (req,res,next) => {
       'email': req.body.email,
       'role': req.body.role,
       'password': randomstring.generate(),
-      'active': true,
-      'ready': true
+      'active': req.body.active,
+      'ready': req.body.ready
     });
     saveUser(user);
   } else if (req._user && req.user.getUserPermissions(req._user).edit) {
     if (req.user.isAdmin()) {
-      if (req.body.email) {
-        req._user.set('email',req.body.email);
-      }
-      if (req.body.role) {
-        req._user.set('role',req.body.role);
-      }
-      if (req.body.active === true || req.body.active === false) {
-        req._user.set('active',req.body.active);
-      }
-      if (req.body.ready === true || req.body.ready === false) {
-        req._user.set('ready',req.body.ready); //TODO test
-      }
+      req._user.set('email',req.body.email);
+      req._user.set('role',req.body.role);
+      req._user.set('active',req.body.active);
+      req._user.set('ready',req.body.ready);
     }
     saveUser(req._user);
   } else {
@@ -144,7 +136,7 @@ exports.saveUser = (req,res,next) => {
   }
 }
 
-exports.reassignUserReviews = (req,res,next) => { //TODO test
+exports.reassignUserReviews = (req,res,next) => {
   if (req._user && req.user.isAdmin()) {
     req._user.recuseAllReviews()
       .then((user) => {
@@ -153,5 +145,17 @@ exports.reassignUserReviews = (req,res,next) => { //TODO test
       .catch((err) => next(err));
   } else {
     res.send(401);
+  }
+}
+
+exports.getFavorites = (req,res,next) => {
+  if (req.user.getUserPermissions(req._user).view) {
+    req._user.fetch({'withRelated':'favorites'})
+      .then(() => {
+        res.send(req._user.related('favorites').map((favorite) => favorite.toJSON()));
+      })
+      .catch((err) => next(err));
+  } else {
+    res.sendStatus(401);
   }
 }
