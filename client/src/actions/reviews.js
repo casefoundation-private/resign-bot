@@ -84,3 +84,21 @@ export const updateReview = () => {
     });
   }
 }
+
+export const recuseReview = (review) => {
+  return (dispatch,getState) => {
+    const url = '/api/review/' + review.id + '/recuse';
+    const method = 'POST'
+    authenticatedRequest(dispatch,getState,url,method,null,() => {
+      dispatch({
+        type: ACTION.REVIEWS.REMOVE,
+        review
+      });
+      dispatch({
+        type: ACTION.MESSAGE.SET,
+        message: 'Review recused.',
+        messageType: 'info'
+      });
+    });
+  }
+}

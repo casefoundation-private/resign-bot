@@ -21,6 +21,6 @@ export const ACTION = {
   },
   REVIEWS: {
     SET: 'REVIEWS_SET',
-    SET_REVIEW_OWNER: 'REVIEWS_SET_REVIEW_OWNER'
+    REMOVE: 'REVIEWS_REMOVE'
   }
 }

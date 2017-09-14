@@ -51,6 +51,23 @@ exports.saveReview = (req,res,next) => {
           next(new Error('Review already exists for that user and submission'));
         }
       })
-      .catch((err) => next(err))
+      .catch((err) => next(err));
+  }
+}
+
+exports.recuseReview = (req,res,next) => {
+  if (req.user.getReviewPermissions(req.review).edit) {
+    req.review.recuse()
+      .then(() => {
+        return req.review.save();
+      })
+      .then(() => {
+        res.send({
+          'message': 'OK'
+        });
+      })
+      .catch((err) => next(err));
+  } else {
+    res.send(401);
   }
 }

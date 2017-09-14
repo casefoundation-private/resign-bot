@@ -14,7 +14,10 @@ const reviews = (state = initialUserState, action) => {
         'review': action.review || state.review,
         'reviews': action.reviews || state.reviews
       });
-    //TODO other action
+    case ACTION.REVIEWS.REMOVE:
+      return Object.assign({},state,{
+        'reviews': state.reviews.filter((review) => review.id !== action.review.id)
+      });
     case ACTION.USER.LOGOUT:
       return initialUserState;
     default:

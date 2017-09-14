@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Table,ButtonGroup } from 'reactstrap';
+import { Table,ButtonGroup,Button } from 'reactstrap';
 import {
-  loadReviewsForUser
+  loadReviewsForUser,
+  recuseReview
 } from '../../actions/reviews';
 import PageWrapper from '../../PageWrapper';
 import {
@@ -36,6 +37,7 @@ class MyReviews extends Component {
                     <td>{new Date(review.created_at).toLocaleDateString()}</td>
                     <td className="text-right">
                       <ButtonGroup>
+                        <Button size="sm" color="danger" onClick={() => this.props.recuseReview(review)}>Recuse</Button>
                         <Link to={'/reviews/'+review.id} className="btn btn-primary btn-sm" disabled={review.score !== null}>Review</Link>
                       </ButtonGroup>
                     </td>
@@ -59,7 +61,8 @@ const stateToProps = (state) => {
 
 const dispatchToProps = (dispatch) => {
   return bindActionCreators({
-    loadReviewsForUser
+    loadReviewsForUser,
+    recuseReview
   }, dispatch);
 }
 

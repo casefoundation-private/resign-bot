@@ -80,6 +80,7 @@ exports.init = (serve) => {
   app.get('/api/review/:review',authenticate,routes.review.getReview);
   app.put('/api/review',authenticate,routes.review.saveReview);
   app.post('/api/review/:review',authenticate,routes.review.saveReview);
+  app.post('/api/review/:review/recuse',authenticate,routes.review.recuseReview); //TODO
 
   app.get('/api/favorite',authenticate,routes.favorite.getFavorites); //TODO test
 
