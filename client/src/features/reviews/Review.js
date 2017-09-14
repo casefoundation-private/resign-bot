@@ -63,7 +63,7 @@ class Review extends Component {
         <Row>
           <Col>
             <Card>
-              <CardBlock>
+              <CardBlock className="card-body">
                 <CardTitle>Submitted Information</CardTitle>
                 <SubmissionContents submission={this.props.reviews.review && this.props.reviews.review.submission} />
               </CardBlock>
@@ -71,7 +71,7 @@ class Review extends Component {
           </Col>
           <Col md={4}>
             <Card>
-              <CardBlock>
+              <CardBlock className="card-body">
                 <CardTitle>My Review</CardTitle>
                 <Form>
                   <p>

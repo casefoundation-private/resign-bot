@@ -11,6 +11,9 @@ const reviews = (state = initialReviewsState, action) => {
   switch (action.type) {
     case ACTION.REVIEWS.SET:
       const review = Object.assign({},(action.review || state.review));
+      if (review && !review.data) {
+        review.data = {};
+      }
       if (review && !review.data.prompts) {
         review.data.prompts = [];
       }

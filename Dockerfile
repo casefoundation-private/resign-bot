@@ -10,7 +10,7 @@ RUN npm install
 
 WORKDIR /usr/src/app/client
 RUN npm install
-RUN npm build
+RUN npm run build
 
 WORKDIR /usr/src/app/server
 

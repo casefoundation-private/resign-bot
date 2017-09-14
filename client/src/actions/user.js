@@ -23,7 +23,6 @@ export const userLogin = (credentials) => {
     .then((responseData) => {
       if (responseData.token && responseData.id) {
         dispatch({type: ACTION.USER.LOGIN_SUCCESS, token: responseData.token, id: responseData.id});
-        dispatch(loadUserDetails());
       } else if (responseData.error) {
         dispatch({type: ACTION.MESSAGE.SET, message: responseData.error, messageType: 'danger'})
       } else {
@@ -103,7 +102,6 @@ export const completePasswordReset = (resetCode) => {
     .then((responseData) => {
       if (responseData.token && responseData.id) {
         dispatch({type: ACTION.USER.LOGIN_SUCCESS, token: responseData.token, id: responseData.id});
-        dispatch(loadUserDetails());
         dispatch({
           type: ACTION.MESSAGE.SET,
           message: 'Your account has been unlocked. Please reset your password by going to My Account.',

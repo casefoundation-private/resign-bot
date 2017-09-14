@@ -18,8 +18,8 @@ import {
 } from './actions/user';
 
 class App extends Component {
-  componentDidMount() {
-    if (this.props.user.token) {
+  componentWillReceiveProps(nextProps) {
+    if (!this.props.user.token && nextProps.user.token) {
       this.props.loadUserDetails();
     }
   }

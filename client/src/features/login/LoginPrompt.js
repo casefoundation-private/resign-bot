@@ -15,7 +15,7 @@ class LoginPrompt extends Component {
   render() {
     return (
       <Card className="login-card">
-        <CardBlock>
+        <CardBlock className="card-body">
           <CardTitle>{this.props.title}</CardTitle>
           { this.props.message.message ? <Alert color={this.props.message.messageType} toggle={() => this.clearAlert()}>{this.props.message.message}</Alert> : null }
           { this.props.children }

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "bootstrap": "^4.0.0-alpha.6",
+    "bootstrap": "4.0.0-alpha.6",
     "get-video-id": "^2.1.6",
     "lodash": "^4.17.4",
     "react": "^15.6.1",
@@ -24,7 +24,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && mv build ../server/build",
+    "build": "react-scripts build && mv -f build ../server/build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
