@@ -174,16 +174,16 @@ const User = module.exports = bookshelf.Model.extend({
         if (users.length == i) {
           return users;
         } else {
-          const query = knex.select(knex.raw('users.id, count(reviews.user_id) as totalReviews'))
-            .from('users')
-            .leftJoin('reviews','users.id','reviews.user_id')
-            .whereNull('reviews.score')
+          const query = knex.select(knex.raw('u.id, count(r.user_id) as totalReviews'))
+            .from('users as u')
+            .leftJoin('reviews as r','u.id','r.user_id')
+            .whereNull('r.score')
             .where({
-              'users.ready': true,
-              'users.active': true
+              'u.ready': true,
+              'u.active': true
             })
-            .groupBy('reviews.user_id')
-            .orderBy('totalReviews')
+            .groupBy('u.id')
+            .orderBy(knex.raw('count(r.user_id)'))
             .limit(i - users.length);
           if (blacklist && blacklist.length > 0) query.whereNotIn('users.id',blacklist);
           return query
