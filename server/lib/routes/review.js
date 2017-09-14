@@ -16,6 +16,7 @@ exports.saveReview = (req,res,next) => {
   const save = (review) => {
     review.set('score',req.body.score);
     review.set('data',req.body.data);
+    review.set('flagged',req.body.flagged); //TODO test
     if (req.user.isAdmin()) {
       if (req.body.user_id) {
         review.set('user_id',req.body.user_id);
@@ -43,7 +44,8 @@ exports.saveReview = (req,res,next) => {
         if (!review) {
           review = new Review({
             'user_id': userId,
-            'submission_id': submissionId
+            'submission_id': submissionId,
+            'flagged': false
           });
           save(review);
         } else {

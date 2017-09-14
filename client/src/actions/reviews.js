@@ -85,6 +85,15 @@ export const updateReview = () => {
   }
 }
 
+export const calculateAndUpdateReview = () => {
+  return (dispatch,getState) => {
+    dispatch({
+      type: ACTION.REVIEWS.CALCULATE,
+    });
+    dispatch(updateReview());
+  }
+}
+
 export const recuseReview = (review) => {
   return (dispatch,getState) => {
     const url = '/api/review/' + review.id + '/recuse';
@@ -101,4 +110,19 @@ export const recuseReview = (review) => {
       });
     });
   }
+}
+
+export const setReviewPromptValue = (prompt,value) => {
+  return {
+    type: ACTION.REVIEWS.SET_PROMPT_VALUE,
+    prompt,
+    value
+  };
+}
+
+export const setReviewFlagged = (flagged) => {
+  return {
+    type: ACTION.REVIEWS.SET_FLAGGED,
+    flagged
+  };
 }

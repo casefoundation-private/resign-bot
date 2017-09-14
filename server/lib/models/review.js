@@ -35,7 +35,13 @@ module.exports = bookshelf.Model.extend({
           throw new Error('No users ready!');
         }
       });
-  }
+  },
+  'toJSON': function(options) {
+    const sendOpts = options ? Object.assign(options,{'virtuals': true}) : {'virtuals': true};
+    const json = bookshelf.Model.prototype.toJSON.apply(this,sendOpts);
+    json.flagged = json.flagged === true || json.flagged === 1;
+    return json;
+  },
 }, {
   'jsonColumns': ['data'],
   'reviewForUserAndSubmission': function(user,submission) {

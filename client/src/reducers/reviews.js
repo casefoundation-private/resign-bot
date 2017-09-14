@@ -2,24 +2,55 @@ import {
   ACTION
 } from '../misc/constants';
 
-const initialUserState = {
+const initialReviewsState = {
   review: null,
   reviews: null,
 };
 
-const reviews = (state = initialUserState, action) => {
+const reviews = (state = initialReviewsState, action) => {
   switch (action.type) {
     case ACTION.REVIEWS.SET:
+      const review = Object.assign({},(action.review || state.review));
+      if (review && !review.data.prompts) {
+        review.data.prompts = [];
+      }
       return Object.assign({},state,{
-        'review': action.review || state.review,
+        'review': review,
         'reviews': action.reviews || state.reviews
       });
     case ACTION.REVIEWS.REMOVE:
       return Object.assign({},state,{
         'reviews': state.reviews.filter((review) => review.id !== action.review.id)
       });
+    case ACTION.REVIEWS.SET_PROMPT_VALUE:
+      const clonedPrompts = state.review.data.prompts ? state.review.data.prompts.slice(0) : [];
+      clonedPrompts[action.prompt] = action.value;
+      return Object.assign({},state,{
+        'review': Object.assign({},state.review,{
+          'data': Object.assign({},state.review.data,{
+            'prompts': clonedPrompts
+          })
+        })
+      });
+    case ACTION.REVIEWS.CALCULATE:
+      const score = state.review.flagged ?
+        0
+        : (state.review.data.prompts ?
+            (state.review.data.prompts.reduce((total,v) => total+v,0) / state.review.data.prompts.length)
+            : null);
+      return Object.assign({},state,{
+        'review': Object.assign({},state.review,{
+          score
+        })
+      });
+    case ACTION.REVIEWS.SET_FLAGGED:
+      return Object.assign({},state,{
+        'review': Object.assign({},state.review,{
+          'flagged': action.flagged
+        })
+      });
     case ACTION.USER.LOGOUT:
-      return initialUserState;
+      return initialReviewsState;
     default:
       return state;
   }

@@ -52,7 +52,7 @@ const User = module.exports = bookshelf.Model.extend({
     }
   },
   'getReviewPermissions': function(review) {
-    if (this.isAdmin() || review.get('user_id') === this.get('id')) {
+    if (this.isAdmin() || (review.get('user_id') === this.get('id') && review.get('score') === null)) { //TODO test
       return {
         'view': true,
         'edit': true

@@ -4,13 +4,15 @@ import users from './users';
 import message from './message';
 import submissions from './submissions';
 import reviews from './reviews';
+import config from './config';
 
 const reducers = combineReducers({
   user,
   users,
   message,
   submissions,
-  reviews
+  reviews,
+  config
 });
 
 export default reducers;

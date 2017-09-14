@@ -54,6 +54,7 @@ exports.init = () => {
           table.integer('user_id').references('id').inTable('users').notNullable();
           table.integer('submission_id').references('id').inTable('submissions').notNullable();
           table.double('score');
+          table.boolean('flagged').notNullable().defaultTo(false); //TODO test
           table.json('data').notNullable().defaultTo('{}');
           table.timestamps();
           table.unique(['user_id','submission_id']);

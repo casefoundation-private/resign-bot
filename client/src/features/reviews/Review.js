@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Row,Col,Card,CardTitle,CardBlock } from 'reactstrap';
+import { Row,Col,Card,CardTitle,CardBlock,Form,Button,Label,Input,FormGroup } from 'reactstrap';
 import {
-  loadReview
+  loadReview,
+  setReviewPromptValue,
+  updateReview,
+  calculateAndUpdateReview,
+  setReviewFlagged
 } from '../../actions/reviews';
 import PageWrapper from '../../PageWrapper';
 import {
@@ -20,11 +24,18 @@ class Review extends Component {
     this.props.loadReview(reviewId);
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.props.reviews.review && this.props.reviews.review.score === null && nextProps.reviews.review.score !== null) {
+      this.props.history.push('/reviews');
+    }
+  }
+
   renderSubmissionField(fieldKey) {
     const fieldValue = this.props.reviews.review.submission.data[fieldKey];
     if (fieldValue) {
       const parsedURL = url.parse(fieldValue);
       const videoId = getVideoId(fieldValue);
+      const colon = fieldKey[fieldKey.length - 1] === ':' ? '' : ':';
       if (videoId && videoId.service && videoId.id) {
         let embedURL;
         switch(videoId.service) {
@@ -39,7 +50,7 @@ class Review extends Component {
         }
         return (
           <div key={fieldKey} className="submission-field">
-            <strong>{fieldKey}:</strong>
+            <strong>{fieldKey}{colon}</strong>
             <br/>
             <div className="embed-responsive embed-responsive-16by9">
               <iframe title="Embedded Video" className="embed-responsive-item" src={embedURL} allowfullscreen></iframe>
@@ -49,13 +60,13 @@ class Review extends Component {
       } else if (parsedURL && (parsedURL.protocol === 'https:' || parsedURL.protocol === 'http:')) {
         return (
           <div key={fieldKey} className="submission-field">
-            <strong>{fieldKey}:</strong> <a href={fieldValue} target="_blank">{fieldValue}</a>
+            <strong>{fieldKey}{colon}</strong> <a href={fieldValue} target="_blank">{fieldValue}</a>
           </div>
         );
       } else if (fieldValue.length > 200) {
         return (
           <div key={fieldKey} className="submission-field">
-            <strong>{fieldKey}:</strong>
+            <strong>{fieldKey}{colon}</strong>
             <br/>
             {fieldValue}
           </div>
@@ -63,24 +74,64 @@ class Review extends Component {
       }
       return (
         <div key={fieldKey} className="submission-field">
-          <strong>{fieldKey}</strong>: {fieldValue}
+          <strong>{fieldKey}</strong>{colon} {fieldValue}
         </div>
       );
     }
   }
 
+  renderReviewPrompts() {
+    return this.props.reviews.review.data && this.props.reviews.review.data.prompts && this.props.config.review.prompts.map((prompt,i) => {
+      return (
+        <FormGroup key={i} tag="fieldset">
+          <label>
+            {prompt}
+          </label>
+          {
+            this.props.config.review.labels.map((label,j) => {
+              return (
+                <FormGroup check key={j}>
+                  <Label check>
+                    <Input type="radio" name={'review_prompt_'+i} value={j} checked={this.props.reviews.review.data.prompts[i] === j} onChange={() => this.props.setReviewPromptValue(i,j)} />{' '}
+                    {label}
+                  </Label>
+                </FormGroup>
+              );
+            })
+          }
+        </FormGroup>
+      )
+    });
+  }
+
   render() {
     return (
-      <PageWrapper title={'Reviewing ' + summarizeSubmission(this.props.reviews.review.submission)}>
+      <PageWrapper title={'Reviewing ' + (this.props.reviews.review && summarizeSubmission(this.props.reviews.review.submission))}>
         <Row>
           <Col>
-            <h2>Submitter's Information</h2>
-            { getSubmissionFields(this.props.reviews.review.submission).map((fieldKey) => this.renderSubmissionField(fieldKey)) }
+            <h2>Submitter Information</h2>
+            { this.props.reviews.review && getSubmissionFields(this.props.reviews.review.submission).map((fieldKey) => this.renderSubmissionField(fieldKey)) }
           </Col>
-          <Col md={3}>
+          <Col md={4}>
             <Card>
               <CardBlock>
                 <CardTitle>My Review</CardTitle>
+                <Form>
+                  <p>
+                    <FormGroup check>
+                      <Label check>
+                        <Input type="checkbox" name="review_flagged" value="flagged" checked={this.props.reviews.review && this.props.reviews.review.flagged} onChange={(event) => this.props.setReviewFlagged(event.target.checked)} />{' '}
+                        Flag as Inappropriate
+                      </Label>
+                    </FormGroup>
+                  </p>
+                  { this.renderReviewPrompts() }
+                  <p>
+                    <Button color="primary" onClick={() => this.props.updateReview()}>Save</Button>
+                    { ' ' }
+                    <Button color="warning" onClick={() => this.props.calculateAndUpdateReview()}>Save and Submit</Button>
+                  </p>
+                </Form>
               </CardBlock>
             </Card>
           </Col>
@@ -93,13 +144,18 @@ class Review extends Component {
 const stateToProps = (state) => {
   return {
     reviews: state.reviews,
-    user: state.user
+    user: state.user,
+    config: state.config
   }
 }
 
 const dispatchToProps = (dispatch) => {
   return bindActionCreators({
-    loadReview
+    loadReview,
+    setReviewPromptValue,
+    updateReview,
+    calculateAndUpdateReview,
+    setReviewFlagged
   }, dispatch);
 }
 

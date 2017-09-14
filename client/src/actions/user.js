@@ -46,10 +46,16 @@ export const loadUserDetails = () => {
         user
       });
     });
-    authenticatedRequest(dispatch,getState,'/api/favorite','GET',null,(favorites) => {
+    authenticatedRequest(dispatch,getState,'/api/user/' + getState().user.user.id + '/favorites','GET',null,(favorites) => {
       dispatch({
         type: ACTION.USER.FAVORITES,
         favorites
+      });
+    });
+    authenticatedRequest(dispatch,getState,'/api/config','GET',null,(config) => {
+      dispatch({
+        type: ACTION.CONFIG.SET,
+        config
       });
     });
   }

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { HashRouter,Route,Switch,Redirect } from 'react-router-dom';
 import Login from './features/login/Login';
 import ResetPassword from './features/login/ResetPassword';
-import Home from './Home';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Logout from './misc/Logout';
@@ -36,7 +35,10 @@ class App extends Component {
           <Route path="/submissions/:submissionId/reviews" exact={true} component={SubmissionReviews} />
           <Route path="/reviews" exact={true} component={MyReviews} />
           <Route path="/reviews/:reviewId" exact={true} component={Review} />
-          <Route path="/" component={Home} />
+          { this.props.user.user && this.props.user.user.role === 'admin' ?
+            (<Redirect from="/" to="/submissions" />)
+            : (<Redirect from="/" to="/reviews" />)
+          }
         </Switch>
       </HashRouter> )
       : (<HashRouter>
