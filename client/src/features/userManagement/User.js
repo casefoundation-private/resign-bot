@@ -9,6 +9,8 @@ import {
   setActiveUserProp
 } from '../../actions/users';
 import PageWrapper from '../../PageWrapper';
+import { Link } from 'react-router-dom';
+import FontAwesome from 'react-fontawesome';
 
 class User extends Component {
   componentDidMount() {
@@ -33,6 +35,9 @@ class User extends Component {
   render() {
     return (
       <PageWrapper title={this.props.match.params.userId !== 'new' ? "Edit User" : "New User"}>
+        { this.props.users.user && this.props.users.user.id !== this.props.user.user.id && (<p>
+          <Link to='/reviews'><FontAwesome name="chevron-left" /> Back to Users</Link>
+        </p>)}
         { this.props.users.user && (<Form onSubmit={(event) => this.handleSave(event)}>
           <FormGroup>
             <Label for="email">Email</Label>
@@ -64,7 +69,7 @@ class User extends Component {
             </Label>
           </FormGroup>
           <br/>
-          <Button color="primary" type="submit">Save</Button>
+          <Button color="primary" type="submit"><FontAwesome name="check-circle-o" /> Save</Button>
         </Form>)}
       </PageWrapper>
     );

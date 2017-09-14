@@ -8,6 +8,10 @@ import {
 } from '../../actions/users';
 import PageWrapper from '../../PageWrapper';
 import { Link } from 'react-router-dom';
+import {
+  round
+} from '../../misc/utils';
+import FontAwesome from 'react-fontawesome';
 
 class Users extends Component {
   componentDidMount() {
@@ -18,7 +22,7 @@ class Users extends Component {
     return (
       <PageWrapper title="Users">
         <p>
-          <Link to="/users/new" className="btn btn-success btn-sm">Add User Profile</Link>
+          <Link to="/users/new" className="btn btn-success btn-sm"><FontAwesome name="user-plus" /> Add User Profile</Link>
         </p>
         <Table striped>
           <thead>
@@ -31,7 +35,7 @@ class Users extends Component {
               <th>Review Queue is Open</th>
               <th>Role</th>
               <th>Created</th>
-              <th className="text-right">Options</th>
+              <th className="text-center">Options</th>
             </tr>
           </thead>
           <tbody>
@@ -42,15 +46,15 @@ class Users extends Component {
                     <td>{user.email}</td>
                     <td>{user.pendingReviews}</td>
                     <td>{user.completedReviews}</td>
-                    <td>{user.averageScore === null ? 'N/A' : user.averageScore}</td>
+                    <td>{user.averageScore === null ? 'N/A' : round(user.averageScore)}</td>
                     <td>{user.active ? 'Yes' : 'No'}</td>
                     <td>{user.ready ? 'Yes' : 'No'}</td>
                     <td>{user.role}</td>
                     <td>{new Date(user.created_at).toLocaleDateString()}</td>
-                    <td className="text-right">
+                    <td className="text-center">
                       <ButtonGroup>
-                        <Link to={'/users/'+user.id} className="btn btn-primary btn-sm">Edit User Profile</Link>
-                        <Button size="sm" color="warning" onClick={() => this.props.reassignUserReviews(user)}>Reassign Reviews</Button>
+                        <Link to={'/users/'+user.id} className="btn btn-primary btn-sm"><FontAwesome name="user" /> Edit User Profile</Link>
+                        <Button size="sm" color="warning" onClick={() => this.props.reassignUserReviews(user)}><FontAwesome name="external-link-square" /> Reassign Reviews</Button>
                       </ButtonGroup>
                     </td>
                   </tr>

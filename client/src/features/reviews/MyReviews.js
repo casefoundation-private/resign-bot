@@ -11,6 +11,7 @@ import {
   summarizeSubmission
 } from '../../misc/utils';
 import { Link } from 'react-router-dom';
+import FontAwesome from 'react-fontawesome';
 
 class MyReviews extends Component {
   componentDidMount() {
@@ -23,9 +24,9 @@ class MyReviews extends Component {
         <Table striped>
           <thead>
             <tr>
-              <th>Summary</th>
+              <th>Name</th>
               <th>Created</th>
-              <th className="text-right">Options</th>
+              <th className="text-center">Options</th>
             </tr>
           </thead>
           <tbody>
@@ -35,10 +36,10 @@ class MyReviews extends Component {
                   <tr key={review.id}>
                     <td>{summarizeSubmission(review.submission)}</td>
                     <td>{new Date(review.created_at).toLocaleDateString()}</td>
-                    <td className="text-right">
+                    <td className="text-center">
                       <ButtonGroup>
-                        <Button size="sm" color="danger" onClick={() => this.props.recuseReview(review)}>Recuse</Button>
-                        <Link to={'/reviews/'+review.id} className="btn btn-primary btn-sm" disabled={review.score !== null}>Review</Link>
+                        <Button size="sm" color="danger" onClick={() => this.props.recuseReview(review)}><FontAwesome name="ban" /> Recuse Myself</Button>
+                        <Link to={'/reviews/'+review.id} className="btn btn-primary btn-sm" disabled={review.score !== null}><FontAwesome name="check-square" /> Review Submission</Link>
                       </ButtonGroup>
                     </td>
                   </tr>

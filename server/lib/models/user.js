@@ -127,12 +127,14 @@ const User = module.exports = bookshelf.Model.extend({
     'averageScore': function() {
       const reviews = this.related('reviews');
       if (reviews && reviews.length > 0) {
-        return reviews.reduce((last,current) => {
-          return last + current.score;
-        },0) / reviews.length;
-      } else {
-        return null;
+        const completedReviews = reviews.filter((review) => review.get('score') !== null);
+        if (completedReviews && completedReviews.length > 0) {
+          return completedReviews.reduce((last,current) => {
+            return last + current.get('score');
+          },0) / completedReviews.length;
+        }
       }
+      return null;
     }
   }
 }, {

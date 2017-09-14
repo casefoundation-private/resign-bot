@@ -1,3 +1,6 @@
 button {
   cursor: pointer;
 }
+.submission-field {
+  margin-top: 1em;
+}

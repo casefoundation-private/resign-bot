@@ -12,11 +12,11 @@ import {
 import PageWrapper from '../../PageWrapper';
 import {
   summarizeSubmission,
-  getSubmissionFields
+  getSubmissionFields,
+  SubmissionContents
 } from '../../misc/utils';
-import url from 'url';
-import getVideoId from 'get-video-id';
-import './Review.css';
+import { Link } from 'react-router-dom';
+import FontAwesome from 'react-fontawesome';
 
 class Review extends Component {
   componentDidMount() {
@@ -27,56 +27,6 @@ class Review extends Component {
   componentWillReceiveProps(nextProps) {
     if (this.props.reviews.review && this.props.reviews.review.score === null && nextProps.reviews.review.score !== null) {
       this.props.history.push('/reviews');
-    }
-  }
-
-  renderSubmissionField(fieldKey) {
-    const fieldValue = this.props.reviews.review.submission.data[fieldKey];
-    if (fieldValue) {
-      const parsedURL = url.parse(fieldValue);
-      const videoId = getVideoId(fieldValue);
-      const colon = fieldKey[fieldKey.length - 1] === ':' ? '' : ':';
-      if (videoId && videoId.service && videoId.id) {
-        let embedURL;
-        switch(videoId.service) {
-          case 'youtube':
-            embedURL = 'https://www.youtube.com/embed/'+videoId.id+'?rel=0';
-            break;
-          case 'vimeo':
-            embedURL = 'https://player.vimeo.com/video/'+videoId.id+'?rel=0';
-            break;
-          default:
-            embedURL = fieldValue;
-        }
-        return (
-          <div key={fieldKey} className="submission-field">
-            <strong>{fieldKey}{colon}</strong>
-            <br/>
-            <div className="embed-responsive embed-responsive-16by9">
-              <iframe title="Embedded Video" className="embed-responsive-item" src={embedURL} allowfullscreen></iframe>
-            </div>
-          </div>
-        );
-      } else if (parsedURL && (parsedURL.protocol === 'https:' || parsedURL.protocol === 'http:')) {
-        return (
-          <div key={fieldKey} className="submission-field">
-            <strong>{fieldKey}{colon}</strong> <a href={fieldValue} target="_blank">{fieldValue}</a>
-          </div>
-        );
-      } else if (fieldValue.length > 200) {
-        return (
-          <div key={fieldKey} className="submission-field">
-            <strong>{fieldKey}{colon}</strong>
-            <br/>
-            {fieldValue}
-          </div>
-        );
-      }
-      return (
-        <div key={fieldKey} className="submission-field">
-          <strong>{fieldKey}</strong>{colon} {fieldValue}
-        </div>
-      );
     }
   }
 
@@ -107,10 +57,17 @@ class Review extends Component {
   render() {
     return (
       <PageWrapper title={'Reviewing ' + (this.props.reviews.review && summarizeSubmission(this.props.reviews.review.submission))}>
+        <p>
+          <Link to='/reviews'><FontAwesome name="chevron-left" /> Back to My Review Queue</Link>
+        </p>
         <Row>
           <Col>
-            <h2>Submitter Information</h2>
-            { this.props.reviews.review && getSubmissionFields(this.props.reviews.review.submission).map((fieldKey) => this.renderSubmissionField(fieldKey)) }
+            <Card>
+              <CardBlock>
+                <CardTitle>Submitted Information</CardTitle>
+                <SubmissionContents submission={this.props.reviews.review && this.props.reviews.review.submission} />
+              </CardBlock>
+            </Card>
           </Col>
           <Col md={4}>
             <Card>
@@ -127,9 +84,9 @@ class Review extends Component {
                   </p>
                   { this.renderReviewPrompts() }
                   <p>
-                    <Button color="primary" onClick={() => this.props.updateReview()}>Save</Button>
+                    <Button color="primary" onClick={() => this.props.updateReview()}><FontAwesome name="check-circle-o" /> Save</Button>
                     { ' ' }
-                    <Button color="warning" onClick={() => this.props.calculateAndUpdateReview()}>Save and Submit</Button>
+                    <Button color="warning" onClick={() => this.props.calculateAndUpdateReview()}><FontAwesome name="check-circle" /> Save and Submit</Button>
                   </p>
                 </Form>
               </CardBlock>

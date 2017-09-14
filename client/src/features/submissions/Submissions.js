@@ -16,9 +16,11 @@ import {
   summarizeSubmission,
   completedReviews,
   incompletedReviews,
-  getFavorite
+  getFavorite,
+  round
 } from '../../misc/utils';
 import { Link } from 'react-router-dom';
+import FontAwesome from 'react-fontawesome';
 
 class Submissions extends Component {
   componentDidMount() {
@@ -31,13 +33,16 @@ class Submissions extends Component {
         <Table striped>
           <thead>
             <tr>
-              <th>Summary</th>
+              <th>Name</th>
               <th>Score</th>
               <th>Std Deviation</th>
               <th>Completed Reviews</th>
               <th>Assigned Reviews</th>
               <th>Created</th>
-              <th className="text-right">Options</th>
+              <th className="text-center">Favorite</th>
+              <th className="text-center">Pinned</th>
+              <th className="text-center">Flagged</th>
+              <th className="text-center">Options</th>
             </tr>
           </thead>
           <tbody>
@@ -47,24 +52,31 @@ class Submissions extends Component {
                 return (
                   <tr key={submission.id}>
                     <td>{summarizeSubmission(submission)}</td>
-                    <td>{submission.score === null ? 'N/A' : submission.score}</td>
-                    <td>{submission.deviation === null ? 'N/A' : submission.deviation}</td>
+                    <td>{submission.score === null ? 'N/A' : round(submission.score)}</td>
+                    <td>{submission.deviation === null ? 'N/A' : round(submission.deviation)}</td>
                     <td>{completedReviews(submission).length}</td>
                     <td>{incompletedReviews(submission).length}</td>
                     <td>{new Date(submission.created_at).toLocaleDateString()}</td>
-                    <td className="text-right">
+                    <td className="text-center">
+                      { !favorite ?
+                        ( <Button size="sm" color="secondary" onClick={() => this.props.makeFavorite(submission)}><FontAwesome name="star" /></Button> )
+                        : ( <Button size="sm" color="success" onClick={() => this.props.deleteFavorite(favorite)}><FontAwesome name="star" /></Button> )
+                      }
+                    </td>
+                    <td className="text-center">
+                      <Button size="sm" color={submission.pinned ? 'success' : 'secondary'} onClick={() => this.props.togglePinSubmission(submission)}>
+                        <FontAwesome name="circle" />
+                      </Button>
+                    </td>
+                    <td className="text-center">
+                      <Button size="sm" color={submission.flagged ? 'danger' : 'secondary'} onClick={() => this.props.toggleFlagSubmission(submission)}>
+                        <FontAwesome name="exclamation-triangle" />
+                      </Button>
+                    </td>
+                    <td className="text-center">
                       <ButtonGroup>
-                        <Button size="sm" color="danger" onClick={() => this.props.toggleFlagSubmission(submission)}>
-                          { !submission.flagged ? 'Flag as Inappropriate' : 'Clear Inappropriate Flag' }
-                        </Button>
-                        <Button size="sm" color="success" onClick={() => this.props.togglePinSubmission(submission)}>
-                          { !submission.pinned ? 'Pin to Top' : 'Unpin' }
-                        </Button>
-                        { !favorite ?
-                          ( <Button size="sm" color="success" onClick={() => this.props.makeFavorite(submission)}>Favorite</Button> )
-                          : ( <Button size="sm" color="success" onClick={() => this.props.deleteFavorite(favorite)}>Unfavorite</Button> )
-                        }
-                        <Link to={'/submissions/'+submission.id+'/reviews'} className="btn btn-primary btn-sm">Manage Reviews</Link>
+                      <Link to={'/submissions/'+submission.id} className="btn btn-primary btn-sm"><FontAwesome name="eye" /> View Submission</Link>
+                        <Link to={'/submissions/'+submission.id+'/reviews'} className="btn btn-primary btn-sm"><FontAwesome name="list" /> Manage Reviews</Link>
                       </ButtonGroup>
                     </td>
                   </tr>

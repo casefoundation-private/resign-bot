@@ -44,39 +44,43 @@ module.exports = bookshelf.Model.extend({
     'score': function() {
       const reviews = this.related('reviews');
       if (reviews && reviews.length > 0) {
-        return reviews.reduce((last,current) => {
-          return last + current.score;
-        },0) / reviews.length;
-      } else {
-        return null;
+        const completedReviews = reviews.filter((review) => review.get('score') !== null);
+        if (completedReviews && completedReviews.length > 0) {
+          return completedReviews.reduce((last,current) => {
+            return last + current.get('score');
+          },0) / completedReviews.length;
+        }
       }
+      return null;
     },
     'deviation': function() {
       const reviews = this.related('reviews');
       if (reviews && reviews.length > 0) {
-        const avg = reviews.reduce((last,review) => {
-          return last + review.score;
-        },0) / reviews.length;
+        const completedReviews = reviews.filter((review) => review.get('score') !== null);
+        if (completedReviews && completedReviews.length > 0) {
+          const avg = completedReviews.reduce((last,review) => {
+            return last + review.get('score');
+          },0) / completedReviews.length;
 
-        const diffs = reviews.map((review) => {
-          const diff = review.score - avg;
-          return diff;
-        });
+          const diffs = completedReviews.map((review) => {
+            const diff = review.get('score') - avg;
+            return diff;
+          });
 
-        const squareDiffs = reviews.map((review) => {
-          const diff = review.score - avg;
-          const sqr = diff * diff;
-          return sqr;
-        });
+          const squareDiffs = completedReviews.map((review) => {
+            const diff = review.get('score') - avg;
+            const sqr = diff * diff;
+            return sqr;
+          });
 
-        const avgSquareDiff = squareDiffs.reduce((last,current) => {
-          return last + current;
-        },0) / squareDiffs.length;
+          const avgSquareDiff = squareDiffs.reduce((last,current) => {
+            return last + current;
+          },0) / squareDiffs.length;
 
-        return Math.sqrt(avgSquareDiff);
-      } else {
-        return null;
+          return Math.sqrt(avgSquareDiff);
+        }
       }
+      return null;
     }
   }
 }, {

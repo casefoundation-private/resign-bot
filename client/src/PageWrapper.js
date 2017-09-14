@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import {
   clearMessage
 } from './actions/message';
+import FontAwesome from 'react-fontawesome';
 
 class PageWrapper extends Component {
   clearAlert() {
@@ -51,7 +52,7 @@ class PageWrapper extends Component {
             ) }
           </Nav>
           <Form className="form-inline">
-            <Link to="/logout" className="btn btn-danger">Logout</Link>
+            <Link to="/logout" className="btn btn-danger"><FontAwesome name="sign-out" /> Logout</Link>
           </Form>
         </Navbar>
         <div className="container-fluid" style={{paddingTop: 12}} role="main">

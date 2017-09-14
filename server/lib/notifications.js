@@ -16,32 +16,13 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-const templateNames = ['account_reset','review_assigned'];
-const templates = {};
 let notificationLock = false;
 
 exports.init = () => {
-  return loadTemplates()
-    .then(() => {
-      setInterval(() => {
-        handleNextNotification();
-      },(parseInt(process.env.NOTIFICATION_INTERVAL) || 30000));
-      return handleNextNotification();
-    });
-}
-
-const loadTemplates = () => {
-  const loadNextTemplate = (index) => {
-    if (index < templateNames.length) {
-      const templateName = templateNames[index];
-      return fs.readFile(path.join('.','emailTemplates',templateName+'.ejs'),'utf-8')
-        .then((file) => {
-          templates[templateName] = ejs.compile(file);
-          return loadNextTemplate(index+1);
-        });
-    }
-  }
-  return loadNextTemplate(0);
+  setInterval(() => {
+    handleNextNotification();
+  },(parseInt(process.env.NOTIFICATION_INTERVAL) || 30000));
+  return handleNextNotification();
 }
 
 const handleNextNotification = () => {
@@ -87,27 +68,41 @@ const generateEmailDetails = (notification) => {
   switch (notification.get('type')) {
     case 'account_reset':
       return new Promise((resolve,reject) => {
-        resolve({
-          'subject': 'Account Reset Instructions',
-          'body': templates.account_reset({
-            'url': (process.env.URL_ROOT || 'http://localhost:3000') + '/#/reset/' + notification.related('user').get('resetCode')
-          })
-        });
+        ejs.renderFile('./emailTemplates/account_reset.ejs',{
+          'url': (process.env.URL_ROOT || 'http://localhost:3000') + '/#/reset/' + notification.related('user').get('resetCode')
+        },(err,html) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({
+              'subject': 'Account Reset Instructions',
+              'body': html
+            });
+          }
+        })
       })
     case 'review_assigned':
       return Review.byId(notification.get('data').review_id)
         .then((review) => {
           if (review) {
-            return {
-              'subject': 'Subission Assigned For Your Review',
-              'body': templates.review_assigned({
+            return new Promise((resolve,reject) => {
+              ejs.renderFile('./emailTemplates/review_assigned.ejs',{
                 'url': (process.env.URL_ROOT || 'http://localhost:3000') + '#/reviews/' + review.id
+              },(err,html) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  resolve({
+                    'subject': 'Subission Assigned For Your Review',
+                    'body': html
+                  });
+                }
               })
-            };
+            });
           } else {
             throw new Error('Review ID invalid');
           }
-        })
+        });
     default:
       throw new Error('Notification type is invlaid');
   }

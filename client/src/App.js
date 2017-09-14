@@ -8,6 +8,7 @@ import Logout from './misc/Logout';
 import Users from './features/userManagement/Users';
 import User from './features/userManagement/User';
 import Submissions from './features/submissions/Submissions';
+import Submission from './features/submissions/Submission';
 import SubmissionReviews from './features/submissions/SubmissionReviews';
 import FinishResetPassword from './features/login/FinishResetPassword';
 import MyReviews from './features/reviews/MyReviews';
@@ -32,6 +33,7 @@ class App extends Component {
           { this.props.user.user && this.props.user.user.role === 'admin' && (<Route path="/users" exact={true} component={Users} />) }
           <Route path="/users/:userId" exact={true} component={User} />
           <Route path="/submissions" exact={true} component={Submissions} />
+          <Route path="/submissions/:submissionId" exact={true} component={Submission} />
           <Route path="/submissions/:submissionId/reviews" exact={true} component={SubmissionReviews} />
           <Route path="/reviews" exact={true} component={MyReviews} />
           <Route path="/reviews/:reviewId" exact={true} component={Review} />

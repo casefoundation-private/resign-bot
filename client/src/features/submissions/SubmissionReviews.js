@@ -18,6 +18,7 @@ import { Link } from 'react-router-dom';
 import {
   summarizeSubmission
 } from '../../misc/utils';
+import FontAwesome from 'react-fontawesome';
 
 class Submissions extends Component {
   componentDidMount() {
@@ -37,7 +38,7 @@ class Submissions extends Component {
     return (
       <PageWrapper title={'Submission Reviews for ' + summarizeSubmission(this.props.submissions.submission)}>
         <p>
-          <Link to='/submissions'>Back to Submissions</Link>
+          <Link to='/submissions'><FontAwesome name="chevron-left" /> Back to Submissions</Link>
         </p>
         <Table striped>
           <thead>
