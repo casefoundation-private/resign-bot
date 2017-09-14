@@ -8,7 +8,6 @@ const Submission = require('./models/submission');
 const routes = require('./routes');
 const passport = require('passport');
 const auth = require('./auth');
-const path = require('path');
 
 exports.init = (serve) => {
   const app = express();
@@ -17,7 +16,7 @@ exports.init = (serve) => {
   }));
   auth.init(app);
   if (process.env.NODE_ENV !== 'test') {
-    app.use(express.static(path.join('.','build')));
+    app.use(express.static('./build'));
     app.use(logger('combined'));
   }
 
