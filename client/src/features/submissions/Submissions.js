@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Table,ButtonGroup,Button } from 'reactstrap';
+import { Table,ButtonGroup,Button,UncontrolledTooltip } from 'reactstrap';
 import {
   loadSubmissions,
   toggleFlagSubmission,
@@ -43,9 +43,27 @@ class Submissions extends Component {
               <th>Completed Reviews</th>
               <th>Assigned Reviews</th>
               <th>Created</th>
-              <th className="text-center">Favorite</th>
-              <th className="text-center">Pinned</th>
-              <th className="text-center">Flagged</th>
+              <th className="text-center">
+                Favorite{' '}
+                <FontAwesome name="question-circle" id="favorite-tooltip" />
+                <UncontrolledTooltip placement="below" target="favorite-tooltip">
+                  This is a marker that only you control. Your favorites are differnet than other users' favorites so that you can mark the submissions you are most interested in tracking.
+                </UncontrolledTooltip>
+              </th>
+              <th className="text-center">
+                Pinned{' '}
+                <FontAwesome name="question-circle" id="pinned-tooltip" />
+                <UncontrolledTooltip placement="below" target="pinned-tooltip">
+                  Pinning a submission is a global change. If you pin a submisison here, it will be pinned for all other users.
+                </UncontrolledTooltip>
+              </th>
+              <th className="text-center">
+                Flagged{' '}
+                <FontAwesome name="question-circle" id="flagged-tooltip" />
+                <UncontrolledTooltip placement="below" target="flagged-tooltip">
+                  Flagging a submission is a global change. If you flag a submisison here, it will be flagged for all other users.
+                </UncontrolledTooltip>
+              </th>
               <th className="text-center">Options</th>
             </tr>
           </thead>
