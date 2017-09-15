@@ -163,7 +163,7 @@ const User = module.exports = bookshelf.Model.extend({
       .query((qb) => {
         const subQuery = knex.select('user_id').from('reviews').whereNull('reviews.score');
         if (submissionBlacklist && submissionBlacklist.length > 0) {
-          subQuery.whereNotIn('reviews.submission_id',submissionBlacklist);
+          subQuery.whereIn('reviews.submission_id',submissionBlacklist);
         }
         qb.whereNotIn('id',subQuery);
         if (userBlacklist && userBlacklist.length > 0) {
@@ -195,7 +195,7 @@ const User = module.exports = bookshelf.Model.extend({
             query.whereNotIn('users.id',userBlacklist)
           };
           if (submissionBlacklist && submissionBlacklist.length > 0) {
-            const subQuery = knex.select('user_id').from('reviews').whereNotIn('reviews.submission_id',submissionBlacklist);
+            const subQuery = knex.select('user_id').from('reviews').whereIn('reviews.submission_id',submissionBlacklist);
             query.whereNotIn('u.id',subQuery);
           }
           return query

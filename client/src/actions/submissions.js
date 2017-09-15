@@ -79,3 +79,19 @@ export const togglePinSubmission = (submission) => {
     });
   }
 }
+
+export const downloadSubmissions = () => {
+  return (dispatch,getState) => {
+    authenticatedRequest(dispatch,getState,'/api/submission/export','GET',null,(data) => {
+      const blob = new Blob([data.csv], {type: 'text/csv'});
+      const a = document.createElement("a");
+      a.style = "display: none";
+      document.body.appendChild(a);
+      const url = window.URL.createObjectURL(blob);
+      a.href = url;
+      a.download = 'Review-O-Matic Submissions Export ' + (new Date().toLocaleString()) + '.csv';
+      a.click();
+      window.URL.revokeObjectURL(url);
+    });
+  }
+}

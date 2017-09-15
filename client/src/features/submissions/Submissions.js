@@ -5,7 +5,8 @@ import { Table,ButtonGroup,Button } from 'reactstrap';
 import {
   loadSubmissions,
   toggleFlagSubmission,
-  togglePinSubmission
+  togglePinSubmission,
+  downloadSubmissions
 } from '../../actions/submissions';
 import {
   makeFavorite,
@@ -30,6 +31,9 @@ class Submissions extends Component {
   render() {
     return (
       <PageWrapper title="Submissions">
+      <p>
+        <Button size="sm" color="primary" onClick={() => this.props.downloadSubmissions()}><FontAwesome name="download" /> Download Submissions</Button>
+      </p>
         <Table striped>
           <thead>
             <tr>
@@ -103,7 +107,8 @@ const dispatchToProps = (dispatch) => {
     toggleFlagSubmission,
     togglePinSubmission,
     makeFavorite,
-    deleteFavorite
+    deleteFavorite,
+    downloadSubmissions
   }, dispatch);
 }
 

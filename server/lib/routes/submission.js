@@ -1,5 +1,7 @@
 const Submission = require('../models/submission');
 const Favorite = require('../models/favorite');
+const stringify = require('csv-stringify-as-promised');
+const _ = require('lodash');
 
 exports.getSubmissions = (req,res,next) => {
   Submission.all()
@@ -94,6 +96,59 @@ exports.deleteFavorite = (req,res,next) => {
       res.send({
         'message': 'Deleted'
       });
+    })
+    .catch((err) => next(err));
+}
+
+exports.submissionsSpreadsheet = (req,res,next) => {
+  Submission.all()
+    .then((values) => {
+      return values.filter((submission) => {
+        return req.user.getSubmissionPermissions(submission).view;
+      }).map((object) => {
+        return object.toJSON();
+      });
+    })
+    .then((array) => {
+      return array.map((baseObject) => {
+        const returnObject = Object.assign({},baseObject.data || {});
+        delete baseObject.data;
+        delete baseObject.reviews;
+        baseObject.created_at = new Date(Date.parse(baseObject.created_at)).toLocaleString();
+        baseObject.updated_at = new Date(Date.parse(baseObject.updated_at)).toLocaleString();
+        return Object.assign(returnObject,baseObject);
+      });
+    })
+    .then((flattend) => {
+      return new Promise((resolve,reject) => {
+        req.user.fetch({'withRelated':'favorites'})
+          .then(() => {
+            console.log('here');
+            flattend.forEach((submission) => {
+              const favorite = req.user.related('favorites').find((_submission) => _submission.get('id') === submission.id);
+              submission.favorite = !(!favorite);
+            });
+            resolve(flattend);
+          })
+          .catch((e) => reject(e));
+      });
+    })
+    .then((flattend) => {
+      const columns = [];
+      flattend.forEach((row) => {
+        _.keys(row).forEach((column) => {
+          if (columns.indexOf(column) < 0) {
+            columns.push(column);
+          }
+        });
+      });
+      return stringify(flattend,{
+        'columns': columns,
+        'header': true
+      });
+    })
+    .then((csv) => {
+      res.send({csv});
     })
     .catch((err) => next(err));
 }

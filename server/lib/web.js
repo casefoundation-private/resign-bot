@@ -70,6 +70,7 @@ exports.init = (serve) => {
   app.post('/api/user/:user',authenticate,routes.user.saveUser);
 
   app.get('/api/submission',authenticate,routes.submission.getSubmissions);
+  app.get('/api/submission/export',authenticate,routes.submission.submissionsSpreadsheet); //TODO test
   app.get('/api/submission/:submission',authenticate,routes.submission.getSubmission);
   app.get('/api/submission/:submission/reviews',authenticate,routes.submission.getSubmissionReviews);
   app.put('/api/submission',authenticate,routes.submission.saveSubmission);
@@ -80,7 +81,7 @@ exports.init = (serve) => {
   app.get('/api/review/:review',authenticate,routes.review.getReview);
   app.put('/api/review',authenticate,routes.review.saveReview);
   app.post('/api/review/:review',authenticate,routes.review.saveReview);
-  app.post('/api/review/:review/recuse',authenticate,routes.review.recuseReview); //TODO
+  app.post('/api/review/:review/recuse',authenticate,routes.review.recuseReview); //TODO test
 
   app.get('/api/config',authenticate,routes.config.getConfig);
 
