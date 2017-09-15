@@ -126,3 +126,29 @@ export const setReviewFlagged = (flagged) => {
     flagged
   };
 }
+
+export const newReviewForSubmission = (submissionId) => {
+  return (dispatch,getState) => {
+    const url = '/api/review';
+    const method = 'PUT'
+    const review = {
+      'submission_id': submissionId
+    }
+    dispatch({
+      type: ACTION.REVIEWS.SET,
+      review
+    });
+    authenticatedRequest(dispatch,getState,url,method,review,(review) => {
+      dispatch({
+        type: ACTION.REVIEWS.SET,
+        review
+      });
+      dispatch(loadReviewsForSubmission(review.submission_id));
+      dispatch({
+        type: ACTION.MESSAGE.SET,
+        message: 'Review created.',
+        messageType: 'info'
+      });
+    });
+  }
+}

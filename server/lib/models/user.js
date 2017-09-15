@@ -158,11 +158,17 @@ const User = module.exports = bookshelf.Model.extend({
   'all': function() {
     return this.forge().fetchAll({'withRelated':'reviews'});
   },
-  'nextAvailableUsers': function(i,blacklist) {
+  'nextAvailableUsers': function(i,userBlacklist,submissionBlacklist) {
     return User.forge()
       .query((qb) => {
-        qb.whereNotIn('id',knex.select('user_id').from('reviews').whereNull('reviews.score'));
-        if (blacklist && blacklist.length > 0) qb.whereNotIn('id',blacklist);
+        const subQuery = knex.select('user_id').from('reviews').whereNull('reviews.score');
+        if (submissionBlacklist && submissionBlacklist.length > 0) {
+          subQuery.whereNotIn('reviews.submission_id',submissionBlacklist);
+        }
+        qb.whereNotIn('id',subQuery);
+        if (userBlacklist && userBlacklist.length > 0) {
+          qb.whereNotIn('id',userBlacklist);
+        }
         qb.where({
           'ready': true,
           'active': true
@@ -185,7 +191,13 @@ const User = module.exports = bookshelf.Model.extend({
             .groupBy('u.id')
             .orderBy(knex.raw('count(r.user_id)'))
             .limit(i - users.length);
-          if (blacklist && blacklist.length > 0) query.whereNotIn('users.id',blacklist);
+          if (userBlacklist && userBlacklist.length > 0) {
+            query.whereNotIn('users.id',userBlacklist)
+          };
+          if (submissionBlacklist && submissionBlacklist.length > 0) {
+            const subQuery = knex.select('user_id').from('reviews').whereNotIn('reviews.submission_id',submissionBlacklist);
+            query.whereNotIn('u.id',subQuery);
+          }
           return query
             .then((result) => {
               if (result && result.length > 0) {

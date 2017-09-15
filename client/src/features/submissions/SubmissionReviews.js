@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Table,Form,Input,FormGroup } from 'reactstrap';
+import { Table,Form,Input,FormGroup,Button } from 'reactstrap';
 import {
   loadSubmission
 } from '../../actions/submissions';
 import {
   loadReviewsForSubmission,
   updateReview,
-  setActiveReview
+  setActiveReview,
+  newReviewForSubmission
 } from '../../actions/reviews';
 import {
   loadUsers
@@ -39,6 +40,9 @@ class Submissions extends Component {
       <PageWrapper title={'Submission Reviews for ' + summarizeSubmission(this.props.submissions.submission)}>
         <p>
           <Link to='/submissions'><FontAwesome name="chevron-left" /> Back to Submissions</Link>
+        </p>
+        <p>
+          { this.props.submissions.submission && (<Button size="sm" color="success" onClick={() => this.props.newReviewForSubmission(this.props.submissions.submission.id)}><FontAwesome name="user-plus" /> Add Review</Button>) }
         </p>
         <Table striped>
           <thead>
@@ -89,7 +93,8 @@ const dispatchToProps = (dispatch) => {
     loadUsers,
     loadReviewsForSubmission,
     setActiveReview,
-    updateReview
+    updateReview,
+    newReviewForSubmission
   }, dispatch);
 }
 

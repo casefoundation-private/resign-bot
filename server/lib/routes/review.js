@@ -1,4 +1,5 @@
 const Review = require('../models/review');
+const User = require('../models/user');
 
 exports.getReview = (req,res,next) => {
   if (req.review) {
@@ -15,8 +16,8 @@ exports.getReview = (req,res,next) => {
 exports.saveReview = (req,res,next) => {
   const save = (review) => {
     review.set('score',req.body.score);
-    review.set('data',req.body.data);
-    review.set('flagged',req.body.flagged); //TODO test
+    review.set('data',req.body.data || {});
+    review.set('flagged',req.body.flagged || false); //TODO test
     if (req.user.isAdmin()) {
       if (req.body.user_id) {
         review.set('user_id',req.body.user_id);
@@ -24,7 +25,6 @@ exports.saveReview = (req,res,next) => {
     }
     review
       .save()
-      .then(() => review.fetch({'withRelated':['user','submission']}))
       .then(() => {
         res.json(review.toJSON());
       })
@@ -39,21 +39,34 @@ exports.saveReview = (req,res,next) => {
   } else {
     const userId = req.user.isAdmin() ? req.body.user_id : req.user.get('id');
     const submissionId = req.body.submission_id;
-    Review.reviewForUserAndSubmission(userId,submissionId)
-      .then((review) => {
-        if (!review) {
-          review = new Review({
-            'user_id': userId,
-            'submission_id': submissionId,
-            'flagged': false
-          });
-          save(review);
+    const finishReviewCreation = (_userId) => {
+      Review.reviewForUserAndSubmission(_userId,submissionId)
+        .then((review) => {
+          if (!review) {
+            review = new Review({
+              'user_id': _userId,
+              'submission_id': submissionId,
+              'flagged': false
+            });
+            save(review);
+          } else {
+            res.status(400);
+            throw new Error('Review already exists for that user and submission.');
+          }
+        })
+        .catch((err) => next(err));
+    }
+    if (userId) {
+      finishReviewCreation(_userId);
+    } else {
+      User.nextAvailableUsers(1,null,[submissionId]).then((users) => {
+        if (users && users.length > 0) {
+          finishReviewCreation(users.at(0).get('id'));
         } else {
-          res.status(400);
-          next(new Error('Review already exists for that user and submission'));
+          throw new Error('There are no users available to review this submission.')
         }
-      })
-      .catch((err) => next(err));
+      }).catch((err) => next(err));
+    }
   }
 }
 
