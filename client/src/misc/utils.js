@@ -26,7 +26,7 @@ export const getSubmissionFields = (submission) => {
 }
 
 export const getFavorite = (favorites,submission) => {
-  return favorites.find((_submission) => _submission.id === submission.id);
+  return favorites && favorites.find((_submission) => _submission.id === submission.id);
 }
 
 export const round = (n) => {

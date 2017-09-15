@@ -5,7 +5,8 @@ import {
 const initialUserState = {
   token: null,
   user: null,
-  favorites: null
+  favorites: null,
+  needsPasswordReset: false
 };
 
 const user = (state = initialUserState, action) => {
@@ -40,6 +41,10 @@ const user = (state = initialUserState, action) => {
     case ACTION.USER.DELETE_FAVORITE:
       return Object.assign({},state,{
         'favorites': (state.favorites || []).filter((submission) => submission.id !== action.submission_id)
+      });
+    case ACTION.USER.SET_NEEDS_PASSWORD_RESET:
+      return Object.assign({},state,{
+        'needsPasswordReset': action.needsPasswordReset
       });
     case ACTION.USER.LOGIN:
     case ACTION.USER.LOGOUT:

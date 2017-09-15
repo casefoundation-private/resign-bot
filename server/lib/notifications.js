@@ -39,6 +39,8 @@ const handleNextNotification = () => {
             notificationLock = false;
             return notification.save();
           });
+        } else {
+          notificationLock = false;
         }
       })
       .catch((err) => {

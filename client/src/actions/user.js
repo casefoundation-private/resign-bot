@@ -101,6 +101,7 @@ export const completePasswordReset = (resetCode) => {
     .then((response) => response.json())
     .then((responseData) => {
       if (responseData.token && responseData.id) {
+        dispatch(setNeedsPasswordReset(true));
         dispatch({type: ACTION.USER.LOGIN_SUCCESS, token: responseData.token, id: responseData.id});
         dispatch({
           type: ACTION.MESSAGE.SET,
@@ -138,5 +139,12 @@ export const deleteFavorite = (submission) => {
         submission_id: submission.id
       });
     });
+  }
+}
+
+export const setNeedsPasswordReset = (needsPasswordReset) => {
+  return {
+    type: ACTION.USER.SET_NEEDS_PASSWORD_RESET,
+    needsPasswordReset
   }
 }

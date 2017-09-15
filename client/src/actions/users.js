@@ -22,9 +22,12 @@ export const loadUsers = () => {
 
 export const loadUser = (userId) => {
   return (dispatch,getState) => {
-    const user = getState().users.users && getState().users.users.find((user) => {
+    let user = getState().users.users && getState().users.users.find((user) => {
       return user.id === userId;
     });
+    if (!user && getState().users.user && userId === getState().users.user.id) {
+      user = getState().users.user;
+    }
     if (user) {
       dispatch({
         type: ACTION.USERS.SET,
@@ -33,7 +36,7 @@ export const loadUser = (userId) => {
     } else {
       dispatch({
         type: ACTION.USERS.SET,
-        user: []
+        user: null
       });
     }
     authenticatedRequest(dispatch,getState,'/api/user/'+userId,'GET',null,(user) => {
@@ -59,14 +62,25 @@ export const updateUser = () => {
     const url = getState().users.user.id ? '/api/user/'+getState().users.user.id : '/api/user';
     const method = getState().users.user.id ? 'POST' : 'PUT';
     authenticatedRequest(dispatch,getState,url,method,getState().users.user,(user) => {
+      if (getState().users.user.id === getState().user.user.id && getState().user.needsPasswordReset && getState().users.user.password) {
+        dispatch({
+          type: ACTION.USER.SET_NEEDS_PASSWORD_RESET,
+          needsPasswordReset: false
+        });
+        dispatch({
+          type: ACTION.MESSAGE.SET,
+          message: null
+        });
+      } else {
+        dispatch({
+          type: ACTION.MESSAGE.SET,
+          message: 'User saved.',
+          messageType: 'info'
+        });
+      }
       dispatch({
         type: ACTION.USERS.SET,
         user
-      });
-      dispatch({
-        type: ACTION.MESSAGE.SET,
-        message: 'User saved.',
-        messageType: 'info'
       });
     });
   }

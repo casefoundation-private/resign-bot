@@ -25,7 +25,7 @@ class App extends Component {
   }
 
   render() {
-    return this.props.user.token ?
+    return this.props.user.token && !this.props.user.needsPasswordReset ?
       ( <HashRouter>
         <Switch>
           <Redirect from="/login" exact={true} to="/" />
