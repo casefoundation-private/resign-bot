@@ -35,10 +35,10 @@ class Review extends Component {
       return (
         <FormGroup key={i} tag="fieldset">
           <label>
-            {prompt}
+            <strong>{prompt.prompt}</strong>
           </label>
           {
-            this.props.config.review.labels.map((label,j) => {
+            prompt.labels.map((label,j) => {
               return (
                 <FormGroup check key={j}>
                   <Label check>
@@ -78,7 +78,7 @@ class Review extends Component {
                     <FormGroup check>
                       <Label check>
                         <Input type="checkbox" name="review_flagged" value="flagged" checked={this.props.reviews.review && this.props.reviews.review.flagged} onChange={(event) => this.props.setReviewFlagged(event.target.checked)} />{' '}
-                        Flag as Inappropriate
+                        <strong>Flag as Inappropriate</strong>
                       </Label>
                     </FormGroup>
                   </p>
