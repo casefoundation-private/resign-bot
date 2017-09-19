@@ -83,6 +83,8 @@ exports.init = (serve) => {
   app.post('/api/review/:review',authenticate,routes.review.saveReview);
   app.post('/api/review/:review/recuse',authenticate,routes.review.recuseReview); //TODO test
 
+  app.get('/api/notification',authenticate,routes.notification.getNotifications); //TODO test
+
   app.get('/api/config',authenticate,routes.config.getConfig);
 
   app.use((err,req,res,next) => {

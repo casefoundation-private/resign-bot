@@ -43,5 +43,18 @@ const Notification = module.exports = bookshelf.Model.extend({
       .fetch({
         'withRelated': ['user']
       })
-  }
+  },
+  'queue': function() {
+    return this
+      .forge()
+      .query({
+        'where': {
+          'queued': true
+        }
+      })
+      .orderBy('created_at','ASC')
+      .fetchAll({
+        'withRelated': ['user']
+      });
+  },
 });

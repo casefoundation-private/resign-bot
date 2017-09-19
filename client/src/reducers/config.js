@@ -2,7 +2,9 @@ import {
   ACTION
 } from '../misc/constants';
 
-const initialConfigState = {};
+const initialConfigState = {
+  'prompts': []
+};
 
 const config = (state = initialConfigState, action) => {
   switch (action.type) {

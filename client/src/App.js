@@ -13,6 +13,7 @@ import SubmissionReviews from './features/submissions/SubmissionReviews';
 import FinishResetPassword from './features/login/FinishResetPassword';
 import MyReviews from './features/reviews/MyReviews';
 import Review from './features/reviews/Review';
+import NotificationQueue from './features/admin/NotificationQueue';
 import {
   loadUserDetails
 } from './actions/user';
@@ -31,6 +32,7 @@ class App extends Component {
           <Redirect from="/login" exact={true} to="/" />
           <Route path="/logout" exact={true} component={Logout} />
           { this.props.user.user && this.props.user.user.role === 'admin' && (<Route path="/users" exact={true} component={Users} />) }
+          { this.props.user.user && this.props.user.user.role === 'admin' && (<Route path="/notifications" exact={true} component={NotificationQueue} />) }
           <Route path="/users/:userId" exact={true} component={User} />
           <Route path="/submissions" exact={true} component={Submissions} />
           <Route path="/submissions/:submissionId" exact={true} component={Submission} />

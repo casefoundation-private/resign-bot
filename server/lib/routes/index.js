@@ -1,3 +1,3 @@
-['review','submission','user','config'].forEach((lib) => {
+['review','submission','user','config','notification'].forEach((lib) => {
   exports[lib] = require('./'+lib);
 })

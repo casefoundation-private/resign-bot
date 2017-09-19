@@ -29,5 +29,8 @@ export const ACTION = {
   },
   CONFIG: {
     'SET': 'CONFIG_SET'
+  },
+  NOTIFICATIONS: {
+    'SET': 'NOTIFICATIONS_SET'
   }
 }

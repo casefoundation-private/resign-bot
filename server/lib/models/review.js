@@ -27,7 +27,7 @@ module.exports = bookshelf.Model.extend({
     return this.belongsTo(Submission);
   },
   'recuse': function() { //TODO test
-    return User.nextAvailableUsers(1,[this.get('user_id')])
+    return User.nextAvailableUsers(1,[this.get('user_id')],[this.get('submission_id')])
       .then((users) => {
         if (users && users.length > 0) {
           this.set('user_id',users.at(0).get('id'));

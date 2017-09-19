@@ -77,6 +77,19 @@ const User = module.exports = bookshelf.Model.extend({
       };
     }
   },
+  'getNotificationPermissions': function(notification) {
+    if (this.isAdmin() || notification.get('user_id') === this.get('id')) {
+      return {
+        'view': true,
+        'edit': false
+      };
+    } else {
+      return {
+        'view': false,
+        'edit': false
+      };
+    }
+  },
   'recuseAllReviews': function() {
     const nextRecusal = (i) => {
       if (i < this.related('reviews').length) {

@@ -40,6 +40,11 @@ class PageWrapper extends Component {
                   <Link to="/submissions" className="nav-link">Submissions</Link>
                 </NavItem>
             ) }
+            { this.props.user.user && this.props.user.user.role === 'admin' && (
+                <NavItem>
+                  <Link to="/notifications" className="nav-link">Notification Queue</Link>
+                </NavItem>
+            ) }
             { this.props.user.user && (
                 <NavItem>
                   <Link to="/reviews" className="nav-link">My Review Queue</Link>

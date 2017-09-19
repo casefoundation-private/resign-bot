@@ -5,6 +5,7 @@ import message from './message';
 import submissions from './submissions';
 import reviews from './reviews';
 import config from './config';
+import notifications from './notifications';
 
 const reducers = combineReducers({
   user,
@@ -12,7 +13,8 @@ const reducers = combineReducers({
   message,
   submissions,
   reviews,
-  config
+  config,
+  notifications
 });
 
 export default reducers;
