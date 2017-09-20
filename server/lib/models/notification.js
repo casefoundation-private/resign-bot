@@ -20,6 +20,14 @@ const Notification = module.exports = bookshelf.Model.extend({
       'data': {}
     });
   },
+  'userAccountWelcome': function(user) {
+    return new Notification({
+      'user_id': user.get('id'),
+      'queued': true,
+      'type': 'account_welcome',
+      'data': {}
+    });
+  },
   'reviewAssigned': function(review) {
     return new Notification({
       'user_id': review.get('user_id'),

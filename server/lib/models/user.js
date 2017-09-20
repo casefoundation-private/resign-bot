@@ -16,6 +16,19 @@ const User = module.exports = bookshelf.Model.extend({
   'notifications': function() {
     return this.hasMany(Notification);
   },
+  'initialize': function() {
+    this.on('creating',function() {
+      this.set('resetCode',uuidv4());
+      this.set('resetExpiration', new Date(new Date().getTime() + (1000 * 60 * 60 * 24)));
+    },this);
+    this.on('created',function() {
+      return this.save()
+        .then(() => {
+          return Notification.userAccountWelcome(this).save();
+        });
+    },this);
+    bookshelf.Model.prototype.initialize.apply(this, arguments);
+  },
   'favorites': function() {
     const Submission = require('./submission');
     const Favorite = require('./favorite');

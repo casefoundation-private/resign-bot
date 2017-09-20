@@ -82,7 +82,22 @@ const generateEmailDetails = (notification) => {
             });
           }
         })
-      })
+      });
+    case 'account_welcome':
+      return new Promise((resolve,reject) => {
+        ejs.renderFile('./emailTemplates/account_welcome.ejs',{
+          'url': (process.env.URL_ROOT || 'http://localhost:3000') + '/#/reset/' + notification.related('user').get('resetCode')
+        },(err,html) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({
+              'subject': 'Welcome to Review-O-Matic',
+              'body': html
+            });
+          }
+        })
+      });
     case 'review_assigned':
       return Review.byId(notification.get('data').review_id)
         .then((review) => {
