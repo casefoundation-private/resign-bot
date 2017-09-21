@@ -16,6 +16,16 @@ exports.getSubmissions = (req,res,next) => {
     .catch((err) => next(err));
 }
 
+exports.getPublicSubmissions = (req,res,next) => {
+  Submission.published()
+    .then((values) => {
+      res.json(values.map((object) => {
+        return object.toJSON();
+      }));
+    })
+    .catch((err) => next(err));
+}
+
 exports.getSubmission = (req,res,next) => {
   if (req.submission) {
     if (req.user.getSubmissionPermissions(req.submission).view) {

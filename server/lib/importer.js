@@ -1,6 +1,7 @@
 const Submission = require('./models/submission');
 
 const importers = [];
+const embargoDate = process.env.EMBARGO_DATE ? new Date(process.env.EMBARGO_DATE) : false;
 
 exports.init = () => {
   if (!process.env.SUSPEND_IMPORTING) {
@@ -23,7 +24,13 @@ const runImporters = () => {
   const nextImporter = (i) => {
     if (i < importers.length) {
       return importers[i]()
-        .then((newSubmissions) => saveSubmissions(newSubmissions))
+        .then((newSubmissions) => saveSubmissions(newSubmissions.filter((newSubmission) => {
+          if (embargoDate) {
+            return newSubmission.get('created_at').getTime() > embargoDate.getTime();
+          } else {
+            return true;
+          }
+        })))
         .then(() => nextImporter(i+1));
     }
   }
@@ -35,14 +42,13 @@ const runImporters = () => {
 const saveSubmissions = (newSubmissions) => {
   const nextSubmission = (i) => {
     if (i < newSubmissions.length) {
-      const submissionData = newSubmissions[i];
+      const newSubmission = newSubmissions[i];
       return Submission
-        .bySourceAndExternalId(submissionData.source,submissionData.external_id)
+        .bySourceAndExternalId(newSubmission.get('source'),newSubmission.get('external_id'))
         .then((existingSubmission) => {
           if (existingSubmission) {
             console.log(existingSubmission.get('source') + '/' + existingSubmission.get('external_id') + ' is a duplicate. Skipping.');
           } else {
-            const newSubmission = new Submission(submissionData);
             console.log(newSubmission.get('source') + '/' + newSubmission.get('external_id') + ' is new. Importing');
             return newSubmission.save();
           }

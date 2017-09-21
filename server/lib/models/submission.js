@@ -41,6 +41,15 @@ module.exports = bookshelf.Model.extend({
     return json;
   },
   'virtuals': {
+    'flags': function() {
+      const reviews = this.related('reviews');
+      if (reviews && reviews.length > 0) {
+        return reviews.reduce((total,review) => {
+          return total + (review.get('flagged') ? 1 : 0);
+        },0);
+      }
+      return null;
+    },
     'score': function() {
       const reviews = this.related('reviews');
       if (reviews && reviews.length > 0) {
@@ -109,5 +118,21 @@ module.exports = bookshelf.Model.extend({
         }
       })
       .fetch()
+  },
+  'published': function() {
+    return this
+      .forge()
+      .query((qb) => {
+        qb.where({'flagged':false})
+        const subquery = knex
+          .select(['submission_id'])
+          .from('reviews')
+          .where({'flagged':true})
+          .whereNotNull('score');
+        qb.whereNotIn('id',subquery);
+      })
+      .orderBy('pinned','DESC')
+      .orderBy('created_at','DESC')
+      .fetchAll();
   }
 });

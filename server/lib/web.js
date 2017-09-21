@@ -70,6 +70,7 @@ exports.init = (serve) => {
   app.post('/api/user/:user',authenticate,routes.user.saveUser);
 
   app.get('/api/submission',authenticate,routes.submission.getSubmissions);
+  app.get('/api/submission/public',routes.submission.getPublicSubmissions); //TODO test
   app.get('/api/submission/export',authenticate,routes.submission.submissionsSpreadsheet); //TODO test
   app.get('/api/submission/:submission',authenticate,routes.submission.getSubmission);
   app.get('/api/submission/:submission/reviews',authenticate,routes.submission.getSubmissionReviews);

@@ -33,22 +33,17 @@ class Review extends Component {
   renderReviewPrompts() {
     return this.props.reviews.review.data && this.props.reviews.review.data.prompts && this.props.config.review.prompts.map((prompt,i) => {
       return (
-        <FormGroup key={i} tag="fieldset">
-          <label>
+        <FormGroup key={i}>
+          <Label for={'review_prompt_'+i}>
             <strong>{prompt.prompt}</strong>
-          </label>
-          {
-            prompt.labels.map((label,j) => {
-              return (
-                <FormGroup check key={j}>
-                  <Label check>
-                    <Input type="radio" name={'review_prompt_'+i} value={j} checked={this.props.reviews.review.data.prompts[i] === j} onChange={() => this.props.setReviewPromptValue(i,j)} />{' '}
-                    {label}
-                  </Label>
-                </FormGroup>
-              );
-            })
-          }
+          </Label>
+          <Input type="select" value={this.props.reviews.review.data.prompts[i]} onChange={(event) => this.props.setReviewPromptValue(i,parseInt(event.target.value))}>
+            {
+              prompt.labels.map((label,j) => {
+                return (<option value={j} key={j}>{j}: {label}</option>)
+              })
+            }
+          </Input>
         </FormGroup>
       )
     });

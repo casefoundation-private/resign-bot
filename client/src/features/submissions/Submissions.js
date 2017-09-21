@@ -42,12 +42,13 @@ class Submissions extends Component {
               <th>Std Deviation</th>
               <th>Completed Reviews</th>
               <th>Assigned Reviews</th>
+              <th>Flagged Reviews</th>
               <th>Created</th>
               <th className="text-center">
                 Favorite{' '}
                 <FontAwesome name="question-circle" id="favorite-tooltip" />
                 <UncontrolledTooltip placement="below" target="favorite-tooltip">
-                  This is a marker that only you control. Your favorites are differnet than other users' favorites so that you can mark the submissions you are most interested in tracking.
+                  This is a marker that only you control. Your favorites are differnet than other users{'\''} favorites so that you can mark the submissions you are most interested in tracking.
                 </UncontrolledTooltip>
               </th>
               <th className="text-center">
@@ -78,6 +79,7 @@ class Submissions extends Component {
                     <td>{submission.deviation === null ? 'N/A' : round(submission.deviation)}</td>
                     <td>{completedReviews(submission).length}</td>
                     <td>{incompletedReviews(submission).length}</td>
+                    <td>{submission.flags === null ? 'N/A' : submission.flags}</td>
                     <td>{new Date(submission.created_at).toLocaleDateString()}</td>
                     <td className="text-center">
                       { !favorite ?

@@ -1,4 +1,5 @@
 const request = require('request-promise-native');
+const Submission = require('../models/submission');
 
 module.exports = () => {
   return getFormFields()
@@ -60,9 +61,9 @@ const getEntries = (fieldMap) => {
             'created_at': new Date(Date.parse(entry.DateCreated))
           };
           for(var fieldKey in fieldMap) {
-            submissionData.data[fieldMap[fieldKey]] = entry[fieldKey];
+            submissionData.data[fieldMap[fieldKey]] = cleanString(entry[fieldKey]);
           }
-          allEntries.push(submissionData);
+          allEntries.push(new Submission(submissionData));
         });
         return makeRequest(page+1);
       } else {
@@ -72,4 +73,11 @@ const getEntries = (fieldMap) => {
     })
   }
   return makeRequest(0);
+}
+
+const cleanString = (str) => {
+  if (str && typeof str === 'string') {
+    return str.replace(/\\/g,'');
+  }
+  return str;
 }
