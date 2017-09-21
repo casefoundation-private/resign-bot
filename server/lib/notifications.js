@@ -28,7 +28,10 @@ exports.init = () => {
 const handleNextNotification = () => {
   if (!notificationLock) {
     notificationLock = true;
-    return Notification.nextNotification()
+    return Notification.aggregateReviewNotifications()
+      .then(() => {
+        return Notification.nextNotification();
+      })
       .then((notification) => {
         if (notification) {
           return processNotification(notification).catch((err) => {
@@ -120,6 +123,22 @@ const generateEmailDetails = (notification) => {
             throw new Error('Review ID invalid');
           }
         });
+    case 'multiple_reviews_assigned':
+      return new Promise((resolve,reject) => {
+        ejs.renderFile('./emailTemplates/multiple_reviews_assigned.ejs',{
+          'url': (process.env.URL_ROOT || 'http://localhost:3000') + '#/reviews'
+        },(err,html) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({
+              'subject': 'Multiple Subissions Assigned For Your Review',
+              'body': html
+            });
+          }
+        })
+      });
+      //TODO
     default:
       throw new Error('Notification type is invlaid');
   }
