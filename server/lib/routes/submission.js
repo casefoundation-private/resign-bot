@@ -2,6 +2,7 @@ const Submission = require('../models/submission');
 const Favorite = require('../models/favorite');
 const stringify = require('csv-stringify-as-promised');
 const _ = require('lodash');
+const allowedPublicSubmissionOrigins = process.env.ALLOWED_SUBMISSION_ORIGINS.split(',');
 
 exports.getSubmissions = (req,res,next) => {
   Submission.all()
@@ -16,14 +17,43 @@ exports.getSubmissions = (req,res,next) => {
     .catch((err) => next(err));
 }
 
+const corsHeaders = (req,res) => {
+  if (req.headers.origin) {
+    const origin = req.headers.origin.replace('http://','').replace('https://','');
+    if (allowedPublicSubmissionOrigins.indexOf(origin) >= 0) {
+      res.header('Access-Control-Allow-Origin', req.headers.origin);
+      res.header('Access-Control-Allow-Methods', 'GET,OPTIONS');
+      res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    }
+  }
+}
+
 exports.getPublicSubmissions = (req,res,next) => {
   Submission.published()
     .then((values) => {
-      res.json(values.map((object) => {
-        return object.toJSON();
-      }));
+      corsHeaders(req,res);
+      res.json(values
+        .map((object) => {
+          const pojo = object.toJSON();
+          delete pojo.created_at;
+          delete pojo.deviation;
+          delete pojo.external_id;
+          delete pojo.flagged;
+          delete pojo.flags;
+          delete pojo.ip;
+          delete pojo.score;
+          delete pojo.source;
+          delete pojo.updated_at;
+          return pojo;
+        })
+      );
     })
     .catch((err) => next(err));
+}
+
+exports.getPublicSubmissionsOptions = (req,res,next) => {
+  corsHeaders(req,res);
+  res.sendStatus(200);
 }
 
 exports.getSubmission = (req,res,next) => {

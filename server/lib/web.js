@@ -73,6 +73,7 @@ exports.init = (serve) => {
   app.post('/api/user/:user',authenticate,routes.user.saveUser);
 
   app.get('/api/submission',authenticate,routes.submission.getSubmissions);
+  app.options('/api/submission/public',routes.submission.getPublicSubmissionsOptions); //TODO test
   app.get('/api/submission/public',routes.submission.getPublicSubmissions); //TODO test
   app.get('/api/submission/export',authenticate,routes.submission.submissionsSpreadsheet); //TODO test
   app.get('/api/submission/:submission',authenticate,routes.submission.getSubmission);
@@ -91,7 +92,7 @@ exports.init = (serve) => {
 
   app.get('/api/config',authenticate,routes.config.getConfig);
 
-  app.post('/api/webbooks/wufoo',routes.webhooks.wufoo);
+  app.post('/api/webbooks/wufoo',routes.webhooks.wufoo); //TODO test
 
   app.use((err,req,res,next) => {
     if (err) {
