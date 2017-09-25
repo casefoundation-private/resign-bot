@@ -30,13 +30,14 @@ class Submissions extends Component {
 
   render() {
     return (
-      <PageWrapper title="Submissions">
+      <PageWrapper title={'Submissions (' + (this.props.submissions.submissions && this.props.submissions.submissions.length) + ' Total)'}>
       <p>
         <Button size="sm" color="primary" onClick={() => this.props.downloadSubmissions()}><FontAwesome name="download" /> Download Submissions</Button>
       </p>
         <Table striped>
           <thead>
             <tr>
+              <th>ID</th>
               <th>Name</th>
               <th>Score</th>
               <th>Std Deviation</th>
@@ -74,6 +75,7 @@ class Submissions extends Component {
                 const favorite = getFavorite(this.props.user.favorites,submission);
                 return (
                   <tr key={submission.id}>
+                    <td>{submission.id}</td>
                     <td>{summarizeSubmission(submission)}</td>
                     <td>{submission.score === null ? 'N/A' : round(submission.score)}</td>
                     <td>{submission.deviation === null ? 'N/A' : round(submission.deviation)}</td>

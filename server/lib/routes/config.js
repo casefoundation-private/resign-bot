@@ -2,6 +2,7 @@
 exports.getConfig = (req,res,next) => {
   const config = {};
   generateReviewConfig(config);
+  generateHelpTextConfig(config);
   res.send(config);
 }
 
@@ -19,5 +20,9 @@ const generateReviewConfig = (config) => {
       config.review.prompts[i].labels[j] = process.env['REVIEW_PROMPT_' + i + '_LABEL_' + j] || process.env['REVIEW_PROMPT_LABEL_' + j];
     }
   }
-  
+
+}
+
+const generateHelpTextConfig = (config) => {
+  config.helpText = process.env.HELP_HTML || false;
 }

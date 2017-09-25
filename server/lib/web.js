@@ -14,6 +14,9 @@ exports.init = (serve) => {
   app.use(bodyParser.json({
     'extended': true
   }));
+  app.use(bodyParser.urlencoded({
+    'extended': true
+  }));
   auth.init(app);
   if (process.env.NODE_ENV !== 'test') {
     app.use(express.static('./build'));
@@ -87,6 +90,8 @@ exports.init = (serve) => {
   app.get('/api/notification',authenticate,routes.notification.getNotifications); //TODO test
 
   app.get('/api/config',authenticate,routes.config.getConfig);
+
+  app.post('/api/webbooks/wufoo',routes.webhooks.wufoo);
 
   app.use((err,req,res,next) => {
     if (err) {

@@ -1,13 +1,17 @@
 const Submission = require('./models/submission');
 
 const importers = [];
+const importersByName = {};
 const embargoDate = process.env.EMBARGO_DATE ? new Date(process.env.EMBARGO_DATE) : false;
+let importLock = false;
 
 exports.init = () => {
   if (!process.env.SUSPEND_IMPORTING) {
     setupImporters();
     setInterval(() => {
-      runImporters().catch((err) => console.log(err))
+      runImporters().catch((err) => {
+        console.log(err);
+      });
     },(parseInt(process.env.IMPORT_INTERVAL) || (1000 * 60 * 60)));
     return runImporters();
   }
@@ -15,28 +19,44 @@ exports.init = () => {
 
 const setupImporters = () => {
   if (process.env.WUFOO_KEY) {
+    importersByName.wufoo = importers.length;
     importers.push(require('./importers/wufoo'));
   }
 }
 
 const runImporters = () => {
-  console.log('Starting import batch');
-  const nextImporter = (i) => {
-    if (i < importers.length) {
-      return importers[i]()
-        .then((newSubmissions) => saveSubmissions(newSubmissions.filter((newSubmission) => {
-          if (embargoDate) {
-            return newSubmission.get('created_at').getTime() > embargoDate.getTime();
-          } else {
-            return true;
-          }
-        })))
-        .then(() => nextImporter(i+1));
+  if (!importLock) {
+    importLock = true;
+    console.log('Starting import batch');
+    const nextImporter = (i) => {
+      if (i < importers.length) {
+        return runImporter(importers[i])
+          .then(() => nextImporter(i+1));
+      }
     }
+    return nextImporter(0).then(() => {
+      console.log('Done import batch');
+    })
+    .then(() => {
+      importLock = false;
+    })
+    .catch((err) => {
+      importLock = false;
+    });
   }
-  return nextImporter(0).then(() => {
-    console.log('Done import batch');
-  });
+}
+
+exports.runImporters = runImporters;
+
+const runImporter = (importer) => {
+  return importer()
+    .then((newSubmissions) => saveSubmissions(newSubmissions.filter((newSubmission) => {
+      if (embargoDate) {
+        return newSubmission.get('created_at').getTime() > embargoDate.getTime();
+      } else {
+        return true;
+      }
+    })));
 }
 
 const saveSubmissions = (newSubmissions) => {

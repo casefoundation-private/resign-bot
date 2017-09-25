@@ -1,6 +1,6 @@
 import url from 'url';
 import getVideoId from 'get-video-id';
-import React, { Component } from 'react';
+import React from 'react';
 const _ = require('lodash');
 
 export const summarizeSubmission = (submission) => {
@@ -83,8 +83,10 @@ export const SubmissionContents = (props) => {
               <strong>{fieldKey}</strong>{colon} {fieldValue}
             </div>
           );
+        } else {
+          return null;
         }
       })}
     </div>
-  )
+  );
 }

@@ -12,7 +12,6 @@ import {
 import PageWrapper from '../../PageWrapper';
 import {
   summarizeSubmission,
-  getSubmissionFields,
   SubmissionContents
 } from '../../misc/utils';
 import { Link } from 'react-router-dom';
@@ -24,12 +23,6 @@ class Review extends Component {
     this.props.loadReview(reviewId);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.reviews.review && this.props.reviews.review.score === null && nextProps.reviews.review.score !== null) {
-      this.props.history.push('/reviews');
-    }
-  }
-
   renderReviewPrompts() {
     return this.props.reviews.review.data && this.props.reviews.review.data.prompts && this.props.config.review.prompts.map((prompt,i) => {
       return (
@@ -37,7 +30,7 @@ class Review extends Component {
           <Label for={'review_prompt_'+i}>
             <strong>{prompt.prompt}</strong>
           </Label>
-          <Input type="select" value={this.props.reviews.review.data.prompts[i]} onChange={(event) => this.props.setReviewPromptValue(i,parseInt(event.target.value))}>
+          <Input disabled={this.freezeFields()} type="select" value={this.props.reviews.review.data.prompts[i]} onChange={(event) => this.props.setReviewPromptValue(i,parseInt(event.target.value,10))}>
             {
               prompt.labels.map((label,j) => {
                 return (<option value={j} key={j}>{j}: {label}</option>)
@@ -47,6 +40,10 @@ class Review extends Component {
         </FormGroup>
       )
     });
+  }
+
+  freezeFields() {
+    return this.props.reviews.review && this.props.reviews.review.score !== null;
   }
 
   render() {
@@ -72,16 +69,16 @@ class Review extends Component {
                   <p>
                     <FormGroup check>
                       <Label check>
-                        <Input type="checkbox" name="review_flagged" value="flagged" checked={this.props.reviews.review && this.props.reviews.review.flagged} onChange={(event) => this.props.setReviewFlagged(event.target.checked)} />{' '}
+                        <Input disabled={this.freezeFields()} type="checkbox" name="review_flagged" value="flagged" checked={this.props.reviews.review && this.props.reviews.review.flagged} onChange={(event) => this.props.setReviewFlagged(event.target.checked)} />{' '}
                         <strong>Flag as Inappropriate</strong>
                       </Label>
                     </FormGroup>
                   </p>
                   { this.renderReviewPrompts() }
                   <p>
-                    <Button color="primary" onClick={() => this.props.updateReview()}><FontAwesome name="check-circle-o" /> Save</Button>
+                    <Button disabled={this.freezeFields()} color="primary" onClick={() => this.props.reviews.review.score === null && this.props.updateReview()}><FontAwesome name="check-circle-o" /> Save</Button>
                     { ' ' }
-                    <Button color="warning" onClick={() => this.props.calculateAndUpdateReview()}><FontAwesome name="check-circle" /> Save and Submit</Button>
+                    <Button disabled={this.freezeFields()} color="warning" onClick={() => this.props.reviews.review.score === null && this.props.calculateAndUpdateReview()}><FontAwesome name="check-circle" /> Save and Submit</Button>
                   </p>
                 </Form>
               </CardBlock>

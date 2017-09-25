@@ -55,6 +55,11 @@ class PageWrapper extends Component {
                   <Link to={'/users/'+this.props.user.user.id} className="nav-link">My Account</Link>
                 </NavItem>
             ) }
+            { this.props.user.user && this.props.config.helpText && (
+                <NavItem>
+                  <Link to={'/help'} className="nav-link">Help</Link>
+                </NavItem>
+            ) }
           </Nav>
           <Form className="form-inline">
             <Link to="/logout" className="btn btn-danger"><FontAwesome name="sign-out" /> Logout</Link>
@@ -73,7 +78,8 @@ class PageWrapper extends Component {
 const stateToProps = (state) => {
   return {
     user: state.user,
-    message: state.message
+    message: state.message,
+    config: state.config
   }
 }
 

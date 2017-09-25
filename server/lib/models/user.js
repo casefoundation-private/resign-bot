@@ -70,6 +70,11 @@ const User = module.exports = bookshelf.Model.extend({
         'view': true,
         'edit': true
       };
+    } else if (review.get('user_id') === this.get('id')) { //TODO test
+      return {
+        'view': true,
+        'edit': false
+      };
     } else {
       return {
         'view': false,

@@ -14,6 +14,7 @@ import FinishResetPassword from './features/login/FinishResetPassword';
 import MyReviews from './features/reviews/MyReviews';
 import Review from './features/reviews/Review';
 import NotificationQueue from './features/admin/NotificationQueue';
+import Help from './features/reviews/Help';
 import {
   loadUserDetails
 } from './actions/user';
@@ -39,6 +40,7 @@ class App extends Component {
           <Route path="/submissions/:submissionId/reviews" exact={true} component={SubmissionReviews} />
           <Route path="/reviews" exact={true} component={MyReviews} />
           <Route path="/reviews/:reviewId" exact={true} component={Review} />
+          <Route path="/help" exact={true} component={Help} />
           { this.props.user.user && this.props.user.user.role === 'admin' ?
             (<Redirect from="/" to="/submissions" />)
             : (<Redirect from="/" to="/reviews" />)

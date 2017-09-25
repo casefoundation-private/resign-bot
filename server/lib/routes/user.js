@@ -91,7 +91,7 @@ exports.getUserReviews = (req,res,next) => {
   if (req.user.getUserPermissions(req._user).view) {
     req._user.fetch({'withRelated':['reviews','reviews.submission']}).then(() => {
       res.json(req._user.related('reviews').filter((review) => {
-        return req.user.getReviewPermissions(review).view && review.get('score') === null;
+        return req.user.getReviewPermissions(review).view;
       }).map((object) => {
         return object.toJSON();
       }));

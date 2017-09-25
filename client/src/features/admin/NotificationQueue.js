@@ -6,7 +6,6 @@ import {
   loadNotifications
 } from '../../actions/notifications';
 import PageWrapper from '../../PageWrapper';
-import FontAwesome from 'react-fontawesome';
 
 class NotificationQueue extends Component {
   componentDidMount() {
