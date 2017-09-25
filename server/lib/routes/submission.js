@@ -44,6 +44,12 @@ exports.getPublicSubmissions = (req,res,next) => {
           delete pojo.score;
           delete pojo.source;
           delete pojo.updated_at;
+          if (pojo.data.email) {
+            delete pojo.data.email;
+          }
+          if (pojo.data.Email) {
+            delete pojo.data.Email;
+          }
           return pojo;
         })
       );
