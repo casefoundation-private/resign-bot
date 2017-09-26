@@ -65,20 +65,29 @@ const User = module.exports = bookshelf.Model.extend({
     }
   },
   'getReviewPermissions': function(review) {
-    if (this.isAdmin() || (review.get('user_id') === this.get('id') && review.get('score') === null)) { //TODO test
+    if (this.isAdmin()) {
       return {
         'view': true,
-        'edit': true
+        'edit': true,
+        'delete': true
+      };
+    } else if (review.get('user_id') === this.get('id') && review.get('score') === null) { //TODO test
+      return {
+        'view': true,
+        'edit': true,
+        'delete': false
       };
     } else if (review.get('user_id') === this.get('id')) { //TODO test
       return {
         'view': true,
-        'edit': false
+        'edit': false,
+        'delete': false
       };
     } else {
       return {
         'view': false,
-        'edit': false
+        'edit': false,
+        'delete': false
       };
     }
   },

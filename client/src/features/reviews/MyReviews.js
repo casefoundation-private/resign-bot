@@ -38,7 +38,11 @@ class MyReviews extends Component {
                   <td className="text-center">
                     <ButtonGroup>
                       { review.score === null && (<Button size="sm" color="danger" onClick={() => this.props.recuseReview(review)}><FontAwesome name="ban" /> Recuse Myself</Button>)}
-                      <Link to={'/reviews/'+review.id} className="btn btn-primary btn-sm" disabled={review.score !== null}><FontAwesome name="check-square" /> Review Submission</Link>
+                      <Link to={'/reviews/'+review.id} className="btn btn-primary btn-sm" disabled={review.score !== null}>
+                        { review.score === null ?
+                          (<span><FontAwesome name="check-square" />{ ' Review Submission'}</span>)
+                          : (<span><FontAwesome name="eye" />{ ' View Submission'}</span>)}
+                      </Link>
                     </ButtonGroup>
                   </td>
                 </tr>

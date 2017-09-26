@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Table,Form,Input,FormGroup,Button } from 'reactstrap';
+import { Table,Form,Input,FormGroup,Button,ButtonGroup } from 'reactstrap';
 import {
   loadSubmission
 } from '../../actions/submissions';
@@ -9,13 +9,14 @@ import {
   loadReviewsForSubmission,
   updateReview,
   setActiveReview,
-  newReviewForSubmission
+  newReviewForSubmission,
+  deleteReview
 } from '../../actions/reviews';
 import {
   loadUsers
 } from '../../actions/users';
 import {
-  summarizeSubmission
+  round
 } from '../../misc/utils';
 import FontAwesome from 'react-fontawesome';
 
@@ -28,9 +29,16 @@ class SubmissionReviews extends Component {
   }
 
   updateReviewOwner(review,newUserId) {
-    review.user_id = newUserId;
+    if (review.score === null) {
+      review.user_id = newUserId;
+      this.props.setActiveReview(review);
+      this.props.updateReview();
+    }
+  }
+
+  deleteReview(review) {
     this.props.setActiveReview(review);
-    this.props.updateReview();
+    this.props.deleteReview();
   }
 
   render() {
@@ -44,6 +52,7 @@ class SubmissionReviews extends Component {
             <tr>
               <th>Assigned To</th>
               <th>Score</th>
+              <th className="text-center">Options</th>
             </tr>
           </thead>
           <tbody>
@@ -54,7 +63,7 @@ class SubmissionReviews extends Component {
                     <td>
                       <Form inline>
                         <FormGroup>
-                          <Input type="select" value={review.user_id} onChange={(event) => this.updateReviewOwner(review,event.target.value)}>
+                          <Input disabled={review.score !== null} type="select" value={review.user_id} onChange={(event) => this.updateReviewOwner(review,event.target.value)}>
                             {
                               this.props.users.users && this.props.users.users.map((user) => (<option value={user.id} key={user.id}>{user.email}</option>))
                             }
@@ -62,7 +71,12 @@ class SubmissionReviews extends Component {
                         </FormGroup>
                       </Form>
                     </td>
-                    <td>{review.score}</td>
+                    <td>{review.score === null ? 'N/A' : round(review.score)}</td>
+                    <td className="text-center">
+                    <ButtonGroup>
+                      <Button onClick={() => this.deleteReview(review)} color="danger" size="sm"><FontAwesome name="trash" /> Remove</Button>
+                    </ButtonGroup>
+                    </td>
                   </tr>
                 )
               })
@@ -89,7 +103,8 @@ const dispatchToProps = (dispatch) => {
     loadReviewsForSubmission,
     setActiveReview,
     updateReview,
-    newReviewForSubmission
+    newReviewForSubmission,
+    deleteReview
   }, dispatch);
 }
 

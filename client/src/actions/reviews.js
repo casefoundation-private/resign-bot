@@ -87,6 +87,26 @@ export const updateReview = () => {
   }
 }
 
+export const deleteReview = () => {
+  return (dispatch,getState) => {
+    const id = getState().reviews.review.id;
+    const url = '/api/review/' + id;
+    const method = 'DELETE';
+    authenticatedRequest(dispatch,getState,url,method,getState().reviews.review,(status) => {
+      dispatch({
+        type: ACTION.REVIEWS.SET,
+        review: null,
+        reviews: getState().reviews.reviews.filter((_review) => _review.id !== id)
+      });
+      dispatch({
+        type: ACTION.MESSAGE.SET,
+        message: status.message,
+        messageType: 'info'
+      });
+    });
+  }
+}
+
 export const calculateAndUpdateReview = () => {
   return (dispatch,getState) => {
     if (getState().reviews.reviewIsValid) {

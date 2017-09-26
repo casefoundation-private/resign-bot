@@ -13,6 +13,21 @@ exports.getReview = (req,res,next) => {
   }
 }
 
+exports.deleteReview = (req,res,next) => {
+  if (req.review) {
+    if (req.user.getReviewPermissions(req.review).delete) {
+      req.review.destroy()
+        .then(() => {
+          res.json({'message':'Review deleted'})
+        });
+    } else {
+      res.send(401);
+    }
+  } else {
+    res.send(404);
+  }
+}
+
 exports.saveReview = (req,res,next) => {
   const save = (review) => {
     review.set('score',req.body.score);

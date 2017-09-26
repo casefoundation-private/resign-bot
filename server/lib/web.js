@@ -84,6 +84,7 @@ exports.init = (serve) => {
   app.delete('/api/submission/:submission/favorite',authenticate,routes.submission.deleteFavorite);
 
   app.get('/api/review/:review',authenticate,routes.review.getReview);
+  app.delete('/api/review/:review',authenticate,routes.review.deleteReview); //TODO test
   app.put('/api/review',authenticate,routes.review.saveReview);
   app.post('/api/review/:review',authenticate,routes.review.saveReview);
   app.post('/api/review/:review/recuse',authenticate,routes.review.recuseReview); //TODO test

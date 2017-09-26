@@ -25,6 +25,8 @@ import { Link } from 'react-router-dom';
 import FontAwesome from 'react-fontawesome';
 import SubmissionReviews from './SubmissionReviews';
 
+//TODO create a setActiveSubmission call for this to sync with sub props
+
 class Submissions extends Component {
   constructor(props) {
     super(props);
