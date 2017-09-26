@@ -8,13 +8,12 @@ import Logout from './misc/Logout';
 import Users from './features/userManagement/Users';
 import User from './features/userManagement/User';
 import Submissions from './features/submissions/Submissions';
-import Submission from './features/submissions/Submission';
-import SubmissionReviews from './features/submissions/SubmissionReviews';
 import FinishResetPassword from './features/login/FinishResetPassword';
 import MyReviews from './features/reviews/MyReviews';
 import Review from './features/reviews/Review';
 import NotificationQueue from './features/admin/NotificationQueue';
 import Help from './features/reviews/Help';
+import Submission from './features/submissions/Submission';
 import {
   loadUserDetails
 } from './actions/user';
@@ -37,7 +36,6 @@ class App extends Component {
           <Route path="/users/:userId" exact={true} component={User} />
           <Route path="/submissions" exact={true} component={Submissions} />
           <Route path="/submissions/:submissionId" exact={true} component={Submission} />
-          <Route path="/submissions/:submissionId/reviews" exact={true} component={SubmissionReviews} />
           <Route path="/reviews" exact={true} component={MyReviews} />
           <Route path="/reviews/:reviewId" exact={true} component={Review} />
           <Route path="/help" exact={true} component={Help} />

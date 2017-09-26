@@ -14,16 +14,14 @@ import {
 import {
   loadUsers
 } from '../../actions/users';
-import PageWrapper from '../../PageWrapper';
-import { Link } from 'react-router-dom';
 import {
   summarizeSubmission
 } from '../../misc/utils';
 import FontAwesome from 'react-fontawesome';
 
-class Submissions extends Component {
+class SubmissionReviews extends Component {
   componentDidMount() {
-    const submissionId = parseInt(this.props.match.params.submissionId,10);
+    const submissionId = parseInt(this.props.submissionId || this.props.match.params.submissionId,10);
     this.props.loadSubmission(submissionId);
     this.props.loadReviewsForSubmission(submissionId);
     this.props.loadUsers();
@@ -37,10 +35,7 @@ class Submissions extends Component {
 
   render() {
     return (
-      <PageWrapper title={'Submission Reviews for ' + summarizeSubmission(this.props.submissions.submission)}>
-        <p>
-          <Link to='/submissions'><FontAwesome name="chevron-left" /> Back to Submissions</Link>
-        </p>
+      <div>
         <p>
           { this.props.submissions.submission && (<Button size="sm" color="success" onClick={() => this.props.newReviewForSubmission(this.props.submissions.submission.id)}><FontAwesome name="user-plus" /> Add Review</Button>) }
         </p>
@@ -74,7 +69,7 @@ class Submissions extends Component {
             }
           </tbody>
         </Table>
-      </PageWrapper>
+      </div>
     );
   }
 }
@@ -98,4 +93,4 @@ const dispatchToProps = (dispatch) => {
   }, dispatch);
 }
 
-export default connect(stateToProps, dispatchToProps)(Submissions);
+export default connect(stateToProps, dispatchToProps)(SubmissionReviews);
