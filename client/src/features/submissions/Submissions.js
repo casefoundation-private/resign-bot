@@ -6,7 +6,8 @@ import {
   loadSubmissions,
   toggleFlagSubmission,
   togglePinSubmission,
-  downloadSubmissions
+  downloadSubmissions,
+  setSubmissionSort
 } from '../../actions/submissions';
 import {
   makeFavorite,
@@ -73,6 +74,23 @@ class Submissions extends Component {
     this.props.loadSubmissions();
   }
 
+  changeSort(name) {
+    if (this.props.submissions.sort.field === name) {
+      this.props.setSubmissionSort(name,this.props.submissions.sort.direction === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.props.setSubmissionSort(name,'asc');
+    }
+  }
+
+  generateSortableColumnHeader(label,name) {
+    return (
+      <span onClick={() => this.changeSort(name)} className="sort-column">
+        { label }{' '}
+        <FontAwesome name={this.props.submissions.sort.field === name ? ('sort-'+this.props.submissions.sort.direction) : 'sort'} />
+      </span>
+    )
+  }
+
   render() {
     return (
       <div>
@@ -83,34 +101,37 @@ class Submissions extends Component {
           <Table striped>
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Score</th>
-                <th>Std Deviation</th>
-                <th>Completed Reviews</th>
-                <th>Assigned Reviews</th>
-                <th>Flagged Reviews</th>
-                <th>Created</th>
+                <th>{this.generateSortableColumnHeader('ID','id')}</th>
+                <th>{this.generateSortableColumnHeader('Name','summary')}</th>
+                <th>{this.generateSortableColumnHeader('Score','score')}</th>
+                <th>{this.generateSortableColumnHeader('Std Deviation','deviation')}</th>
+                <th>{this.generateSortableColumnHeader('Completed Reviews','completedReviews')}</th>
+                <th>{this.generateSortableColumnHeader('Assigned Reviews','assignedReviews')}</th>
+                <th>{this.generateSortableColumnHeader('Flagged Reviews','flags')}</th>
+                <th>{this.generateSortableColumnHeader('Created','created_at')}</th>
                 <th className="text-center">
-                  Favorite{' '}
-                  <FontAwesome name="question-circle" id="favorite-tooltip" />
+                <FontAwesome name="question-circle" id="favorite-tooltip" />
                   <UncontrolledTooltip placement="below" target="favorite-tooltip">
                     This is a marker that only you control. Your favorites are differnet than other users{'\''} favorites so that you can mark the submissions you are most interested in tracking.
                   </UncontrolledTooltip>
+                  {' '}
+                  {this.generateSortableColumnHeader('Favorite','favorite')}
                 </th>
                 <th className="text-center">
-                  Pinned{' '}
                   <FontAwesome name="question-circle" id="pinned-tooltip" />
                   <UncontrolledTooltip placement="below" target="pinned-tooltip">
                     Pinning a submission is a global change. If you pin a submisison here, it will be pinned for all other users.
                   </UncontrolledTooltip>
+                  {' '}
+                  {this.generateSortableColumnHeader('Pinned','pinned')}
                 </th>
                 <th className="text-center">
-                  Flagged{' '}
                   <FontAwesome name="question-circle" id="flagged-tooltip" />
                   <UncontrolledTooltip placement="below" target="flagged-tooltip">
                     Flagging a submission is a global change. If you flag a submisison here, it will be flagged for all other users.
                   </UncontrolledTooltip>
+                  {' '}
+                  {this.generateSortableColumnHeader('Flagged','flagged')}
                 </th>
                 <th className="text-center">Options</th>
               </tr>
@@ -128,7 +149,7 @@ class Submissions extends Component {
                       <td>{completedReviews(submission).length}</td>
                       <td>{incompletedReviews(submission).length}</td>
                       <td>{submission.flags === null ? 'N/A' : submission.flags}</td>
-                      <td>{new Date(submission.created_at).toLocaleDateString()}</td>
+                      <td>{submission.created_at && submission.created_at.toLocaleDateString ? submission.created_at.toLocaleDateString() : submission.created_at}</td>
                       <td className="text-center">
                         { !favorite ?
                           ( <Button size="sm" color="secondary" onClick={() => this.props.makeFavorite(submission)}><FontAwesome name="star" /></Button> )
@@ -199,7 +220,8 @@ const dispatchToProps = (dispatch) => {
     togglePinSubmission,
     makeFavorite,
     deleteFavorite,
-    downloadSubmissions
+    downloadSubmissions,
+    setSubmissionSort
   }, dispatch);
 }
 

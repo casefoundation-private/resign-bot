@@ -18,6 +18,10 @@ class ResetPassword extends Component {
     }
   }
 
+  componentDidMount() {
+    this.props.clearMessage();
+  }
+
   clearAlert() {
     this.props.clearMessage();
   }

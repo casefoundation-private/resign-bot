@@ -20,6 +20,10 @@ class Login extends Component {
     }
   }
 
+  componentDidMount() {
+    this.props.clearMessage();
+  }
+
   handleSubmit(event) {
     event.preventDefault();
     this.props.userLogin(this.state);

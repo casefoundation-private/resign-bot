@@ -5,6 +5,10 @@ import {
 const initialSubmissionsState = {
   submission: null,
   submissions: null,
+  sort: {
+    field: 'pinned',
+    direction: 'desc'
+  }
 };
 
 const submissions = (state = initialSubmissionsState, action) => {
@@ -18,6 +22,13 @@ const submissions = (state = initialSubmissionsState, action) => {
       return Object.assign({},state,{
         'submission': action.submission || state.submission,
         'submissions': list
+      });
+    case ACTION.SUBMISSIONS.SET_SORT:
+      return Object.assign({},state,{
+        'sort': Object.assign({},state.sort,{
+          field: action.field,
+          direction: action.direction
+        })
       });
     case ACTION.USER.LOGOUT:
       return initialSubmissionsState;

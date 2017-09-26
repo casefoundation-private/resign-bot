@@ -94,11 +94,10 @@ module.exports = bookshelf.Model.extend({
   }
 }, {
   'jsonColumns': ['data'],
-  'all': function() {
+  'all': function(sortColumn,sortDirection) {
     return this
       .forge()
-      .orderBy('pinned','DESC')
-      .orderBy('created_at','DESC')
+      .orderBy(sortColumn,sortDirection)
       .fetchAll({
         'withRelated': 'reviews'
       });

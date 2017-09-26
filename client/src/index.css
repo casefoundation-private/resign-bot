@@ -14,3 +14,7 @@ button {
   max-width: 1200px;
   margin: auto;
 }
+
+.sort-column {
+  cursor: pointer;
+}
