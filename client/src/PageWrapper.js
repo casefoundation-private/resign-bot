@@ -67,7 +67,7 @@ class PageWrapper extends Component {
         </Navbar>
         <div className="container-fluid" style={{paddingTop: 12}} role="main">
           { this.props.title && (<h1 className="page-header">{this.props.title}</h1>) }
-          { this.props.message.message ? <Alert color={this.props.message.messageType} toggle={() => this.clearAlert()}>{this.props.message.message}</Alert> : null }
+          { this.props.message.message ? <div className="fixed-alert-wrapper"><Alert color={this.props.message.messageType} toggle={() => this.clearAlert()}>{this.props.message.message}</Alert></div> : null }
           { this.props.children }
         </div>
       </div>

@@ -4,6 +4,7 @@ import {
 
 const initialReviewsState = {
   review: null,
+  reviewIsValid: false,
   reviews: null,
 };
 
@@ -35,15 +36,10 @@ const reviews = (state = initialReviewsState, action) => {
           })
         })
       });
-    case ACTION.REVIEWS.CALCULATE:
-      const score = state.review.flagged ?
-        0
-        : (state.review.data.prompts ?
-            (state.review.data.prompts.reduce((total,v) => total+v,0) / state.review.data.prompts.length)
-            : null);
+    case ACTION.REVIEWS.SET_SCORE:
       return Object.assign({},state,{
         'review': Object.assign({},state.review,{
-          score
+          score: action.score
         })
       });
     case ACTION.REVIEWS.SET_FLAGGED:
@@ -51,6 +47,14 @@ const reviews = (state = initialReviewsState, action) => {
         'review': Object.assign({},state.review,{
           'flagged': action.flagged
         })
+      });
+    case ACTION.REVIEWS.VALIDATE:
+      return Object.assign({},state,{
+        'reviewIsValid': true
+      });
+    case ACTION.REVIEWS.INVALIDATE:
+      return Object.assign({},state,{
+        'reviewIsValid': false
       });
     case ACTION.USER.LOGOUT:
       return initialReviewsState;

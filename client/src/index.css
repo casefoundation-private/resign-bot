@@ -4,3 +4,13 @@ button {
 .submission-field {
   margin-top: 1em;
 }
+
+.fixed-alert-wrapper {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  z-index: 10000;
+  max-width: 1200px;
+  margin: auto;
+}

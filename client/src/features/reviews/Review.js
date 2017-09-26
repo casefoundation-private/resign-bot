@@ -7,7 +7,8 @@ import {
   setReviewPromptValue,
   updateReview,
   calculateAndUpdateReview,
-  setReviewFlagged
+  setReviewFlagged,
+  validateReview
 } from '../../actions/reviews';
 import PageWrapper from '../../PageWrapper';
 import {
@@ -23,6 +24,15 @@ class Review extends Component {
     this.props.loadReview(reviewId);
   }
 
+  updateReviewRank(prompt,strValue) {
+    const intValue = parseInt(strValue,10);
+    if (isNaN(intValue)) {
+      this.props.setReviewPromptValue(prompt,null);
+    } else {
+      this.props.setReviewPromptValue(prompt,intValue);
+    }
+  }
+
   renderReviewPrompts() {
     return this.props.reviews.review.data && this.props.reviews.review.data.prompts && this.props.config.review.prompts.map((prompt,i) => {
       return (
@@ -30,7 +40,8 @@ class Review extends Component {
           <Label for={'review_prompt_'+i}>
             <strong>{prompt.prompt}</strong>
           </Label>
-          <Input disabled={this.freezeFields()} type="select" value={this.props.reviews.review.data.prompts[i]} onChange={(event) => this.props.setReviewPromptValue(i,parseInt(event.target.value,10))}>
+          <Input disabled={this.freezeFields()} type="select" value={this.props.reviews.review.data.prompts[i] || ''} onChange={(event) => this.updateReviewRank(i,event.target.value)}>
+            <option value="">Select One</option>
             {
               prompt.labels.map((label,j) => {
                 return (<option value={j} key={j}>{j}: {label}</option>)
@@ -44,6 +55,14 @@ class Review extends Component {
 
   freezeFields() {
     return this.props.reviews.review && this.props.reviews.review.score !== null;
+  }
+
+  save() {
+    this.props.updateReview();
+  }
+
+  saveAndSubmit() {
+    this.props.calculateAndUpdateReview();
   }
 
   render() {
@@ -66,19 +85,19 @@ class Review extends Component {
               <CardBlock className="card-body">
                 <CardTitle>My Review</CardTitle>
                 <Form>
-                  <p>
+                  <div>
                     <FormGroup check>
                       <Label check>
                         <Input disabled={this.freezeFields()} type="checkbox" name="review_flagged" value="flagged" checked={this.props.reviews.review && this.props.reviews.review.flagged} onChange={(event) => this.props.setReviewFlagged(event.target.checked)} />{' '}
                         <strong>Flag as Inappropriate</strong>
                       </Label>
                     </FormGroup>
-                  </p>
+                  </div>
                   { this.renderReviewPrompts() }
                   <p>
-                    <Button disabled={this.freezeFields()} color="primary" onClick={() => this.props.reviews.review.score === null && this.props.updateReview()}><FontAwesome name="check-circle-o" /> Save</Button>
+                    <Button disabled={this.freezeFields()} color="primary" onClick={() => this.save()}><FontAwesome name="check-circle-o" /> Save</Button>
                     { ' ' }
-                    <Button disabled={this.freezeFields()} color="warning" onClick={() => this.props.reviews.review.score === null && this.props.calculateAndUpdateReview()}><FontAwesome name="check-circle" /> Save and Submit</Button>
+                    <Button disabled={this.freezeFields() || !this.props.reviews.reviewIsValid} color="warning" onClick={() => this.saveAndSubmit()}><FontAwesome name="check-circle" /> Save and Submit</Button>
                   </p>
                 </Form>
               </CardBlock>
@@ -104,7 +123,8 @@ const dispatchToProps = (dispatch) => {
     setReviewPromptValue,
     updateReview,
     calculateAndUpdateReview,
-    setReviewFlagged
+    setReviewFlagged,
+    validateReview
   }, dispatch);
 }
 

@@ -7,3 +7,11 @@ export const clearMessage = () => {
     type: ACTION.MESSAGE.CLEAR
   }
 }
+
+export const setMessage = (message,messageType) => {
+  return {
+    type: ACTION.MESSAGE.SET,
+    message,
+    messageType
+  }
+}
