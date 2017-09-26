@@ -18,6 +18,8 @@
     "ejs": "^2.5.7",
     "express": "^4.15.4",
     "fs-extra": "^4.0.1",
+    "googleapis": "^22.2.0",
+    "jsdom": "^11.2.0",
     "jsonwebtoken": "^7.4.3",
     "knex": "^0.13.0",
     "morgan": "^1.8.2",

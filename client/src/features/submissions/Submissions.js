@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Table,ButtonGroup,Button,UncontrolledTooltip,Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Row,Col,Form,FormGroup,Label,Input,Table,ButtonGroup,Button,UncontrolledTooltip,Modal,ModalHeader,ModalBody,ModalFooter,InputGroup,InputGroupAddon,InputGroupButton } from 'reactstrap';
 import {
   loadSubmissions,
   toggleFlagSubmission,
   togglePinSubmission,
   downloadSubmissions,
-  setSubmissionSort
+  setSubmissionSort,
+  setSubmissionSearch
 } from '../../actions/submissions';
 import {
   makeFavorite,
@@ -91,13 +92,42 @@ class Submissions extends Component {
     )
   }
 
+  getSubmissions() {
+    if (this.props.submissions.submissions) {
+      if (this.props.submissions.search.indices) {
+        return this.props.submissions.submissions.filter((submission,i) => this.props.submissions.search.indices.indexOf(i) >= 0);
+      } else {
+        return this.props.submissions.submissions;
+      }
+    }
+    return [];
+  }
+
   render() {
     return (
       <div>
         <PageWrapper title={'Submissions (' + (this.props.submissions.submissions && this.props.submissions.submissions.length) + ' Total)'}>
-        <p>
-          <Button size="sm" color="primary" onClick={() => this.props.downloadSubmissions()}><FontAwesome name="download" /> Download Submissions</Button>
-        </p>
+          <Row>
+            <Col>
+              <Form inline>
+                <FormGroup>
+                  <Label for="search" hidden>Search String</Label>
+                  <InputGroup>
+                    <Input onChange={(event) => this.props.setSubmissionSearch(event.target.value.trim().length > 0 ? event.target.value : null)} value={this.props.submissions.search.str || ''} type="text" name="search" id="search" placeholder="Search" />
+                    {
+                      this.props.submissions.search.str && this.props.submissions.search.str.length > 0 ?
+                        (<InputGroupButton><Button color="danger" onClick={() => this.props.setSubmissionSearch(null)}><FontAwesome name="times-circle" /></Button></InputGroupButton>)
+                        : (<InputGroupAddon><FontAwesome name="search" /></InputGroupAddon>)
+                    }
+                  </InputGroup>
+                </FormGroup>
+              </Form>
+            </Col>
+            <Col className="text-right">
+              <Button color="primary" onClick={() => this.props.downloadSubmissions()}><FontAwesome name="download" /> Download Submissions</Button>
+            </Col>
+          </Row>
+          <br/>
           <Table striped>
             <thead>
               <tr>
@@ -111,7 +141,7 @@ class Submissions extends Component {
                 <th>{this.generateSortableColumnHeader('Created','created_at')}</th>
                 <th className="text-center">
                 <FontAwesome name="question-circle" id="favorite-tooltip" />
-                  <UncontrolledTooltip placement="below" target="favorite-tooltip">
+                  <UncontrolledTooltip placement="bottom" target="favorite-tooltip">
                     This is a marker that only you control. Your favorites are differnet than other users{'\''} favorites so that you can mark the submissions you are most interested in tracking.
                   </UncontrolledTooltip>
                   {' '}
@@ -119,7 +149,7 @@ class Submissions extends Component {
                 </th>
                 <th className="text-center">
                   <FontAwesome name="question-circle" id="pinned-tooltip" />
-                  <UncontrolledTooltip placement="below" target="pinned-tooltip">
+                  <UncontrolledTooltip placement="bottom" target="pinned-tooltip">
                     Pinning a submission is a global change. If you pin a submisison here, it will be pinned for all other users.
                   </UncontrolledTooltip>
                   {' '}
@@ -127,7 +157,7 @@ class Submissions extends Component {
                 </th>
                 <th className="text-center">
                   <FontAwesome name="question-circle" id="flagged-tooltip" />
-                  <UncontrolledTooltip placement="below" target="flagged-tooltip">
+                  <UncontrolledTooltip placement="bottom" target="flagged-tooltip">
                     Flagging a submission is a global change. If you flag a submisison here, it will be flagged for all other users.
                   </UncontrolledTooltip>
                   {' '}
@@ -138,7 +168,7 @@ class Submissions extends Component {
             </thead>
             <tbody>
               {
-                this.props.submissions.submissions && this.props.submissions.submissions.map((submission) => {
+                this.getSubmissions().map((submission) => {
                   const favorite = getFavorite(this.props.user.favorites,submission);
                   return (
                     <tr key={submission.id}>
@@ -221,7 +251,8 @@ const dispatchToProps = (dispatch) => {
     makeFavorite,
     deleteFavorite,
     downloadSubmissions,
-    setSubmissionSort
+    setSubmissionSort,
+    setSubmissionSearch
   }, dispatch);
 }
 

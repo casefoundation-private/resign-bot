@@ -26,10 +26,10 @@ class Review extends Component {
 
   updateReviewRank(prompt,strValue) {
     const intValue = parseInt(strValue,10);
-    if (isNaN(intValue)) {
-      this.props.setReviewPromptValue(prompt,null);
-    } else {
+    if (intValue >= 0) {
       this.props.setReviewPromptValue(prompt,intValue);
+    } else {
+      this.props.setReviewPromptValue(prompt,null);
     }
   }
 
@@ -40,8 +40,8 @@ class Review extends Component {
           <Label for={'review_prompt_'+i}>
             <strong>{prompt.prompt}</strong>
           </Label>
-          <Input disabled={this.freezeFields()} type="select" value={this.props.reviews.review.data.prompts[i] || ''} onChange={(event) => this.updateReviewRank(i,event.target.value)}>
-            <option value="">Select One</option>
+          <Input disabled={this.freezeFields()} type="select" value={this.props.reviews.review.data.prompts[i] >= 0 ? this.props.reviews.review.data.prompts[i] : ''} onChange={(event) => this.updateReviewRank(i,event.target.value)}>
+            <option value="none">Select One</option>
             {
               prompt.labels.map((label,j) => {
                 return (<option value={j} key={j}>{j}: {label}</option>)

@@ -103,11 +103,6 @@ export const completePasswordReset = (resetCode) => {
       if (responseData.token && responseData.id) {
         dispatch(setNeedsPasswordReset(true));
         dispatch({type: ACTION.USER.LOGIN_SUCCESS, token: responseData.token, id: responseData.id});
-        dispatch({
-          type: ACTION.MESSAGE.SET,
-          message: 'Your account has been unlocked. Please reset your password by going to My Account.',
-          messageType: 'info'
-        });
       } else if (responseData.error) {
         dispatch({type: ACTION.MESSAGE.SET, message: responseData.error, messageType: 'danger'})
       } else {

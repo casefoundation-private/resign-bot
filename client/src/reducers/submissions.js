@@ -8,6 +8,10 @@ const initialSubmissionsState = {
   sort: {
     field: 'pinned',
     direction: 'desc'
+  },
+  search: {
+    str: null,
+    indices: null
   }
 };
 
@@ -28,6 +32,13 @@ const submissions = (state = initialSubmissionsState, action) => {
         'sort': Object.assign({},state.sort,{
           field: action.field,
           direction: action.direction
+        })
+      });
+    case ACTION.SUBMISSIONS.SET_SEARCH:
+      return Object.assign({},state,{
+        'search': Object.assign({},state.sort,{
+          str: action.str,
+          indices: action.indices
         })
       });
     case ACTION.USER.LOGOUT:

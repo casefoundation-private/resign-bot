@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Table,Form,Input,FormGroup,Button,ButtonGroup } from 'reactstrap';
+import { Table,Form,Input,FormGroup,Button,ButtonGroup,Modal,ModalHeader,ModalBody,ModalFooter } from 'reactstrap';
 import {
   loadSubmission
 } from '../../actions/submissions';
@@ -19,8 +19,24 @@ import {
   round
 } from '../../misc/utils';
 import FontAwesome from 'react-fontawesome';
+import ReviewSummary from './ReviewSummary';
 
 class SubmissionReviews extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      reviewSummaryModal: false
+    };
+  }
+
+  openReviewSummaryModal() {
+    this.setState({reviewSummaryModal: true})
+  }
+
+  closeReviewSummaryModal() {
+    this.setState({reviewSummaryModal: false})
+  }
+
   componentDidMount() {
     const submissionId = parseInt(this.props.submissionId || this.props.match.params.submissionId,10);
     this.props.loadSubmission(submissionId);
@@ -34,6 +50,11 @@ class SubmissionReviews extends Component {
       this.props.setActiveReview(review);
       this.props.updateReview();
     }
+  }
+
+  viewReviewDetails(review) {
+    this.props.setActiveReview(review);
+    this.openReviewSummaryModal();
   }
 
   deleteReview(review) {
@@ -75,6 +96,7 @@ class SubmissionReviews extends Component {
                     <td className="text-center">
                     <ButtonGroup>
                       <Button onClick={() => this.deleteReview(review)} color="danger" size="sm"><FontAwesome name="trash" /> Remove</Button>
+                      <Button onClick={() => this.viewReviewDetails(review)} color="primary" size="sm"><FontAwesome name="eye" /> View Details</Button>
                     </ButtonGroup>
                     </td>
                   </tr>
@@ -83,6 +105,17 @@ class SubmissionReviews extends Component {
             }
           </tbody>
         </Table>
+        <Modal isOpen={this.state.reviewSummaryModal} toggle={() => this.closeReviewSummaryModal()} size="lg">
+          <ModalHeader toggle={() => this.closeReviewSummaryModal()}>
+            Review Summary
+          </ModalHeader>
+          <ModalBody>
+            <ReviewSummary review={this.props.reviews.review} prompts={this.props.config.review.prompts} />
+          </ModalBody>
+          <ModalFooter>
+            <Button color="primary" onClick={() => this.closeReviewSummaryModal()}>Done</Button>
+          </ModalFooter>
+        </Modal>
       </div>
     );
   }
@@ -92,7 +125,8 @@ const stateToProps = (state) => {
   return {
     submissions: state.submissions,
     users: state.users,
-    reviews: state.reviews
+    reviews: state.reviews,
+    config: state.config
   }
 }
 

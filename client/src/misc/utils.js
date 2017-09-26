@@ -2,14 +2,17 @@ import url from 'url';
 import getVideoId from 'get-video-id';
 import React from 'react';
 const _ = require('lodash');
+const summaryCache = {};
 
 export const summarizeSubmission = (submission) => {
   if (!submission || !submission.data) {
     return null;
+  } else if (summaryCache[submission.id]) {
+    return summaryCache[submission.id];
   } else if (submission.data['First Name'] && submission.data['Last Name']) {
-    return submission.data['First Name'] +' '+ submission.data['Last Name'];
+    return summaryCache[submission.id] = (submission.data['First Name'] +' '+ submission.data['Last Name']);
   } else {
-    return submission.source + '/' + submission.external_id;
+    return summaryCache[submission.id] = (submission.source + '/' + submission.external_id);
   }
 }
 

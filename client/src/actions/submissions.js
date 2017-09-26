@@ -53,6 +53,11 @@ export const sortSubmissions = () => {
         case 'favorite':
           aVal = getFavorite(getState().user.favorites,a) ? 1 : 0;
           bVal = getFavorite(getState().user.favorites,b) ? 1 : 0;
+          break;
+        default:
+          aVal = 0;
+          bVal = 0;
+          break;
       }
       if (getState().submissions.sort.direction === 'asc') {
         return aVal - bVal;
@@ -75,6 +80,31 @@ export const setSubmissionSort = (field,direction) => {
       direction
     });
     dispatch(sortSubmissions());
+  }
+}
+
+export const setSubmissionSearch = (str) => {
+  return (dispatch,getState) => {
+    if (str) {
+      const indices = [];
+      getState().submissions.submissions.forEach((submission,i) => {
+        const summary = summarizeSubmission(submission);
+        if (summary.indexOf(str) >= 0) {
+          indices.push(i);
+        }
+      });
+      dispatch({
+        type: ACTION.SUBMISSIONS.SET_SEARCH,
+        str: str,
+        indices: indices
+      });
+    } else {
+      dispatch({
+        type: ACTION.SUBMISSIONS.SET_SEARCH,
+        str: null,
+        indices: null
+      });
+    }
   }
 }
 
