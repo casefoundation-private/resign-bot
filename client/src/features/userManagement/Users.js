@@ -93,7 +93,7 @@ class Users extends Component {
         </PageWrapper>
         <Modal isOpen={this.state.reassignModal} toggle={() => this.closeReassignModal()} size="lg">
           <ModalHeader toggle={() => this.closeReassignModal()}>
-            Reassign Reviews For {this.props.users.user.email}
+            Reassign Reviews For {this.props.users.user && this.props.users.user.email}
           </ModalHeader>
           <ModalBody>
             <FormGroup>
