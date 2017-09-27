@@ -36,7 +36,7 @@ class User extends Component {
     return (
       <PageWrapper title={this.props.match.params.userId !== 'new' ? "Edit User" : "New User"}>
         { this.props.users.user && this.props.users.user.id !== this.props.user.user.id && (<p>
-          <Link to='/reviews'><FontAwesome name="chevron-left" /> Back to Users</Link>
+          <Link to='/users'><FontAwesome name="chevron-left" /> Back to Users</Link>
         </p>)}
         { this.props.users.user && (<Form onSubmit={(event) => this.handleSave(event)}>
           <FormGroup>

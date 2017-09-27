@@ -25,6 +25,12 @@ class App extends Component {
     }
   }
 
+  componentDidMount() {
+    if (this.props.user.token) {
+      this.props.loadUserDetails();
+    }
+  }
+
   render() {
     return this.props.user.token && !this.props.user.needsPasswordReset ?
       ( <HashRouter>

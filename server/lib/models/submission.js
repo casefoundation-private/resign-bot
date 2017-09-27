@@ -1,6 +1,7 @@
 const knex = require('../database').knex;
 const bookshelf = require('bookshelf')(knex);
 const jsonColumns = require('bookshelf-json-columns');
+const Notification = require('./notification');
 bookshelf.plugin(jsonColumns);
 bookshelf.plugin('virtuals');
 
@@ -15,7 +16,15 @@ module.exports = bookshelf.Model.extend({
     this.on('created',function() {
       const User = require('./user');
       const Review = require('./review');
-      return User.nextAvailableUsers(process.env.REVIEWS_PER_SUBMISSION || 1,[]) //TODO test
+      return Notification.submissionCreated(this)
+        .then((notifications) => {
+          return Promise.all(
+            notifications.map((notification) => notification.save())
+          );
+        })
+        .then(() => {
+          return User.nextAvailableUsers(process.env.REVIEWS_PER_SUBMISSION || 1,[]); //TODO test
+        })
         .then((users) => {
           if (users && users.length > 0) {
             return Promise.all(

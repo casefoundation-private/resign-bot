@@ -26,9 +26,17 @@ export const sortSubmissions = () => {
           bVal = b[getState().submissions.sort.field] === null ? -1 : b[getState().submissions.sort.field];
           break;
         case 'pinned':
-        case 'flagged':
           aVal = a[getState().submissions.sort.field] ? 1 : 0;
           bVal = b[getState().submissions.sort.field] ? 1 : 0;
+          break;
+        case 'flagged':
+          if (getState().config.flaggedByDefault) {
+            aVal = a[getState().submissions.sort.field] ? 0 : 1;
+            bVal = b[getState().submissions.sort.field] ? 0 : 1;
+          } else {
+            aVal = a[getState().submissions.sort.field] ? 1 : 0;
+            bVal = b[getState().submissions.sort.field] ? 1 : 0;
+          }
           break;
         case 'created_at':
           aVal = a.created_at.getTime();

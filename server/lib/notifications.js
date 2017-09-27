@@ -102,27 +102,20 @@ const generateEmailDetails = (notification) => {
         })
       });
     case 'review_assigned':
-      return Review.byId(notification.get('data').review_id)
-        .then((review) => {
-          if (review) {
-            return new Promise((resolve,reject) => {
-              ejs.renderFile('./emailTemplates/review_assigned.ejs',{
-                'url': (process.env.URL_ROOT || 'http://localhost:3000') + '#/reviews/' + review.id
-              },(err,html) => {
-                if (err) {
-                  reject(err);
-                } else {
-                  resolve({
-                    'subject': 'Subission Assigned For Your Review',
-                    'body': html
-                  });
-                }
-              })
-            });
+      return new Promise((resolve,reject) => {
+        ejs.renderFile('./emailTemplates/review_assigned.ejs',{
+          'url': (process.env.URL_ROOT || 'http://localhost:3000') + '#/reviews/' + notification.get('data').review_id
+        },(err,html) => {
+          if (err) {
+            reject(err);
           } else {
-            throw new Error('Review ID invalid');
+            resolve({
+              'subject': 'Submission Assigned For Your Review',
+              'body': html
+            });
           }
-        });
+        })
+      });
     case 'multiple_reviews_assigned':
       return new Promise((resolve,reject) => {
         ejs.renderFile('./emailTemplates/multiple_reviews_assigned.ejs',{
@@ -132,13 +125,42 @@ const generateEmailDetails = (notification) => {
             reject(err);
           } else {
             resolve({
-              'subject': 'Multiple Subissions Assigned For Your Review',
+              'subject': 'Multiple Submission Assigned For Your Review',
               'body': html
             });
           }
         })
       });
-      //TODO
+    case 'submission_created':
+      return new Promise((resolve,reject) => {
+        ejs.renderFile('./emailTemplates/submissions_created.ejs',{
+          'url': (process.env.URL_ROOT || 'http://localhost:3000') + '#/submissions/' + notification.get('data').submission_id
+        },(err,html) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({
+              'subject': 'Submission Created',
+              'body': html
+            });
+          }
+        })
+      });
+    case 'multiple_submissions_created':
+      return new Promise((resolve,reject) => {
+        ejs.renderFile('./emailTemplates/multiple_submissions_created.ejs',{
+          'url': (process.env.URL_ROOT || 'http://localhost:3000') + '#/submissions'
+        },(err,html) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({
+              'subject': 'Submissions Created',
+              'body': html
+            });
+          }
+        })
+      });
     default:
       throw new Error('Notification type is invlaid');
   }

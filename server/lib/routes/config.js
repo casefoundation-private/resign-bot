@@ -1,5 +1,6 @@
 const google = require('googleapis');
 const drive = google.drive('v3');
+const sanitizeHtml = require('sanitize-html');
 
 let config = null;
 
@@ -18,6 +19,7 @@ const loadConfig = () => {
   return Promise.all([
     generateReviewConfig(config),
     generateHelpTextConfig(config),
+    generateFlagConfig(config)
   ])
 }
 
@@ -41,26 +43,41 @@ const generateReviewConfig = (config) => {
 }
 
 const generateHelpTextConfig = (config) => {
-  return new Promise((resolve,reject) => {
-    if (process.env.HELP_HTML) {
+  if (process.env.HELP_HTML) {
+    return new Promise((resolve,reject) => {
       config.helpText = process.env.HELP_HTML;
       resolve();
-    } else if (process.env.HELP_GOOGLE_DOC_ID) {
-      drive.files.export({
-        'fileId': process.env.HELP_GOOGLE_DOC_ID,
-        'auth': process.env.GOOGLE_API_KEY,
-        'mimeType': 'text/html'
-      },(err,data) => {
-        if (err) {
-          reject(err);
-        } else {
-          config.helpText = data;
-          console.log(data);
-          resolve();
-        }
-      })
-    }
+    });
+  } else if (process.env.HELP_GOOGLE_DOC_ID) {
+    setInterval(() => fetchGoogleDocsContent(config).catch((err) => console.error(err)),(1000 * 60 * 60));
+    return fetchGoogleDocsContent(config);
+  }
+}
+
+const generateFlagConfig = (config) => {
+  return new Promise((resolve,reject) => {
+    config.flaggedByDefault = JSON.parse(process.env.FLAGGED_BY_DEFAULT || false);
+    resolve();
   });
 }
 
-loadConfig().catch((err) => console.log(err));
+const fetchGoogleDocsContent = (config) => {
+  return new Promise((resolve,reject) => {
+    drive.files.export({
+      'fileId': process.env.HELP_GOOGLE_DOC_ID,
+      'auth': process.env.GOOGLE_API_KEY,
+      'mimeType': 'text/html'
+    },(err,data) => {
+      if (err) {
+        reject(err);
+      } else {
+        config.helpText = sanitizeHtml(data,{
+          allowedTags: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
+  'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
+  'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre' ]
+        });
+        resolve();
+      }
+    })
+  })
+}

@@ -18,3 +18,24 @@ button {
 .sort-column {
   cursor: pointer;
 }
+
+.help-content h2,
+.help-content h3,
+.help-content h4,
+.help-content h5,
+.help-content h6 {
+  padding-top: 0.5em;
+}
+
+.help-content h2 {
+  border-bottom: solid 1px #aaa;
+  padding-bottom: 5px;
+}
+
+.help-content h3 {
+  font-size: 1.5rem;
+}
+
+.help-content h4 {
+  font-size: 1.25rem;
+}

@@ -7,8 +7,8 @@ import PageWrapper from '../../PageWrapper';
 class Help extends Component {
   render() {
     return (
-      <PageWrapper title="Help">
-        <div dangerouslySetInnerHTML={{__html:this.props.config.helpText}} />
+      <PageWrapper title={null}>
+        <div className="help-content" dangerouslySetInnerHTML={{__html:this.props.config.helpText}} />
       </PageWrapper>
     );
   }

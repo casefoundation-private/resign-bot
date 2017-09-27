@@ -24,6 +24,10 @@ class PageWrapper extends Component {
     }
   }
 
+  navLink(path,label) {
+    return (<Link to={path} className={['nav-link',(window.location.hash.substring(1).indexOf(path) === 0 ? 'active' : '')].join(' ')}>{label}</Link>);
+  }
+
   render() {
     return (
       <div>
@@ -32,32 +36,32 @@ class PageWrapper extends Component {
           <Nav className="ml-auto" navbar>
             { this.props.user.user && this.props.user.user.role === 'admin' && (
                 <NavItem>
-                  <Link to="/users" className="nav-link">Users</Link>
+                  { this.navLink('/users','Users') }
                 </NavItem>
             ) }
             { this.props.user.user && this.props.user.user.role === 'admin' && (
                 <NavItem>
-                  <Link to="/submissions" className="nav-link">Submissions</Link>
+                  { this.navLink('/submissions','Submissions') }
                 </NavItem>
             ) }
             { this.props.user.user && this.props.user.user.role === 'admin' && (
                 <NavItem>
-                  <Link to="/notifications" className="nav-link">Notification Queue</Link>
+                  { this.navLink('/notifications','Notification Queue') }
                 </NavItem>
             ) }
             { this.props.user.user && (
                 <NavItem>
-                  <Link to="/reviews" className="nav-link">My Review Queue</Link>
+                  { this.navLink('/reviews','My Review Queue') }
                 </NavItem>
             ) }
             { this.props.user.user && (
                 <NavItem>
-                  <Link to={'/users/'+this.props.user.user.id} className="nav-link">My Account</Link>
+                  { this.navLink('/users/'+this.props.user.user.id,'My Account') }
                 </NavItem>
             ) }
             { this.props.user.user && this.props.config.helpText && (
                 <NavItem>
-                  <Link to={'/help'} className="nav-link">Help</Link>
+                  { this.navLink('/help','Help') }
                 </NavItem>
             ) }
           </Nav>

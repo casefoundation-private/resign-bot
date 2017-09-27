@@ -20,6 +20,13 @@ export const loadUsers = () => {
   }
 }
 
+export const setActiveUser = (user) => {
+  return {
+    type: ACTION.USERS.SET,
+    user
+  }
+}
+
 export const loadUser = (userId) => {
   return (dispatch,getState) => {
     let user = getState().users.users && getState().users.users.find((user) => {
@@ -99,9 +106,10 @@ export const newUser = () => {
   };
 }
 
-export const reassignUserReviews = (user) => {
+//TODO create a setActive
+export const reassignUserReviews = (count) => {
   return (dispatch,getState) => {
-    const url = '/api/user/'+user.id+'/reviews/reassign';
+    const url = '/api/user/'+getState().users.user.id+'/reviews/reassign?n='+encodeURIComponent(count);
     authenticatedRequest(dispatch,getState,url,'POST',null,(user) => {
       dispatch({
         type: ACTION.USERS.SET,

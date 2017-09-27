@@ -26,11 +26,14 @@ module.exports = bookshelf.Model.extend({
     const Submission = require('./submission');
     return this.belongsTo(Submission);
   },
-  'recuse': function() { //TODO test
+  'recuse': function(failQuietly) { //TODO test
     return User.nextAvailableUsers(1,[this.get('user_id')],[this.get('submission_id')])
       .then((users) => {
         if (users && users.length > 0) {
           this.set('user_id',users.at(0).get('id'));
+          return true;
+        } else if (failQuietly) {
+          return false;
         } else {
           throw new Error('No users ready!');
         }

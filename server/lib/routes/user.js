@@ -138,7 +138,7 @@ exports.saveUser = (req,res,next) => {
 
 exports.reassignUserReviews = (req,res,next) => {
   if (req._user && req.user.isAdmin()) {
-    req._user.recuseAllReviews()
+    req._user.recuseReviews(req.query.n ? parseInt(req.query.n,10) : false)
       .then((user) => {
         res.json(req._user.toJSON());
       })

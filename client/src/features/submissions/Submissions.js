@@ -156,12 +156,28 @@ class Submissions extends Component {
                   {this.generateSortableColumnHeader('Pinned','pinned')}
                 </th>
                 <th className="text-center">
-                  <FontAwesome name="question-circle" id="flagged-tooltip" />
-                  <UncontrolledTooltip placement="bottom" target="flagged-tooltip">
-                    Flagging a submission is a global change. If you flag a submisison here, it will be flagged for all other users.
-                  </UncontrolledTooltip>
-                  {' '}
-                  {this.generateSortableColumnHeader('Flagged','flagged')}
+                  { this.props.config.flaggedByDefault ?
+                    (
+                      <div>
+                        <FontAwesome name="question-circle" id="approved-tooltip" />
+                        <UncontrolledTooltip placement="bottom" target="approved-tooltip">
+                          Approving a submission is a global change. If you approve a submisison here, it will be approved for all other users.
+                        </UncontrolledTooltip>
+                        {' '}
+                        {this.generateSortableColumnHeader('Approved','flagged')}
+                      </div>
+                    )
+                    : (
+                      <div>
+                        <FontAwesome name="question-circle" id="flagged-tooltip" />
+                        <UncontrolledTooltip placement="bottom" target="flagged-tooltip">
+                          Flagging a submission is a global change. If you flag a submisison here, it will be flagged for all other users.
+                        </UncontrolledTooltip>
+                        {' '}
+                        {this.generateSortableColumnHeader('Flagged','flagged')}
+                      </div>
+                    )
+                  }
                 </th>
                 <th className="text-center">Options</th>
               </tr>
@@ -192,8 +208,10 @@ class Submissions extends Component {
                         </Button>
                       </td>
                       <td className="text-center">
-                        <Button size="sm" color={submission.flagged ? 'danger' : 'secondary'} onClick={() => this.props.toggleFlagSubmission(submission)}>
-                          <FontAwesome name="exclamation-triangle" />
+                        <Button size="sm" color={submission.flagged ? (this.props.config.flaggedByDefault ? 'secondary' : 'danger') : (this.props.config.flaggedByDefault ? 'success' : 'secondary')} onClick={() => this.props.toggleFlagSubmission(submission)}>
+                          { this.props.config.flaggedByDefault ?
+                            (<FontAwesome name="thumbs-up" />)
+                            : (<FontAwesome name="exclamation-triangle" />) }
                         </Button>
                       </td>
                       <td className="text-center">
@@ -239,7 +257,8 @@ class Submissions extends Component {
 const stateToProps = (state) => {
   return {
     submissions: state.submissions,
-    user: state.user
+    user: state.user,
+    config: state.config
   }
 }
 

@@ -39,6 +39,23 @@ const Notification = module.exports = bookshelf.Model.extend({
       }
     });
   },
+  'submissionCreated': function(submission) {
+    const User = require('./user');
+    return User
+      .allAdmins()
+      .then((admins) => {
+        return admins.map((user) => {
+          return new Notification({
+            'user_id': user.get('id'),
+            'queued': true,
+            'type': 'submission_created',
+            'data': {
+              'submission_id': submission.get('id')
+            }
+          });
+        });
+      });
+  },
   'nextNotification': function() {
     return this
       .forge()
@@ -71,40 +88,68 @@ const Notification = module.exports = bookshelf.Model.extend({
     const creates = [];
     return this
       .forge()
-      .query({
-        'where': {
+      .query((qb) => {
+        qb.where({
           'queued': true,
-          'errored': false,
-          'type': 'review_assigned'
-        }
+          'errored': false
+        });
+        qb.whereIn('type',['review_assigned','submission_created']);
       })
       .orderBy('user_id')
       .fetchAll()
-      .then((reviews) => {
-        const userMap = {};
-        reviews.forEach((review) => {
-          if (!userMap[review.get('user_id')]) {
-            userMap[review.get('user_id')] = [];
+      .then((notifications) => {
+        const typeUserMap = {
+          'review_assigned': {},
+          'submission_created': {}
+        };
+        notifications.forEach((notification) => {
+          if (!typeUserMap[notification.get('type')][notification.get('user_id')]) {
+            typeUserMap[notification.get('type')][notification.get('user_id')] = [];
           }
-          userMap[review.get('user_id')].push(review);
+          typeUserMap[notification.get('type')][notification.get('user_id')].push(notification);
         });
-        _.values(userMap).forEach((reviews) => {
-          if (reviews.length > 1) {
-            reviews.forEach((review) => {
-              deletes.push(review.get('id'));
-            });
-            creates.push(new Notification({
-              'user_id': reviews[0].get('user_id'),
-              'queued': true,
-              'errored': false,
-              'type': 'multiple_reviews_assigned',
-              'data': {
-                'review_ids': reviews.map((review) => {
-                  return review.get('data').review_id
-                })
-              }
-            }));
+        _.keys(typeUserMap).forEach((type) => {
+          let newType = null;
+          switch(type) {
+            case 'review_assigned':
+              newType = 'multiple_reviews_assigned';
+              break;
+            case 'submission_created':
+              newType = 'multiple_submissions_created';
+              break;
           }
+          _.values(typeUserMap[type]).forEach((reviewNotifications) => {
+            if (reviewNotifications.length > 1) {
+              let reassignProp = null;
+              let reassignSourceProp = null;
+              const newData = {};
+              switch(type) {
+                case 'review_assigned':
+                  reassignProp = 'review_ids';
+                  reassignSourceProp = 'review_id';
+                  break;
+                case 'submission_created':
+                  reassignProp = 'submission_ids';
+                  reassignSourceProp = 'submission_id';
+                  break;
+              }
+              if (reassignProp && reassignSourceProp) {
+                newData[reassignProp] = reviewNotifications.map((reviewNotification) => {
+                  return reviewNotification.get('data')[reassignSourceProp]
+                });
+              }
+              reviewNotifications.forEach((reviewNotification) => {
+                deletes.push(reviewNotification.get('id'));
+              });
+              creates.push(new Notification({
+                'user_id': reviewNotifications[0].get('user_id'),
+                'queued': true,
+                'errored': false,
+                'type': newType,
+                'data': newData
+              }));
+            }
+          });
         });
       })
       .then(() => {

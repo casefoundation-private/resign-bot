@@ -117,21 +117,24 @@ const User = module.exports = bookshelf.Model.extend({
       };
     }
   },
-  'recuseAllReviews': function() {
-    const nextRecusal = (i) => {
-      if (i < this.related('reviews').length) {
-        const review = this.related('reviews').at(i);
+  'recuseReviews': function(limit) {
+    const pendingReviews = this.related('reviews').filter((review) => review.get('score') === null);
+    const nextRecusal = (i,recused) => {
+      if (i < pendingReviews.length && (!limit || recused < limit)) {
+        const review = pendingReviews[i];
         return review
-          .recuse()
-          .then(() => {
-            return review.save();
-          })
-          .then(() => {
-            return nextRecusal(i+1);
-          })
+          .recuse(true)
+          .then((succeeded) => {
+            if (succeeded) {
+              return review.save()
+                .then(() => {
+                  return nextRecusal(i+1,recused+(succeeded ? 1 : 0));
+                });
+            }
+          });
       }
     }
-    return nextRecusal(0)
+    return nextRecusal(0,0)
       .then(() => {
         return this.fetch({'withRelated':'reviews'})
       })
@@ -198,6 +201,13 @@ const User = module.exports = bookshelf.Model.extend({
   'all': function() {
     return this.forge().fetchAll({'withRelated':'reviews'});
   },
+  'allAdmins': function() {
+    return this.forge()
+      .query((qb) => {
+        qb.where({'role':'admin'});
+      })
+      .fetchAll({'withRelated':'reviews'});
+  },
   'nextAvailableUsers': function(i,userBlacklist,submissionBlacklist) {
     return User.forge()
       .query((qb) => {
@@ -232,7 +242,7 @@ const User = module.exports = bookshelf.Model.extend({
             .orderBy(knex.raw('count(r.user_id)'))
             .limit(i - users.length);
           if (userBlacklist && userBlacklist.length > 0) {
-            query.whereNotIn('users.id',userBlacklist)
+            query.whereNotIn('u.id',userBlacklist)
           };
           if (submissionBlacklist && submissionBlacklist.length > 0) {
             const subQuery = knex.select('user_id').from('reviews').whereIn('reviews.submission_id',submissionBlacklist);

@@ -1,4 +1,6 @@
 const Submission = require('./models/submission');
+const BadLanguageFilter = require('bad-language-filter');
+const blFilter = new BadLanguageFilter();
 
 const importers = [];
 const importersByName = {};
@@ -59,7 +61,15 @@ const runImporter = (importer) => {
     })));
 }
 
-const saveSubmissions = (newSubmissions) => {
+const saveSubmissions = (_newSubmissions) => {
+  const newSubmissions = _newSubmissions.filter((submission) => {
+    for(var key in submission.get('data')) {
+      if (blFilter.contains(submission.get('data')[key])) {
+        return false;
+      }
+    }
+    return true;
+  });
   const nextSubmission = (i) => {
     if (i < newSubmissions.length) {
       const newSubmission = newSubmissions[i];
@@ -70,6 +80,7 @@ const saveSubmissions = (newSubmissions) => {
             console.log(existingSubmission.get('source') + '/' + existingSubmission.get('external_id') + ' is a duplicate. Skipping.');
           } else {
             console.log(newSubmission.get('source') + '/' + newSubmission.get('external_id') + ' is new. Importing');
+            newSubmission.set('flagged',JSON.parse(process.env.FLAGGED_BY_DEFAULT || false));
             return newSubmission.save();
           }
         })
