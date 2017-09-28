@@ -61,15 +61,7 @@ const runImporter = (importer) => {
     })));
 }
 
-const saveSubmissions = (_newSubmissions) => {
-  const newSubmissions = _newSubmissions.filter((submission) => {
-    for(var key in submission.get('data')) {
-      if (blFilter.contains(submission.get('data')[key])) {
-        return false;
-      }
-    }
-    return true;
-  });
+const saveSubmissions = (newSubmissions) => {
   const nextSubmission = (i) => {
     if (i < newSubmissions.length) {
       const newSubmission = newSubmissions[i];
@@ -80,7 +72,14 @@ const saveSubmissions = (_newSubmissions) => {
             console.log(existingSubmission.get('source') + '/' + existingSubmission.get('external_id') + ' is a duplicate. Skipping.');
           } else {
             console.log(newSubmission.get('source') + '/' + newSubmission.get('external_id') + ' is new. Importing');
-            newSubmission.set('flagged',JSON.parse(process.env.FLAGGED_BY_DEFAULT || false));
+            let badLanguage = false;
+            for(var key in newSubmission.get('data')) {
+              if (blFilter.contains(newSubmission.get('data')[key])) {
+                badLanguage = true;
+                console.log('Flagging new submission for bad language.');
+              }
+            }
+            newSubmission.set('flagged',JSON.parse(process.env.FLAGGED_BY_DEFAULT) || badLanguage);
             return newSubmission.save();
           }
         })
