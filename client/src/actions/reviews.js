@@ -193,29 +193,35 @@ export const newReviewForSubmission = (submissionId) => {
 export const validateReview = () => {
   return (dispatch,getState) => {
     if (getState().reviews.review.score === null) {
-      let valid = true;
-      for(var i = 0; i < getState().config.review.prompts.length; i++) {
-        if (typeof getState().reviews.review.data.prompts[i] !== 'number') {
-          dispatch({
-            type: ACTION.REVIEWS.SET_PROMPT_VALUE,
-            prompt: i,
-            value: null
-          });
-          valid = false;
-        } else if (getState().reviews.review.data.prompts[i] === null) {
-          valid = false;
-        }
-      }
-      if (valid) {
+      if (getState().reviews.review.flagged) {
         dispatch({
           type: ACTION.REVIEWS.VALIDATE
         });
       } else {
-        dispatch({
-          type: ACTION.REVIEWS.INVALIDATE
-        });
+        let valid = true;
+        for(var i = 0; i < getState().config.review.prompts.length; i++) {
+          if (typeof getState().reviews.review.data.prompts[i] !== 'number') {
+            dispatch({
+              type: ACTION.REVIEWS.SET_PROMPT_VALUE,
+              prompt: i,
+              value: null
+            });
+            valid = false;
+          } else if (getState().reviews.review.data.prompts[i] === null) {
+            valid = false;
+          }
+        }
+        if (valid) {
+          dispatch({
+            type: ACTION.REVIEWS.VALIDATE
+          });
+        } else {
+          dispatch({
+            type: ACTION.REVIEWS.INVALIDATE
+          });
+        }
+        return;
       }
-      return;
     } else {
       dispatch({
         type: ACTION.REVIEWS.INVALIDATE

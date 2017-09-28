@@ -14,7 +14,7 @@ const ReviewSummary = (props) => {
         {
           props.prompts.map((prompt,i) => {
             return (
-              <tr>
+              <tr key={i}>
                 <td>{prompt.prompt}</td>
                 <td>{props.review.data.prompts[i] >= 0 ? props.review.data.prompts[i] : 'N/A'}</td>
               </tr>

@@ -107,9 +107,12 @@ export const newUser = () => {
 }
 
 //TODO create a setActive
-export const reassignUserReviews = (count) => {
+export const reassignUserReviews = (count,userId) => {
   return (dispatch,getState) => {
-    const url = '/api/user/'+getState().users.user.id+'/reviews/reassign?n='+encodeURIComponent(count);
+    let url = '/api/user/'+getState().users.user.id+'/reviews/reassign?n='+encodeURIComponent(count);
+    if (userId) {
+      url += '&user='+encodeURIComponent(userId);
+    }
     authenticatedRequest(dispatch,getState,url,'POST',null,(user) => {
       dispatch({
         type: ACTION.USERS.SET,

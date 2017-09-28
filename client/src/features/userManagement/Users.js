@@ -19,7 +19,8 @@ class Users extends Component {
     super(props);
     this.state = {
       reassignModal: false,
-      reassignCount: 0
+      reassignCount: 0,
+      reassignUser: null
     };
   }
 
@@ -27,7 +28,8 @@ class Users extends Component {
     this.props.setActiveUser(user);
     this.setState({
       reassignModal: true,
-      reassignCount: user.pendingReviews
+      reassignCount: user.pendingReviews,
+      reassignUser: null
     })
   }
 
@@ -36,7 +38,7 @@ class Users extends Component {
   }
 
   reassignUserReviews() {
-    this.props.reassignUserReviews(this.state.reassignCount);
+    this.props.reassignUserReviews(this.state.reassignCount,this.state.reassignUser);
     this.closeReassignModal();
   }
 
@@ -99,6 +101,19 @@ class Users extends Component {
             <FormGroup>
               <Label for="count">Number</Label>
               <Input type="number" value={this.state.reassignCount} onChange={(event) => this.setState({'reassignCount':Math.min(parseInt(event.target.value,10),this.props.users.user.pendingReviews)})} id="count" name="count" />
+            </FormGroup>
+            <FormGroup>
+              <Label for="user">Preferred New User</Label>
+              <Input name="user" type="select" value={this.state.reassignUser || ''} onChange={(event) => this.setState({'reassignUser':event.target.value.length > 0 ? parseInt(event.target.value,10) : null})}>
+                <option value="">Any User</option>
+                {
+                  this.props.users.user
+                    && this.props.users.users
+                    && this.props.users.users
+                      .filter((user) => user.id !== this.props.users.user.id)
+                      .map((user) => (<option value={user.id} key={user.id}>{user.email}</option>))
+                }
+              </Input>
             </FormGroup>
           </ModalBody>
           <ModalFooter>

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Row,Col,Card,CardTitle,CardBlock,Form,Button,Label,Input,FormGroup } from 'reactstrap';
+import { Row,Col,Card,CardTitle,CardBlock,Form,Button,Label,Input,FormGroup,Badge } from 'reactstrap';
 import {
   loadReview,
   setReviewPromptValue,
@@ -17,6 +17,7 @@ import {
 } from '../../misc/utils';
 import { Link } from 'react-router-dom';
 import FontAwesome from 'react-fontawesome';
+import ReviewSummary from '../submissions/ReviewSummary';
 
 class Review extends Component {
   componentDidMount() {
@@ -53,6 +54,17 @@ class Review extends Component {
     });
   }
 
+  renderReviewSummary() {
+    if (this.props.reviews.review) {
+      if (this.props.reviews.review.flagged) {
+        return (<Badge color="danger">Review flagged as inappropriate</Badge>);
+      } else {
+        return (<ReviewSummary review={this.props.reviews.review} prompts={this.props.config.review.prompts} />);
+      }
+    }
+    return null;
+  }
+
   freezeFields() {
     return this.props.reviews.review && this.props.reviews.review.score !== null;
   }
@@ -84,22 +96,29 @@ class Review extends Component {
             <Card>
               <CardBlock className="card-body">
                 <CardTitle>My Review</CardTitle>
-                <Form>
-                  <div>
-                    <FormGroup check>
-                      <Label check>
-                        <Input disabled={this.freezeFields()} type="checkbox" name="review_flagged" value="flagged" checked={this.props.reviews.review && this.props.reviews.review.flagged} onChange={(event) => this.props.setReviewFlagged(event.target.checked)} />{' '}
-                        <strong>Flag as Inappropriate</strong>
-                      </Label>
-                    </FormGroup>
-                  </div>
-                  { this.renderReviewPrompts() }
-                  <p>
-                    <Button disabled={this.freezeFields()} color="primary" onClick={() => this.save()}><FontAwesome name="check-circle-o" /> Save</Button>
-                    { ' ' }
-                    <Button disabled={this.freezeFields() || !this.props.reviews.reviewIsValid} color="warning" onClick={() => this.saveAndSubmit()}><FontAwesome name="check-circle" /> Save and Submit</Button>
-                  </p>
-                </Form>
+                {
+                  this.props.reviews.review && this.props.reviews.review.score === null ?
+                    (
+                      <Form>
+                        <div>
+                          <FormGroup check>
+                            <Label check>
+                              <Input disabled={this.freezeFields()} type="checkbox" name="review_flagged" value="flagged" checked={this.props.reviews.review && this.props.reviews.review.flagged} onChange={(event) => this.props.setReviewFlagged(event.target.checked)} />{' '}
+                              <strong>Flag as Inappropriate</strong>
+                            </Label>
+                          </FormGroup>
+                        </div>
+                        { this.renderReviewPrompts() }
+                        <p>
+                          <Button disabled={this.freezeFields()} color="primary" onClick={() => this.save()}><FontAwesome name="check-circle-o" /> Save</Button>
+                          { ' ' }
+                          <Button disabled={this.freezeFields() || !this.props.reviews.reviewIsValid} color="warning" onClick={() => this.saveAndSubmit()}><FontAwesome name="check-circle" /> Save and Submit</Button>
+                        </p>
+                      </Form>
+                    )
+                    :
+                    this.renderReviewSummary()
+                }
               </CardBlock>
             </Card>
           </Col>

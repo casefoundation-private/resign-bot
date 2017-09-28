@@ -72,6 +72,7 @@ class SubmissionReviews extends Component {
           <thead>
             <tr>
               <th>Assigned To</th>
+              <th>Flagged as Inappropriate</th>
               <th>Score</th>
               <th className="text-center">Options</th>
             </tr>
@@ -92,6 +93,7 @@ class SubmissionReviews extends Component {
                         </FormGroup>
                       </Form>
                     </td>
+                    <td>{review.flagged ? 'Yes' : 'No'}</td>
                     <td>{review.score === null ? 'N/A' : round(review.score)}</td>
                     <td className="text-center">
                     <ButtonGroup>

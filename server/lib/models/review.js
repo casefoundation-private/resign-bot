@@ -12,9 +12,32 @@ module.exports = bookshelf.Model.extend({
     this.on('created',function() {
       return Notification.reviewAssigned(this).save();
     },this);
+    this.on('creating',function() {
+      return this.checkForReviewLimit()
+        .then((limitReached) => {
+          if (limitReached) {
+            throw new Error('Too many reviews for this submission.');
+          }
+        });
+    })
     this.on('updating',function() {
-      if (this.get('user_id') != this.previous('user_id')) {
-        return Notification.reviewAssigned(this).save();
+      const notificationUpdate = () => {
+        if (this.get('user_id') != this.previous('user_id')) {
+          return Notification.reviewAssigned(this).save();
+        }
+      }
+      if (this.get('submission_id') != this.previous('submission_id')) {
+        return this.checkForReviewLimit()
+          .then((limitReached) => {
+            if (limitReached) {
+              throw new Error('Too many reviews for this submission.');
+            }
+          })
+          .then(() => {
+            return notificationUpdate();
+          });
+      } else {
+        return notificationUpdate();
       }
     },this);
     bookshelf.Model.prototype.initialize.apply(this, arguments);
@@ -26,18 +49,22 @@ module.exports = bookshelf.Model.extend({
     const Submission = require('./submission');
     return this.belongsTo(Submission);
   },
-  'recuse': function(failQuietly) { //TODO test
-    return User.nextAvailableUsers(1,[this.get('user_id')],[this.get('submission_id')])
-      .then((users) => {
-        if (users && users.length > 0) {
-          this.set('user_id',users.at(0).get('id'));
-          return true;
-        } else if (failQuietly) {
-          return false;
-        } else {
-          throw new Error('No users ready!');
-        }
-      });
+  'recuse': function(failQuietly,targetUserId) { //TODO test
+    if (targetUserId) {
+
+    } else {
+      return User.nextAvailableUsers(1,[this.get('user_id')],[this.get('submission_id')])
+        .then((users) => {
+          if (users && users.length > 0) {
+            this.set('user_id',users.at(0).get('id'));
+            return true;
+          } else if (failQuietly) {
+            return false;
+          } else {
+            throw new Error('No users ready!');
+          }
+        });
+    }
   },
   'toJSON': function(options) {
     const sendOpts = options ? Object.assign(options,{'virtuals': true}) : {'virtuals': true};
@@ -45,6 +72,18 @@ module.exports = bookshelf.Model.extend({
     json.flagged = json.flagged === true || json.flagged === 1;
     return json;
   },
+  'checkForReviewLimit': function() {
+    return knex('reviews')
+      .count('*')
+      .where({'submission_id':this.get('submission_id')})
+      .then((total) => {
+        if (total[0]['count(*)'] >= parseInt(process.env.REVIEW_LIMIT)) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+  }
 }, {
   'jsonColumns': ['data'],
   'reviewForUserAndSubmission': function(user,submission) {

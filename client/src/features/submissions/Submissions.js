@@ -21,7 +21,8 @@ import {
   incompletedReviews,
   getFavorite,
   round,
-  SubmissionContents
+  SubmissionContents,
+  actualFlagsForSubmission
 } from '../../misc/utils';
 import { Link } from 'react-router-dom';
 import FontAwesome from 'react-fontawesome';
@@ -194,7 +195,7 @@ class Submissions extends Component {
                       <td>{submission.deviation === null ? 'N/A' : round(submission.deviation)}</td>
                       <td>{completedReviews(submission).length}</td>
                       <td>{incompletedReviews(submission).length}</td>
-                      <td>{submission.flags === null ? 'N/A' : submission.flags}</td>
+                      <td>{actualFlagsForSubmission(this.props.config,submission)}</td>
                       <td>{submission.created_at && submission.created_at.toLocaleDateString ? submission.created_at.toLocaleDateString() : submission.created_at}</td>
                       <td className="text-center">
                         { !favorite ?

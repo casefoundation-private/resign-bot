@@ -74,13 +74,19 @@ exports.saveReview = (req,res,next) => {
     if (userId) {
       finishReviewCreation(_userId);
     } else {
-      User.nextAvailableUsers(1,null,[submissionId]).then((users) => {
-        if (users && users.length > 0) {
-          finishReviewCreation(users.at(0).get('id'));
-        } else {
-          throw new Error('There are no users available to review this submission.')
-        }
-      }).catch((err) => next(err));
+      Review.forSubmission(submissionId)
+        .then((reviews) => {
+          const userIds = reviews.map((review) => {
+            return review.get('user_id');
+          });
+          User.nextAvailableUsers(1,userIds,[submissionId]).then((users) => {
+            if (users && users.length > 0) {
+              finishReviewCreation(users.at(0).get('id'));
+            } else {
+              throw new Error('There are no users available to review this submission.')
+            }
+          })
+        }).catch((err) => next(err));
     }
   }
 }

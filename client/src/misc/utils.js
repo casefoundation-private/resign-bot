@@ -36,6 +36,21 @@ export const round = (n) => {
   return (Math.round(n * 100) / 100);
 }
 
+export const actualFlagsForSubmission = (config,submission) => {
+  let total = null;
+  if (submission.flags !== null) {
+    total = submission.flags;
+  }
+  if (!config.flaggedByDefault) {
+    if (submission.flagged === true && total === null) {
+      total = 1;
+    } else if (submission.flagged === true) {
+      total++;
+    }
+  }
+  return total === null ? 'N/A' : total;
+}
+
 export const SubmissionContents = (props) => {
   return (
     <div>

@@ -5,7 +5,7 @@ const Notification = require('./notification');
 bookshelf.plugin(jsonColumns);
 bookshelf.plugin('virtuals');
 
-module.exports = bookshelf.Model.extend({
+module.exports = Submission = bookshelf.Model.extend({
   'tableName': 'submissions',
   'hasTimestamps': true,
   'reviews': function() {
@@ -39,6 +39,24 @@ module.exports = bookshelf.Model.extend({
             throw new Error('No users ready!');
           }
         });
+    },this);
+    this.on('updating',function() {
+      if (process.env.PINNED_LIMIT && this.get('pinned') && this.get('pinned') != this.previous('pinned')) {
+        return Submission.checkForPinLimit().then((limitReached) => {
+          if (limitReached) {
+            throw new Error('Too many submissions pinned.');
+          }
+        });
+      }
+    },this);
+    this.on('creating',function() {
+      if (process.env.PINNED_LIMIT && this.get('pinned')) {
+        return Submission.checkForPinLimit().then((limitReached) => {
+          if (limitReached) {
+            throw new Error('Too many submissions pinned.');
+          }
+        });
+      }
     },this);
     bookshelf.Model.prototype.initialize.apply(this, arguments);
   },
@@ -142,5 +160,17 @@ module.exports = bookshelf.Model.extend({
       .orderBy('pinned','DESC')
       .orderBy('created_at','DESC')
       .fetchAll();
+  },
+  'checkForPinLimit': function() {
+    return knex('submissions')
+      .count('*')
+      .where({'pinned':true})
+      .then((total) => {
+        if (total[0]['count(*)'] >= parseInt(process.env.PINNED_LIMIT)) {
+          return true;
+        } else {
+          return false;
+        }
+      });
   }
 });

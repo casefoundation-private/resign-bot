@@ -117,19 +117,22 @@ const User = module.exports = bookshelf.Model.extend({
       };
     }
   },
-  'recuseReviews': function(limit) {
+  'recuseReviews': function(limit,prefUser) {
+    const failedReassigns = [];
     const pendingReviews = this.related('reviews').filter((review) => review.get('score') === null);
     const nextRecusal = (i,recused) => {
       if (i < pendingReviews.length && (!limit || recused < limit)) {
         const review = pendingReviews[i];
         return review
-          .recuse(true)
+          .recuse(true,prefUser)
           .then((succeeded) => {
             if (succeeded) {
               return review.save()
                 .then(() => {
                   return nextRecusal(i+1,recused+(succeeded ? 1 : 0));
                 });
+            } else {
+              failedReassigns.push(review);
             }
           });
       }
@@ -137,6 +140,9 @@ const User = module.exports = bookshelf.Model.extend({
     return nextRecusal(0,0)
       .then(() => {
         return this.fetch({'withRelated':'reviews'})
+      })
+      .then(() => {
+        return failedReassigns;
       })
   },
   'toJSON': function(options) {
