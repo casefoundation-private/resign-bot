@@ -14,9 +14,19 @@ const ReviewSummary = (props) => {
         {
           props.prompts.map((prompt,i) => {
             return (
-              <tr key={i}>
+              <tr key={'prompt_'+i}>
                 <td>{prompt.prompt}</td>
                 <td>{props.review.data.prompts[i] >= 0 ? props.review.data.prompts[i] : 'N/A'}</td>
+              </tr>
+            );
+          })
+        }
+        {
+          props.categories.map((category,i) => {
+            return (
+              <tr key={'category_'+i}>
+                <td>{category.prompt}</td>
+                <td>{props.review.data.categories[i] !== null ? props.review.data.categories[i] : 'N/A'}</td>
               </tr>
             );
           })

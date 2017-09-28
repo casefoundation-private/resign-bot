@@ -139,6 +139,11 @@ class Submissions extends Component {
                 <th>{this.generateSortableColumnHeader('Completed Reviews','completedReviews')}</th>
                 <th>{this.generateSortableColumnHeader('Assigned Reviews','assignedReviews')}</th>
                 <th>{this.generateSortableColumnHeader('Flagged Reviews','flags')}</th>
+                {
+                  this.props.config.review.categories.map((category,i) => {
+                    return (<th key={'category_'+i}>{category.prompt}</th>);
+                  })
+                }
                 <th>{this.generateSortableColumnHeader('Created','created_at')}</th>
                 <th className="text-center">
                 <FontAwesome name="question-circle" id="favorite-tooltip" />
@@ -196,6 +201,17 @@ class Submissions extends Component {
                       <td>{completedReviews(submission).length}</td>
                       <td>{incompletedReviews(submission).length}</td>
                       <td>{actualFlagsForSubmission(this.props.config,submission)}</td>
+                      {
+                        this.props.config.review.categories.map((category,i) => {
+                          return (
+                            <td key={'category_'+i}>
+                              { submission.categories && submission.categories[category.prompt] ?
+                                submission.categories[category.prompt]
+                                : 'N/A'}
+                            </td>
+                          );
+                        })
+                      }
                       <td>{submission.created_at && submission.created_at.toLocaleDateString ? submission.created_at.toLocaleDateString() : submission.created_at}</td>
                       <td className="text-center">
                         { !favorite ?

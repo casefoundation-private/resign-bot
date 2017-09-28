@@ -2,6 +2,7 @@ const knex = require('../database').knex;
 const bookshelf = require('bookshelf')(knex);
 const jsonColumns = require('bookshelf-json-columns');
 const Notification = require('./notification');
+const _ = require('lodash');
 bookshelf.plugin(jsonColumns);
 bookshelf.plugin('virtuals');
 
@@ -117,6 +118,41 @@ module.exports = Submission = bookshelf.Model.extend({
         }
       }
       return null;
+    },
+    'categories': function() {
+      const reviews = this.related('reviews');
+      if (reviews && reviews.length > 0) {
+        const categoryVoteMap = {};
+        reviews.filter((review) => review.get('score') !== null).forEach((review) => {
+          if (review.get('data') && review.get('data').categories) {
+            review.get('data').categories.forEach((category,i) => {
+              const categoryName = process.env['REVIEW_CATEGORY_' + i];
+              if (!categoryVoteMap[categoryName]) {
+                categoryVoteMap[categoryName] = {};
+              }
+              if (!categoryVoteMap[categoryName][category]) {
+                categoryVoteMap[categoryName][category] = 1;
+              } else {
+                categoryVoteMap[categoryName][category]++;
+              }
+            })
+          }
+        });
+        const categories = {};
+        _.keys(categoryVoteMap).forEach((categoryName) => {
+          let winnerCategory = null;
+          let winnerVote = -1;
+          _.keys(categoryVoteMap[categoryName]).forEach((category) => {
+            const vote = categoryVoteMap[categoryName][category];
+            if (vote > winnerVote) {
+              winnerCategory = category;
+            }
+          });
+          categories[categoryName] = winnerCategory;
+        });
+        return categories;
+      }
+      return null;
     }
   }
 }, {
@@ -159,7 +195,9 @@ module.exports = Submission = bookshelf.Model.extend({
       })
       .orderBy('pinned','DESC')
       .orderBy('created_at','DESC')
-      .fetchAll();
+      .fetchAll({
+        'withRelated': ['reviews']
+      });
   },
   'checkForPinLimit': function() {
     return knex('submissions')

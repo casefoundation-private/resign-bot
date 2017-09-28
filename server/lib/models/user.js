@@ -118,7 +118,8 @@ const User = module.exports = bookshelf.Model.extend({
     }
   },
   'recuseReviews': function(limit,prefUser) {
-    const failedReassigns = [];
+    const reassigned = [];
+    const unreassignable = [];
     const pendingReviews = this.related('reviews').filter((review) => review.get('score') === null);
     const nextRecusal = (i,recused) => {
       if (i < pendingReviews.length && (!limit || recused < limit)) {
@@ -127,12 +128,14 @@ const User = module.exports = bookshelf.Model.extend({
           .recuse(true,prefUser)
           .then((succeeded) => {
             if (succeeded) {
+              reassigned.push(review);
               return review.save()
                 .then(() => {
-                  return nextRecusal(i+1,recused+(succeeded ? 1 : 0));
+                  return nextRecusal(i+1,recused+1);
                 });
             } else {
-              failedReassigns.push(review);
+              unreassignable.push(review);
+              return nextRecusal(i+1,recused);
             }
           });
       }
@@ -142,7 +145,10 @@ const User = module.exports = bookshelf.Model.extend({
         return this.fetch({'withRelated':'reviews'})
       })
       .then(() => {
-        return failedReassigns;
+        return {
+          reassigned,
+          unreassignable
+        };
       })
   },
   'toJSON': function(options) {
@@ -219,7 +225,7 @@ const User = module.exports = bookshelf.Model.extend({
       .query((qb) => {
         const subQuery = knex.select('user_id').from('reviews').whereNull('reviews.score');
         if (submissionBlacklist && submissionBlacklist.length > 0) {
-          subQuery.whereIn('reviews.submission_id',submissionBlacklist);
+          subQuery.orWhereIn('reviews.submission_id',submissionBlacklist);
         }
         qb.whereNotIn('id',subQuery);
         if (userBlacklist && userBlacklist.length > 0) {

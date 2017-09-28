@@ -112,7 +112,7 @@ class SubmissionReviews extends Component {
             Review Summary
           </ModalHeader>
           <ModalBody>
-            <ReviewSummary review={this.props.reviews.review} prompts={this.props.config.review.prompts} />
+            <ReviewSummary review={this.props.reviews.review} prompts={this.props.config.review.prompts} categories={this.props.config.review.categories} />
           </ModalBody>
           <ModalFooter>
             <Button color="primary" onClick={() => this.closeReviewSummaryModal()}>Done</Button>

@@ -138,9 +138,19 @@ exports.saveUser = (req,res,next) => {
 
 exports.reassignUserReviews = (req,res,next) => {
   if (req._user && req.user.isAdmin()) {
-    req._user.recuseReviews(req.query.n ? parseInt(req.query.n,10) : false,req.query.user)
-      .then((user) => {
-        res.json(req._user.toJSON());
+    req._user.recuseReviews(
+        req.query.n ? parseInt(req.query.n,10) : false,
+        req.query.user ? parseInt(req.query.user,10) : false
+      )
+      .then(({reassigned,unreassignable}) => {
+        let message = 'Reassigned ' + reassigned.length + ' reviews';
+        if (unreassignable.length > 0) {
+          message += ', and unable to reassign ' + unreassignable.length + ' reviews due to assignment constraints';
+        }
+        message += '.';
+        res.json({
+          'message': message
+        });
       })
       .catch((err) => next(err));
   } else {

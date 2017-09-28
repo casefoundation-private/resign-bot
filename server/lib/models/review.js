@@ -5,7 +5,7 @@ const jsonColumns = require('bookshelf-json-columns');
 const Notification = require('./notification');
 bookshelf.plugin(jsonColumns);
 
-module.exports = bookshelf.Model.extend({
+module.exports = Review = bookshelf.Model.extend({
   'tableName': 'reviews',
   'hasTimestamps': true,
   'initialize': function() {
@@ -51,7 +51,19 @@ module.exports = bookshelf.Model.extend({
   },
   'recuse': function(failQuietly,targetUserId) { //TODO test
     if (targetUserId) {
-
+      return Review.reviewForUserAndSubmission(targetUserId,this.get('submission_id'))
+        .then((review) => {
+          if (review) {
+            if (failQuietly) {
+              return false;
+            } else {
+              throw new Error('That user has or is already reviewing this submission!');
+            }
+          } else {
+            this.set('user_id',targetUserId);
+            return true;
+          }
+        })
     } else {
       return User.nextAvailableUsers(1,[this.get('user_id')],[this.get('submission_id')])
         .then((users) => {

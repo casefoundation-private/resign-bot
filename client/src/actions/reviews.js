@@ -154,6 +154,17 @@ export const setReviewPromptValue = (prompt,value) => {
   }
 }
 
+export const setReviewCategoryValue = (category,value) => {
+  return (dispatch,getState) => {
+    dispatch({
+      type: ACTION.REVIEWS.SET_CATEGORY_VALUE,
+      category,
+      value
+    });
+    dispatch(validateReview());
+  }
+}
+
 export const setReviewFlagged = (flagged) => {
   return (dispatch,getState) => {
     dispatch({
@@ -208,6 +219,18 @@ export const validateReview = () => {
             });
             valid = false;
           } else if (getState().reviews.review.data.prompts[i] === null) {
+            valid = false;
+          }
+        }
+        for(var i = 0; i < getState().config.review.categories.length; i++) {
+          if (typeof getState().reviews.review.data.categories[i] !== 'string') {
+            dispatch({
+              type: ACTION.REVIEWS.SET_CATEGORY_VALUE,
+              category: i,
+              value: null
+            });
+            valid = false;
+          } else if (getState().reviews.review.data.categories[i] === null) {
             valid = false;
           }
         }

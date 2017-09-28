@@ -46,6 +46,7 @@ exports.getPublicSubmissions = (req,res,next) => {
           delete pojo.score;
           delete pojo.source;
           delete pojo.updated_at;
+          delete pojo.reviews;
           if (pojo.data.email) {
             delete pojo.data.email;
           }

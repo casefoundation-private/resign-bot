@@ -18,6 +18,9 @@ const reviews = (state = initialReviewsState, action) => {
       if (review && !review.data.prompts) {
         review.data.prompts = [];
       }
+      if (review && !review.data.categories) {
+        review.data.categories = [];
+      }
       return Object.assign({},state,{
         'review': review,
         'reviews': action.reviews || state.reviews
@@ -33,6 +36,16 @@ const reviews = (state = initialReviewsState, action) => {
         'review': Object.assign({},state.review,{
           'data': Object.assign({},state.review.data,{
             'prompts': clonedPrompts
+          })
+        })
+      });
+    case ACTION.REVIEWS.SET_CATEGORY_VALUE:
+      const clonedCategories = state.review.data.categories ? state.review.data.categories.slice(0) : [];
+      clonedCategories[action.category] = action.value;
+      return Object.assign({},state,{
+        'review': Object.assign({},state.review,{
+          'data': Object.assign({},state.review.data,{
+            'categories': clonedCategories
           })
         })
       });

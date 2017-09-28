@@ -113,14 +113,10 @@ export const reassignUserReviews = (count,userId) => {
     if (userId) {
       url += '&user='+encodeURIComponent(userId);
     }
-    authenticatedRequest(dispatch,getState,url,'POST',null,(user) => {
-      dispatch({
-        type: ACTION.USERS.SET,
-        user
-      });
+    authenticatedRequest(dispatch,getState,url,'POST',null,(result) => {
       dispatch({
         type: ACTION.MESSAGE.SET,
-        message: 'Reviews reassigned',
+        message: result.message,
         messageType: 'info'
       });
       dispatch(loadUsers());

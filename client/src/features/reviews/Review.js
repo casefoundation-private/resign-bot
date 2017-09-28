@@ -8,7 +8,8 @@ import {
   updateReview,
   calculateAndUpdateReview,
   setReviewFlagged,
-  validateReview
+  validateReview,
+  setReviewCategoryValue
 } from '../../actions/reviews';
 import PageWrapper from '../../PageWrapper';
 import {
@@ -34,24 +35,57 @@ class Review extends Component {
     }
   }
 
+  updateReviewCateory(category,value) {
+    if (value.trim().length >= 0) {
+      this.props.setReviewCategoryValue(category,value);
+    } else {
+      this.props.setReviewCategoryValue(category,null);
+    }
+  }
+
   renderReviewPrompts() {
-    return this.props.reviews.review.data && this.props.reviews.review.data.prompts && this.props.config.review.prompts.map((prompt,i) => {
-      return (
-        <FormGroup key={i}>
-          <Label for={'review_prompt_'+i}>
-            <strong>{prompt.prompt}</strong>
-          </Label>
-          <Input disabled={this.freezeFields()} type="select" value={this.props.reviews.review.data.prompts[i] >= 0 ? this.props.reviews.review.data.prompts[i] : ''} onChange={(event) => this.updateReviewRank(i,event.target.value)}>
-            <option value="none">Select One</option>
-            {
-              prompt.labels.map((label,j) => {
-                return (<option value={j} key={j}>{j}: {label}</option>)
-              })
-            }
-          </Input>
-        </FormGroup>
-      )
-    });
+    return (
+      <div>
+        {
+          this.props.reviews.review.data && this.props.reviews.review.data.prompts && this.props.config.review.prompts.map((prompt,i) => {
+            return (
+              <FormGroup key={'prompt_'+i}>
+                <Label for={'review_prompt_'+i}>
+                  <strong>{prompt.prompt}</strong>
+                </Label>
+                <Input disabled={this.freezeFields()} type="select" value={this.props.reviews.review.data.prompts[i] >= 0 ? this.props.reviews.review.data.prompts[i] : 'none'} onChange={(event) => this.updateReviewRank(i,event.target.value)}>
+                  <option value="none">Select One</option>
+                  {
+                    prompt.labels.map((label,j) => {
+                      return (<option value={j} key={j}>{j}: {label}</option>)
+                    })
+                  }
+                </Input>
+              </FormGroup>
+            )
+          })
+        }
+        {
+          this.props.reviews.review.data && this.props.reviews.review.data.categories && this.props.config.review.categories.map((category,i) => {
+            return (
+              <FormGroup key={'category_'+i}>
+                <Label for={'review_category_'+i}>
+                  <strong>{category.prompt}</strong>
+                </Label>
+                <Input disabled={this.freezeFields()} type="select" value={this.props.reviews.review.data.categories[i] !== null ? this.props.reviews.review.data.categories[i] : 'none'} onChange={(event) => this.updateReviewCateory(i,event.target.value)}>
+                  <option value="none">Select One</option>
+                  {
+                    category.labels.map((label,j) => {
+                      return (<option value={label} key={j}>{label}</option>)
+                    })
+                  }
+                </Input>
+              </FormGroup>
+            )
+          })
+        }
+      </div>
+    );
   }
 
   renderReviewSummary() {
@@ -59,7 +93,7 @@ class Review extends Component {
       if (this.props.reviews.review.flagged) {
         return (<Badge color="danger">Review flagged as inappropriate</Badge>);
       } else {
-        return (<ReviewSummary review={this.props.reviews.review} prompts={this.props.config.review.prompts} />);
+        return (<ReviewSummary review={this.props.reviews.review} prompts={this.props.config.review.prompts} categories={this.props.config.review.categories} />);
       }
     }
     return null;
@@ -143,7 +177,8 @@ const dispatchToProps = (dispatch) => {
     updateReview,
     calculateAndUpdateReview,
     setReviewFlagged,
-    validateReview
+    validateReview,
+    setReviewCategoryValue
   }, dispatch);
 }
 

@@ -67,6 +67,10 @@ export const sortSubmissions = () => {
           bVal = 0;
           break;
       }
+      if (aVal === bVal) {
+        aVal = a.created_at.getTime();
+        bVal = b.created_at.getTime();
+      }
       if (getState().submissions.sort.direction === 'asc') {
         return aVal - bVal;
       } else {
