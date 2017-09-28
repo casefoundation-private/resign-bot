@@ -176,7 +176,7 @@ export const toggleFlagSubmission = (submission) => {
       });
       dispatch({
         type: ACTION.MESSAGE.SET,
-        message: 'Submission flagged as inappropriate.',
+        message: submission.flagged ? 'Submission flagged as inappropriate.' : 'Submission unflagged as inappropriate.',
         messageType: 'info'
       });
       dispatch(sortSubmissions());
@@ -194,7 +194,7 @@ export const togglePinSubmission = (submission) => {
       });
       dispatch({
         type: ACTION.MESSAGE.SET,
-        message: 'Submission pinned to top.',
+        message: submission.pinned ? 'Submission pinned to top.' : 'Submission unpinned.',
         messageType: 'info'
       });
       dispatch(sortSubmissions());
