@@ -204,8 +204,7 @@ module.exports = Submission = bookshelf.Model.extend({
       .count('*')
       .where({'pinned':true})
       .then((total) => {
-        console.log(total)
-        if (total[0]['count(*)'] >= parseInt(process.env.PINNED_LIMIT)) {
+        if (total[0]['count(*)'] >= parseInt(process.env.PINNED_LIMIT) || total[0]['count'] >= parseInt(process.env.PINNED_LIMIT)) {
           return true;
         } else {
           return false;

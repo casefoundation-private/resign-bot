@@ -89,7 +89,7 @@ module.exports = Review = bookshelf.Model.extend({
       .count('*')
       .where({'submission_id':this.get('submission_id')})
       .then((total) => {
-        if (total[0]['count(*)'] >= parseInt(process.env.REVIEW_LIMIT)) {
+        if (total[0]['count(*)'] >= parseInt(process.env.REVIEW_LIMIT) || total[0]['count'] >= parseInt(process.env.REVIEW_LIMIT)) {
           return true;
         } else {
           return false;
