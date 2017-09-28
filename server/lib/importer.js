@@ -79,7 +79,7 @@ const saveSubmissions = (newSubmissions) => {
                 console.log('Flagging new submission for bad language.');
               }
             }
-            newSubmission.set('flagged',JSON.parse(process.env.FLAGGED_BY_DEFAULT) || badLanguage);
+            newSubmission.set('flagged',JSON.parse(process.env.FLAGGED_BY_DEFAULT || false) || badLanguage);
             return newSubmission.save();
           }
         })
