@@ -72,14 +72,14 @@ const saveSubmissions = (newSubmissions) => {
             console.log(existingSubmission.get('source') + '/' + existingSubmission.get('external_id') + ' is a duplicate. Skipping.');
           } else {
             console.log(newSubmission.get('source') + '/' + newSubmission.get('external_id') + ' is new. Importing');
-            let badLanguage = false;
+            let badLanguage = JSON.parse(process.env.FLAGGED_BY_DEFAULT || false);
             for(var key in newSubmission.get('data')) {
               if (blFilter.contains(newSubmission.get('data')[key])) {
                 badLanguage = true;
                 console.log('Flagging new submission for bad language.');
               }
             }
-            newSubmission.set('flagged',JSON.parse(process.env.FLAGGED_BY_DEFAULT || false) || badLanguage);
+            newSubmission.set('flagged',badLanguage);
             return newSubmission.save();
           }
         })
