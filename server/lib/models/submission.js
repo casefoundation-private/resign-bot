@@ -42,7 +42,7 @@ module.exports = Submission = bookshelf.Model.extend({
         });
     },this);
     this.on('updating',function() {
-      if (process.env.PINNED_LIMIT && this.get('pinned') && this.get('pinned') != this.previous('pinned')) {
+      if (process.env.PINNED_LIMIT && this.get('pinned') && this.get('pinned') != this.previous('pinned')) { //TODO test
         return Submission.checkForPinLimit().then((limitReached) => {
           if (limitReached) {
             throw new Error('Too many submissions pinned.');
@@ -204,6 +204,7 @@ module.exports = Submission = bookshelf.Model.extend({
       .count('*')
       .where({'pinned':true})
       .then((total) => {
+        console.log(total)
         if (total[0]['count(*)'] >= parseInt(process.env.PINNED_LIMIT)) {
           return true;
         } else {
