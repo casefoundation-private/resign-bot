@@ -26,8 +26,8 @@ export const sortSubmissions = () => {
           bVal = b[getState().submissions.sort.field] === null ? -1 : b[getState().submissions.sort.field];
           break;
         case 'flags':
-          aVal = actualFlagsForSubmission(a) === null ? -1 : actualFlagsForSubmission(a);
-          bVal = actualFlagsForSubmission(b) === null ? -1 : actualFlagsForSubmission(b);
+          aVal = actualFlagsForSubmission(getState().config,a) === 'N/A' ? -1 : actualFlagsForSubmission(getState().config,a);
+          bVal = actualFlagsForSubmission(getState().config,b) === 'N/A' ? -1 : actualFlagsForSubmission(getState().config,b);
           break;
         case 'pinned':
           aVal = a[getState().submissions.sort.field] ? 1 : 0;
