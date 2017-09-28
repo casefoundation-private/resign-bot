@@ -105,7 +105,7 @@ export const setSubmissionSearch = (str) => {
       const indices = [];
       getState().submissions.submissions.forEach((submission,i) => {
         const summary = summarizeSubmission(submission);
-        if (summary.indexOf(str) >= 0) {
+        if (summary.toLowerCase().indexOf(str.toLowerCase()) >= 0) {
           indices.push(i);
         }
       });
