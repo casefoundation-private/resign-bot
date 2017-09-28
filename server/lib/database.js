@@ -19,6 +19,13 @@ const knex = exports.knex = require('knex')({
   'useNullAsDefault': true
 });
 
+const defaultNotificationPreferences = {
+  'review_assigned': true,
+  'multiple_reviews_assigned': true,
+  'submission_created': true,
+  'multiple_submissions_created': true
+};
+
 exports.init = () => {
   return knex.schema.hasTable('users').then(function(exists) {
     if (!exists) {
@@ -31,8 +38,18 @@ exports.init = () => {
         table.datetime('resetExpiration');
         table.boolean('active').notNullable().defaultTo(true);
         table.boolean('ready').notNullable().defaultTo(true);
+        table.json('notificationPreferences').notNullable().defaultTo(JSON.stringify(defaultNotificationPreferences));
         table.timestamps();
       });
+    } else {
+      return knex.schema.hasColumn('users','notificationPreferences')
+        .then((hasNotificationPreferences) => {
+          if (!hasNotificationPreferences) {
+            return knex.schema.alterTable('users', function(table) {
+              table.json('notificationPreferences').notNullable().defaultTo(JSON.stringify(defaultNotificationPreferences));
+            });
+          }
+        });
     }
   }).then(() => {
     return knex.schema.hasTable('submissions').then(function(exists) {

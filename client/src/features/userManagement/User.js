@@ -6,7 +6,8 @@ import {
   loadUser,
   updateUser,
   newUser,
-  setActiveUserProp
+  setActiveUserProp,
+  setActiveUserNotificationPreference
 } from '../../actions/users';
 import PageWrapper from '../../PageWrapper';
 import { Link } from 'react-router-dom';
@@ -30,6 +31,20 @@ class User extends Component {
   handleSave(event) {
     event.preventDefault();
     this.props.updateUser();
+  }
+
+  toggleNotificationPreferences(properties) {
+    let lastValue = null;
+    properties.forEach((property) => {
+      if (lastValue === null) {
+        lastValue = this.props.users.user.notificationPreferences[property];
+      } else {
+        lastValue = lastValue && this.props.users.user.notificationPreferences[property];
+      }
+    });
+    properties.forEach((property) => {
+      this.props.setActiveUserNotificationPreference(property,!lastValue);
+    });
   }
 
   render() {
@@ -68,6 +83,31 @@ class User extends Component {
               Review Queue is Open
             </Label>
           </FormGroup>
+          {
+            this.props.users.user.notificationPreferences && (
+              <FormGroup tag="fieldset">
+                <legend>Email Notification Preferences</legend>
+                <FormGroup check>
+                  <Label check>
+                    <Input type="checkbox" name="active" id="active" checked={this.props.users.user.notificationPreferences.review_assigned && this.props.users.user.notificationPreferences.multiple_reviews_assigned} onChange={(event) => this.toggleNotificationPreferences(['review_assigned','multiple_reviews_assigned'])} />
+                    {' '}
+                    Review(s) Assigned to Me
+                  </Label>
+                </FormGroup>
+                {
+                  this.props.users.user.role==='admin' && (
+                    <FormGroup check>
+                      <Label check>
+                        <Input type="checkbox" name="active" id="active" checked={this.props.users.user.notificationPreferences.submission_created && this.props.users.user.notificationPreferences.multiple_submissions_created} onChange={(event) => this.toggleNotificationPreferences(['submission_created','multiple_submissions_created'])} />
+                        {' '}
+                        Submission(s) Added
+                      </Label>
+                    </FormGroup>
+                  )
+                }
+              </FormGroup>
+            )
+          }
           <br/>
           <Button color="primary" type="submit"><FontAwesome name="check-circle-o" /> Save</Button>
         </Form>)}
@@ -88,7 +128,8 @@ const dispatchToProps = (dispatch) => {
     loadUser,
     updateUser,
     newUser,
-    setActiveUserProp
+    setActiveUserProp,
+    setActiveUserNotificationPreference
   }, dispatch);
 }
 

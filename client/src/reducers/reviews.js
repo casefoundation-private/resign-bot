@@ -4,7 +4,11 @@ import {
 
 const initialReviewsState = {
   review: null,
-  reviewIsValid: false,
+  validation: {
+    isValid: false,
+    invalidPrompts: [],
+    invalidCategories: []
+  },
   reviews: null,
 };
 
@@ -63,11 +67,19 @@ const reviews = (state = initialReviewsState, action) => {
       });
     case ACTION.REVIEWS.VALIDATE:
       return Object.assign({},state,{
-        'reviewIsValid': true
+        'validation': {
+          isValid: true,
+          invalidPrompts: [],
+          invalidCategories: []
+        }
       });
     case ACTION.REVIEWS.INVALIDATE:
       return Object.assign({},state,{
-        'reviewIsValid': false
+        'validation': {
+          isValid: false,
+          invalidPrompts: action.invalidPrompts,
+          invalidCategories: action.invalidCategories
+        }
       });
     case ACTION.USER.LOGOUT:
       return initialReviewsState;

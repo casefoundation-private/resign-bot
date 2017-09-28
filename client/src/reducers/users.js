@@ -23,6 +23,14 @@ const users = (state = initialUsersState, action) => {
       return Object.assign({},state,{
         'user': Object.assign({},state.user,action.updates)
       });
+    case ACTION.USERS.SET_NOTIFICATION_PREFERENCE:
+      const newNotificationPreferences = Object.assign({},state.user.notificationPreferences,{}) || {};
+      newNotificationPreferences[action.property] = action.value;
+      return Object.assign({},state,{
+        'user': Object.assign({},state.user,{
+          'notificationPreferences': newNotificationPreferences
+        })
+      });
     case ACTION.USER.LOGOUT:
       return initialUsersState;
     default:

@@ -5,6 +5,8 @@ const uuidv4 = require('uuid/v4');
 const Notification = require('./notification');
 const randomstring = require('randomstring');
 bookshelf.plugin('virtuals');
+const jsonColumns = require('bookshelf-json-columns');
+bookshelf.plugin(jsonColumns);
 
 const User = module.exports = bookshelf.Model.extend({
   'tableName': 'users',
@@ -193,6 +195,7 @@ const User = module.exports = bookshelf.Model.extend({
     }
   }
 }, {
+  'jsonColumns': ['notificationPreferences'],
   'byEmail': function(email) {
     return this.forge().query({where:{ email: email }}).fetch({'withRelated':'reviews'});
   },

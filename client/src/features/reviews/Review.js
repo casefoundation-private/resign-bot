@@ -21,6 +21,13 @@ import FontAwesome from 'react-fontawesome';
 import ReviewSummary from '../submissions/ReviewSummary';
 
 class Review extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      'showValidation': false
+    };
+  }
+
   componentDidMount() {
     const reviewId = parseInt(this.props.match.params.reviewId,10);
     this.props.loadReview(reviewId);
@@ -49,11 +56,15 @@ class Review extends Component {
         {
           this.props.reviews.review.data && this.props.reviews.review.data.prompts && this.props.config.review.prompts.map((prompt,i) => {
             return (
-              <FormGroup key={'prompt_'+i}>
+              <FormGroup key={'prompt_'+i} className={this.state.showValidation && this.props.reviews.validation.invalidPrompts.indexOf(i) >= 0 ? 'has-danger' : null}>
                 <Label for={'review_prompt_'+i}>
                   <strong>{prompt.prompt}</strong>
                 </Label>
-                <Input disabled={this.freezeFields()} type="select" value={this.props.reviews.review.data.prompts[i] >= 0 ? this.props.reviews.review.data.prompts[i] : 'none'} onChange={(event) => this.updateReviewRank(i,event.target.value)}>
+                <Input
+                  disabled={this.freezeFields()}
+                  type="select"
+                  value={this.props.reviews.review.data.prompts[i] >= 0 ? this.props.reviews.review.data.prompts[i] : 'none'}
+                  onChange={(event) => this.updateReviewRank(i,event.target.value)}>
                   <option value="none">Select One</option>
                   {
                     prompt.labels.map((label,j) => {
@@ -68,11 +79,15 @@ class Review extends Component {
         {
           this.props.reviews.review.data && this.props.reviews.review.data.categories && this.props.config.review.categories.map((category,i) => {
             return (
-              <FormGroup key={'category_'+i}>
+              <FormGroup key={'category_'+i} className={this.state.showValidation && this.props.reviews.validation.invalidCategories.indexOf(i) >= 0 ? 'has-danger' : null}>
                 <Label for={'review_category_'+i}>
                   <strong>{category.prompt}</strong>
                 </Label>
-                <Input disabled={this.freezeFields()} type="select" value={this.props.reviews.review.data.categories[i] !== null ? this.props.reviews.review.data.categories[i] : 'none'} onChange={(event) => this.updateReviewCateory(i,event.target.value)}>
+                <Input
+                  disabled={this.freezeFields()}
+                  type="select"
+                  value={this.props.reviews.review.data.categories[i] !== null ? this.props.reviews.review.data.categories[i] : 'none'}
+                  onChange={(event) => this.updateReviewCateory(i,event.target.value)}>
                   <option value="none">Select One</option>
                   {
                     category.labels.map((label,j) => {
@@ -108,7 +123,13 @@ class Review extends Component {
   }
 
   saveAndSubmit() {
-    this.props.calculateAndUpdateReview();
+    if (this.props.reviews.validation.isValid) {
+      this.props.calculateAndUpdateReview();
+    } else {
+      this.setState({
+        'showValidation': true
+      });
+    }
   }
 
   render() {
@@ -146,7 +167,7 @@ class Review extends Component {
                         <p>
                           <Button disabled={this.freezeFields()} color="primary" onClick={() => this.save()}><FontAwesome name="check-circle-o" /> Save</Button>
                           { ' ' }
-                          <Button disabled={this.freezeFields() || !this.props.reviews.reviewIsValid} color="warning" onClick={() => this.saveAndSubmit()}><FontAwesome name="check-circle" /> Save and Submit</Button>
+                          <Button disabled={this.freezeFields()} color="warning" onClick={() => this.saveAndSubmit()}><FontAwesome name="check-circle" /> Save and Submit</Button>
                         </p>
                       </Form>
                     )

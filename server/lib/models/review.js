@@ -1,8 +1,8 @@
 const knex = require('../database').knex;
 const bookshelf = require('bookshelf')(knex);
 const User = require('./user');
-const jsonColumns = require('bookshelf-json-columns');
 const Notification = require('./notification');
+const jsonColumns = require('bookshelf-json-columns');
 bookshelf.plugin(jsonColumns);
 
 module.exports = Review = bookshelf.Model.extend({

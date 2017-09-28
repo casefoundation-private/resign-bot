@@ -109,7 +109,7 @@ export const deleteReview = () => {
 
 export const calculateAndUpdateReview = () => {
   return (dispatch,getState) => {
-    if (getState().reviews.reviewIsValid) {
+    if (getState().reviews.validation.isValid) {
       let score = 0;
       if (!getState().reviews.review.flagged) {
         score = getState().reviews.review.data.prompts.reduce((total,v) => total+v,0) / getState().reviews.review.data.prompts.length;
@@ -209,7 +209,7 @@ export const validateReview = () => {
           type: ACTION.REVIEWS.VALIDATE
         });
       } else {
-        let valid = true;
+        const invalidPrompts = [];
         for(var i = 0; i < getState().config.review.prompts.length; i++) {
           if (typeof getState().reviews.review.data.prompts[i] !== 'number') {
             dispatch({
@@ -217,11 +217,12 @@ export const validateReview = () => {
               prompt: i,
               value: null
             });
-            valid = false;
+            invalidPrompts.push(i);
           } else if (getState().reviews.review.data.prompts[i] === null) {
-            valid = false;
+            invalidPrompts.push(i);
           }
         }
+        const invalidCategories = [];
         for(var i = 0; i < getState().config.review.categories.length; i++) {
           if (typeof getState().reviews.review.data.categories[i] !== 'string') {
             dispatch({
@@ -229,25 +230,29 @@ export const validateReview = () => {
               category: i,
               value: null
             });
-            valid = false;
+            invalidCategories.push(i);
           } else if (getState().reviews.review.data.categories[i] === null) {
-            valid = false;
+            invalidCategories.push(i);
           }
         }
-        if (valid) {
+        if (invalidPrompts.length === 0 && invalidCategories.length === 0) {
           dispatch({
             type: ACTION.REVIEWS.VALIDATE
           });
         } else {
           dispatch({
-            type: ACTION.REVIEWS.INVALIDATE
+            type: ACTION.REVIEWS.INVALIDATE,
+            invalidPrompts,
+            invalidCategories
           });
         }
         return;
       }
     } else {
       dispatch({
-        type: ACTION.REVIEWS.INVALIDATE
+        type: ACTION.REVIEWS.INVALIDATE,
+        invalidPrompts: null,
+        invalidCategories: null
       });
     }
   }

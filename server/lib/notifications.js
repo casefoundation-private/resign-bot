@@ -55,18 +55,24 @@ const handleNextNotification = () => {
 
 const processNotification = (notification) => {
   console.log('Handling notification: ' + notification.get('type'))
-  return generateEmailDetails(notification)
-    .then((emailDetails) => {
-      const mailOptions = {
-        'from': process.env.MAIL_FROM,
-        'to': notification.related('user').get('email'),
-        'subject': emailDetails.subject,
-        'html': emailDetails.body
-      };
-      return transporter.sendMail(mailOptions).then(() => {
-        notification.set('queued',false);
+  if (notification.related('user').get('notificationPreferences')[notification.get('type')] !== false) {
+    return generateEmailDetails(notification)
+      .then((emailDetails) => {
+        const mailOptions = {
+          'from': process.env.MAIL_FROM,
+          'to': notification.related('user').get('email'),
+          'subject': emailDetails.subject,
+          'html': emailDetails.body
+        };
+        return transporter.sendMail(mailOptions).then(() => {
+          notification.set('queued',false);
+        });
       });
-    });
+  } else {
+    console.log('User notification muted for that type.');
+    notification.set('queued',false);
+    return new Promise((resolve) => resolve());
+  }
 }
 
 const generateEmailDetails = (notification) => {

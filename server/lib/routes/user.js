@@ -106,6 +106,9 @@ exports.saveUser = (req,res,next) => {
     if (req.body.password && req.body.password.trim().length > 0) {
       user.setPassword(req.body.password);
     }
+    if (req.body.notificationPreferences) {
+      user.set('notificationPreferences',req.body.notificationPreferences);
+    }
     user.save()
       .then(() => {
         res.json(user.toJSON());

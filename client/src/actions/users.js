@@ -123,3 +123,11 @@ export const reassignUserReviews = (count,userId) => {
     });
   }
 }
+
+export const setActiveUserNotificationPreference = (property,value) => {
+  return {
+    type: ACTION.USERS.SET_NOTIFICATION_PREFERENCE,
+    property,
+    value
+  };
+}
