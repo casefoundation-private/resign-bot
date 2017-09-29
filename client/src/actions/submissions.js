@@ -67,8 +67,22 @@ export const sortSubmissions = () => {
           bVal = getFavorite(getState().user.favorites,b) ? 1 : 0;
           break;
         default:
-          aVal = 0;
-          bVal = 0;
+          if (getState().submissions.sort.field.indexOf('category_') === 0) {
+            const categoryIndex = parseInt(getState().submissions.sort.field.replace('category_',''));
+            const categoryName = getState().config.review.categories[categoryIndex].prompt;
+            aVal = a.categories[categoryName] || null;
+            bVal = b.categories[categoryName] || null;
+            if (aVal && bVal) {
+              if (getState().submissions.sort.direction === 'asc') {
+                return aVal.localeCompare(bVal);
+              } else {
+                return bVal.localeCompare(aVal);
+              }
+            }
+          } else {
+            aVal = 0;
+            bVal = 0;
+          }
           break;
       }
       if (aVal === bVal) {

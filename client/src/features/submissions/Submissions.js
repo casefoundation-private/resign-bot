@@ -141,7 +141,11 @@ class Submissions extends Component {
                 <th>{this.generateSortableColumnHeader('Flagged Reviews','flags')}</th>
                 {
                   this.props.config.review.categories.map((category,i) => {
-                    return (<th key={'category_'+i}>{category.prompt}</th>);
+                    return (
+                      <th key={'category_'+i}>
+                        {this.generateSortableColumnHeader(category.prompt,'category_'+i)}
+                      </th>
+                    );
                   })
                 }
                 <th>{this.generateSortableColumnHeader('Created','created_at')}</th>
