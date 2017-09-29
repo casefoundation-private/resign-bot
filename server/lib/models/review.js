@@ -49,7 +49,7 @@ module.exports = Review = bookshelf.Model.extend({
     const Submission = require('./submission');
     return this.belongsTo(Submission);
   },
-  'recuse': function(failQuietly,targetUserId) { //TODO test
+  'recuse': function(failQuietly,targetUserId) {
     if (targetUserId) {
       return Review.reviewForUserAndSubmission(targetUserId,this.get('submission_id'))
         .then((review) => {

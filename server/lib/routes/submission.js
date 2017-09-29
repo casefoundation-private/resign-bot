@@ -5,9 +5,7 @@ const _ = require('lodash');
 const allowedPublicSubmissionOrigins = process.env.ALLOWED_SUBMISSION_ORIGINS ? process.env.ALLOWED_SUBMISSION_ORIGINS.split(',') : [];
 
 exports.getSubmissions = (req,res,next) => {
-  const sortField = req.query.sortField || 'created_at';
-  const sortDirection = req.query.sortDirection || 'desc'; //TODO test
-  Submission.all(sortField,sortDirection)
+  Submission.all('created_at','desc')
     .then((values) => {
       res.json(values.filter((submission) => {
         return req.user.getSubmissionPermissions(submission).view;

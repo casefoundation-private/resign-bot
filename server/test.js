@@ -296,7 +296,7 @@ describe('API',() => {
       }).catch((err) => done(err));
     });
 
-    it('POST /api/user/:user/reviews/reassign',(done) => {
+    it('POST /api/user/:user/reviews/reassign (Blind Reassignment)',(done) => {
       const user2 = new User({
         'email': randomstring.generate(),
         'password': randomstring.generate(),
@@ -358,11 +358,125 @@ describe('API',() => {
         })
         .then(() => {
           assert.equal(user.related('reviews').length,1);
-          //TODO not assigning totally right
-          // assert.equal(user2.related('reviews').length,submissions.length / 2);
-          // assert.equal(user3.related('reviews').length,submissions.length / 2);
+          assert.equal(user2.related('reviews').length,5);
+          assert.equal(user3.related('reviews').length,4);
           assert.equal(user4.related('reviews').length,0);
           assert.equal(user5.related('reviews').length,0);
+          done();
+        })
+        .catch((err) => done(err));
+    }).timeout(5000);
+
+    it('POST /api/user/:user/reviews/reassign (Partial Reassignment)',(done) => {
+      const user2 = new User({
+        'email': randomstring.generate(),
+        'password': randomstring.generate(),
+        'ready': true,
+        'active': true
+      });
+      const user3 = new User({
+        'email': randomstring.generate(),
+        'password': randomstring.generate(),
+        'ready': true,
+        'active': true
+      });
+      Promise.all([
+        user2.save(),
+        user3.save(),
+      ])
+        .then(() => {
+          return user.fetch({'withRelated':['reviews']})
+        })
+        .then(() => {
+          assert.equal(user.related('reviews').length,submissions.length);
+        })
+        .then(() => {
+          return new Promise((resolve,reject) => {
+            chai.request(api)
+              .post('/api/user/' + user.get('id') + '/reviews/reassign?n=6')
+              .set('Authorization','JWT ' + token)
+              .end((err, res) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  resolve();
+                }
+              });
+          });
+        })
+        .then(() => {
+          return Promise.all([
+            user.fetch({'withRelated':['reviews']}),
+            user2.fetch({'withRelated':['reviews']}),
+            user3.fetch({'withRelated':['reviews']})
+          ]);
+        })
+        .then(() => {
+          assert.equal(user.related('reviews').length,4);
+          assert.equal(user2.related('reviews').length,3);
+          assert.equal(user3.related('reviews').length,3);
+          done();
+        })
+        .catch((err) => done(err));
+    }).timeout(5000);
+
+    it('POST /api/user/:user/reviews/reassign (Directed Reassignment)',(done) => {
+      const user2 = new User({
+        'email': randomstring.generate(),
+        'password': randomstring.generate(),
+        'ready': true,
+        'active': true
+      });
+      const user3 = new User({
+        'email': randomstring.generate(),
+        'password': randomstring.generate(),
+        'ready': true,
+        'active': true
+      });
+      const user4 = new User({
+        'email': randomstring.generate(),
+        'password': randomstring.generate(),
+        'ready': true,
+        'active': false
+      });
+      Promise.all([
+        user2.save(),
+        user3.save(),
+        user4.save()
+      ])
+        .then(() => {
+          return user.fetch({'withRelated':['reviews']})
+        })
+        .then(() => {
+          assert.equal(user.related('reviews').length,submissions.length);
+        })
+        .then(() => {
+          return new Promise((resolve,reject) => {
+            chai.request(api)
+              .post('/api/user/' + user.get('id') + '/reviews/reassign?user='+user3.get('id'))
+              .set('Authorization','JWT ' + token)
+              .end((err, res) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  resolve();
+                }
+              });
+          });
+        })
+        .then(() => {
+          return Promise.all([
+            user.fetch({'withRelated':['reviews']}),
+            user2.fetch({'withRelated':['reviews']}),
+            user3.fetch({'withRelated':['reviews']}),
+            user4.fetch({'withRelated':['reviews']})
+          ]);
+        })
+        .then(() => {
+          assert.equal(user.related('reviews').length,1);
+          assert.equal(user2.related('reviews').length,0);
+          assert.equal(user3.related('reviews').length,9);
+          assert.equal(user4.related('reviews').length,0);
           done();
         })
         .catch((err) => done(err));
@@ -572,6 +686,7 @@ describe('API',() => {
           res.body.user.id.should.be.eq(user.get('id'));
           res.body.submission.should.be.a('object');
           res.body.submission.id.should.be.eq(submissions[0].get('id'));
+          res.body.flagged.should.be.eq(false);
           done();
         });
     });
@@ -588,7 +703,8 @@ describe('API',() => {
           'score': Math.random() * 1000,
           'data': {
             'subfield1': randomstring.generate()
-          }
+          },
+          'flagged': true
         }
         chai.request(api)
           .put('/api/review')
@@ -605,6 +721,7 @@ describe('API',() => {
             res.body.data.subfield1.should.be.eq(newReview.data.subfield1);
             res.body.user_id.should.be.eq(user2.get('id'));
             res.body.submission_id.should.be.eq(submissions[0].get('id'));
+            res.body.flagged.should.be.eq(true);
             done();
           });
       }).catch((err) => done(err));
@@ -617,7 +734,8 @@ describe('API',() => {
         'score': Math.random() * 1000,
         'data': {
           'subfield1': randomstring.generate()
-        }
+        },
+        'flagged': true
       }
       chai.request(api)
         .put('/api/review')
@@ -636,7 +754,10 @@ describe('API',() => {
         'score': 30,
         'data': {
           'subfield1': randomstring.generate()
-        }
+        },
+        'flagged': true,
+        'submission_id': 1000,
+        'user_id': 2000
       }
       chai.request(api)
         .post('/api/review/' + review.get('id'))
@@ -646,7 +767,7 @@ describe('API',() => {
           res.should.have.status(200);
           res.body.should.be.a('object');
           res.body.id.should.be.eql(review.get('id'));
-          res.body.user_id.should.be.eql(review.get('user_id'));
+          res.body.user_id.should.be.eql(2000);
           res.body.submission_id.should.be.eql(review.get('submission_id'));
           res.body.score.should.be.eql(updatedReview.score);
           res.body.user.should.be.a('object');

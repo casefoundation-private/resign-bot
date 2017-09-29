@@ -32,7 +32,7 @@ exports.saveReview = (req,res,next) => {
   const save = (review) => {
     review.set('score',req.body.score);
     review.set('data',req.body.data || {});
-    review.set('flagged',req.body.flagged || false); //TODO test
+    review.set('flagged',req.body.flagged || false);
     if (req.user.isAdmin()) {
       if (req.body.user_id) {
         review.set('user_id',req.body.user_id);
