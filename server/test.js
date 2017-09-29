@@ -247,7 +247,7 @@ describe('API',() => {
           res.body.message.should.be.a('string');
 
           user.fetch()
-            .then((user) => {
+            .then(() => {
               assert(user.get('resetCode'));
               assert(user.get('resetExpiration'));
             })
@@ -255,7 +255,7 @@ describe('API',() => {
               return Notification.forge().fetchAll();
             })
             .then((notifications) => {
-              assert.equal(notifications.length,11);
+              assert.equal(notifications.length,22);
             })
             .then(() => {
               done();
@@ -357,7 +357,7 @@ describe('API',() => {
           ]);
         })
         .then(() => {
-          assert.equal(user.related('reviews').length,0);
+          assert.equal(user.related('reviews').length,1);
           //TODO not assigning totally right
           // assert.equal(user2.related('reviews').length,submissions.length / 2);
           // assert.equal(user3.related('reviews').length,submissions.length / 2);
@@ -468,7 +468,7 @@ describe('API',() => {
               return Notification.forge().fetchAll();
             })
             .then((notifications) => {
-              assert.equal(notifications.length,11);
+              assert.equal(notifications.length,23);
             })
             .then(() => {
               done();
@@ -603,10 +603,8 @@ describe('API',() => {
             res.body.score.should.be.eql(newReview.score);
             res.body.data.should.be.a('object');
             res.body.data.subfield1.should.be.eq(newReview.data.subfield1);
-            res.body.user.should.be.a('object');
-            res.body.user.id.should.be.eq(user2.get('id'));
-            res.body.submission.should.be.a('object');
-            res.body.submission.id.should.be.eq(submissions[0].get('id'));
+            res.body.user_id.should.be.eq(user2.get('id'));
+            res.body.submission_id.should.be.eq(submissions[0].get('id'));
             done();
           });
       }).catch((err) => done(err));

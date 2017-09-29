@@ -2,7 +2,7 @@ const Submission = require('../models/submission');
 const Favorite = require('../models/favorite');
 const stringify = require('csv-stringify-as-promised');
 const _ = require('lodash');
-const allowedPublicSubmissionOrigins = process.env.ALLOWED_SUBMISSION_ORIGINS.split(',');
+const allowedPublicSubmissionOrigins = process.env.ALLOWED_SUBMISSION_ORIGINS ? process.env.ALLOWED_SUBMISSION_ORIGINS.split(',') : [];
 
 exports.getSubmissions = (req,res,next) => {
   const sortField = req.query.sortField || 'created_at';

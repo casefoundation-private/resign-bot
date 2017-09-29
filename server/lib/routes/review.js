@@ -72,7 +72,7 @@ exports.saveReview = (req,res,next) => {
         .catch((err) => next(err));
     }
     if (userId) {
-      finishReviewCreation(_userId);
+      finishReviewCreation(userId);
     } else {
       Review.forSubmission(submissionId)
         .then((reviews) => {
