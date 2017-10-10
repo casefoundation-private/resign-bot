@@ -8,7 +8,8 @@ import {
   togglePinSubmission,
   downloadSubmissions,
   setSubmissionSort,
-  setSubmissionSearch
+  setSubmissionSearch,
+  clearAutoFlagSubmission
 } from '../../actions/submissions';
 import {
   makeFavorite,
@@ -152,7 +153,6 @@ class Submissions extends Component {
                 <th>{this.generateSortableColumnHeader('Std Deviation','deviation')}</th>
                 <th>{this.generateSortableColumnHeader('Completed Reviews','completedReviews')}</th>
                 <th>{this.generateSortableColumnHeader('Assigned Reviews','assignedReviews')}</th>
-                <th>{this.generateSortableColumnHeader('Auto Flagged','autoFlagged')}</th>
                 <th>{this.generateSortableColumnHeader('Flags','flags')}</th>
                 {
                   this.props.config.review.categories.map((category,i) => {
@@ -204,6 +204,14 @@ class Submissions extends Component {
                     )
                   }
                 </th>
+                <th className="text-center">
+                  <FontAwesome name="question-circle" id="auto-flagged-tooltip" />
+                  <UncontrolledTooltip placement="bottom" target="auto-flagged-tooltip">
+                    Auto-flagged submissions are those which the computer flagged as inappropriate. If a submission has been automatically flagged, an admin can remove the flag but not reinstate it. To do that, use the regular "Flagged" field.
+                  </UncontrolledTooltip>
+                  {' '}
+                  {this.generateSortableColumnHeader('Auto Flagged','autoFlagged')}
+                </th>
                 <th className="text-center">Options</th>
               </tr>
             </thead>
@@ -219,7 +227,6 @@ class Submissions extends Component {
                       <td>{submission.deviation === null ? 'N/A' : round(submission.deviation)}</td>
                       <td>{completedReviews(submission).length}</td>
                       <td>{incompletedReviews(submission).length}</td>
-                      <td>{ submission.autoFlagged === true ? 'Yes' : (submission.autoFlagged === false ? 'No' : 'N/A') }</td>
                       <td>{actualFlagsForSubmission(this.props.config,submission)}</td>
                       {
                         this.props.config.review.categories.map((category,i) => {
@@ -249,6 +256,15 @@ class Submissions extends Component {
                           { this.props.config.flaggedByDefault ?
                             (<FontAwesome name="thumbs-up" />)
                             : (<FontAwesome name="exclamation-triangle" />) }
+                        </Button>
+                      </td>
+                      <td className="text-center">
+                        <Button
+                          size="sm"
+                          color={submission.autoFlagged ? 'danger' : 'secondary' }
+                          onClick={() => this.props.clearAutoFlagSubmission(submission)}
+                          disabled={!submission.autoFlagged}>
+                          <FontAwesome name="exclamation-triangle" />
                         </Button>
                       </td>
                       <td className="text-center">
@@ -311,7 +327,8 @@ const dispatchToProps = (dispatch) => {
     setSubmissionSort,
     setSubmissionSearch,
     loadImporterPausedState,
-    setImporterPaused
+    setImporterPaused,
+    clearAutoFlagSubmission
   }, dispatch);
 }
 

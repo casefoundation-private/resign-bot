@@ -206,6 +206,7 @@ export const toggleFlagSubmission = (submission) => {
   }
 }
 
+//TODO this really isn't the right way to do this
 export const togglePinSubmission = (submission) => {
   return (dispatch,getState) => {
     submission.pinned = !submission.pinned;
@@ -236,6 +237,25 @@ export const downloadSubmissions = () => {
       a.download = 'Review-O-Matic Submissions Export ' + (new Date().toLocaleString()) + '.csv';
       a.click();
       window.URL.revokeObjectURL(url);
+    });
+  }
+}
+
+//TODO this really isn't the right way to do this
+export const clearAutoFlagSubmission = (submission) => {
+  return (dispatch,getState) => {
+    submission.autoFlagged = false;
+    authenticatedRequest(dispatch,getState,'/api/submission/' + submission.id,'POST',submission,(submission) => {
+      dispatch({
+        type: ACTION.SUBMISSIONS.SET,
+        submission
+      });
+      dispatch({
+        type: ACTION.MESSAGE.SET,
+        message: 'Submission auto-flag cleared.',
+        messageType: 'info'
+      });
+      dispatch(sortSubmissions());
     });
   }
 }
