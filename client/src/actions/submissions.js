@@ -42,6 +42,10 @@ export const sortSubmissions = () => {
             bVal = b[getState().submissions.sort.field] ? 1 : 0;
           }
           break;
+        case 'autoFlagged':
+          aVal = a[getState().submissions.sort.field] ? 1 : 0;
+          bVal = b[getState().submissions.sort.field] ? 1 : 0;
+          break;
         case 'created_at':
           aVal = a.created_at.getTime();
           bVal = b.created_at.getTime();

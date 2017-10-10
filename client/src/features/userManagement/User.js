@@ -58,10 +58,12 @@ class User extends Component {
             <Label for="email">Email</Label>
             <Input autoComplete={false} name="email" type="email" id="email" value={this.props.users.user.email} disabled={this.props.user.user.role!=='admin'} onChange={(event) => this.props.setActiveUserProp('email',event.target.value)} required/>
           </FormGroup>
-          <FormGroup>
-            <Label for="password">Password</Label>
-            <Input autoComplete={false} type="password" name="password" id="password" value={this.props.users.user.password || ''} onChange={(event) => this.props.setActiveUserProp('password',event.target.value)} />
-          </FormGroup>
+          {
+            this.props.users.user.id && (<FormGroup>
+              <Label for="password">Password</Label>
+              <Input autoComplete={false} type="password" name="password" id="password" value={this.props.users.user.password || ''} onChange={(event) => this.props.setActiveUserProp('password',event.target.value)} />
+            </FormGroup>)
+          }
           <FormGroup>
             <Label for="role">Role</Label>
             <Input type="select" name="role" id="role" value={this.props.users.user.role} disabled={this.props.user.user.role!=='admin'} onChange={(event) => this.props.setActiveUserProp('role',event.target.value)} required>

@@ -48,6 +48,11 @@ export const actualFlagsForSubmission = (config,submission) => {
       total++;
     }
   }
+  if (submission.autoFlagged === true && total === null) {
+    total = 1;
+  } else if (submission.autoFlagged === true) {
+    total++;
+  }
   return total === null ? 'N/A' : total;
 }
 

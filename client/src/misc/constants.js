@@ -38,5 +38,8 @@ export const ACTION = {
   },
   NOTIFICATIONS: {
     'SET': 'NOTIFICATIONS_SET'
+  },
+  IMPORTER: {
+    'SET_PAUSED': 'IMPORTER_SET_PAUSED'
   }
 }

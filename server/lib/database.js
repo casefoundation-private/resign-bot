@@ -62,8 +62,18 @@ exports.init = () => {
           table.json('data').notNullable();
           table.boolean('pinned').notNullable().defaultTo(false);
           table.boolean('flagged').notNullable().defaultTo(false);
+          table.boolean('autoFlagged').notNullable().defaultTo(false);
           table.timestamps();
         });
+      } else {
+        return knex.schema.hasColumn('submissions','autoFlagged')
+          .then((hasNotificationPreferences) => {
+            if (!hasNotificationPreferences) {
+              return knex.schema.alterTable('submissions', function(table) {
+                table.boolean('autoFlagged').notNullable().defaultTo(false);
+              });
+            }
+          });
       }
     })
   }).then(() => {

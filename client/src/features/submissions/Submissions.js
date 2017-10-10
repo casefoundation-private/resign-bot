@@ -27,6 +27,10 @@ import {
 import { Link } from 'react-router-dom';
 import FontAwesome from 'react-fontawesome';
 import SubmissionReviews from './SubmissionReviews';
+import {
+  loadImporterPausedState,
+  setImporterPaused
+} from '../../actions/importer';
 
 //TODO create a setActiveSubmission call for this to sync with sub props
 
@@ -74,6 +78,7 @@ class Submissions extends Component {
 
   componentDidMount() {
     this.props.loadSubmissions();
+    this.props.loadImporterPausedState();
   }
 
   changeSort(name) {
@@ -125,7 +130,16 @@ class Submissions extends Component {
               </Form>
             </Col>
             <Col className="text-right">
-              <Button color="primary" onClick={() => this.props.downloadSubmissions()}><FontAwesome name="download" /> Download Submissions</Button>
+              <ButtonGroup>
+                <Button color={this.props.importer.paused ? 'success' : 'danger'} onClick={() => this.props.setImporterPaused(!this.props.importer.paused)}>
+                  {this.props.importer.paused ?
+                    (<span><FontAwesome name="play" /> Resume Importing</span>)
+                    : (<span><FontAwesome name="pause" /> Pause Importing</span>)}
+                </Button>
+                <Button color="primary" onClick={() => this.props.downloadSubmissions()}>
+                  <FontAwesome name="download" /> Download Submissions
+                </Button>
+              </ButtonGroup>
             </Col>
           </Row>
           <br/>
@@ -138,7 +152,8 @@ class Submissions extends Component {
                 <th>{this.generateSortableColumnHeader('Std Deviation','deviation')}</th>
                 <th>{this.generateSortableColumnHeader('Completed Reviews','completedReviews')}</th>
                 <th>{this.generateSortableColumnHeader('Assigned Reviews','assignedReviews')}</th>
-                <th>{this.generateSortableColumnHeader('Flagged Reviews','flags')}</th>
+                <th>{this.generateSortableColumnHeader('Auto Flagged','autoFlagged')}</th>
+                <th>{this.generateSortableColumnHeader('Flags','flags')}</th>
                 {
                   this.props.config.review.categories.map((category,i) => {
                     return (
@@ -204,6 +219,7 @@ class Submissions extends Component {
                       <td>{submission.deviation === null ? 'N/A' : round(submission.deviation)}</td>
                       <td>{completedReviews(submission).length}</td>
                       <td>{incompletedReviews(submission).length}</td>
+                      <td>{ submission.autoFlagged === true ? 'Yes' : (submission.autoFlagged === false ? 'No' : 'N/A') }</td>
                       <td>{actualFlagsForSubmission(this.props.config,submission)}</td>
                       {
                         this.props.config.review.categories.map((category,i) => {
@@ -279,7 +295,8 @@ const stateToProps = (state) => {
   return {
     submissions: state.submissions,
     user: state.user,
-    config: state.config
+    config: state.config,
+    importer: state.importer
   }
 }
 
@@ -292,7 +309,9 @@ const dispatchToProps = (dispatch) => {
     deleteFavorite,
     downloadSubmissions,
     setSubmissionSort,
-    setSubmissionSearch
+    setSubmissionSearch,
+    loadImporterPausedState,
+    setImporterPaused
   }, dispatch);
 }
 

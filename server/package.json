@@ -23,6 +23,7 @@
     "jsdom": "^11.2.0",
     "jsonwebtoken": "^7.4.3",
     "knex": "^0.13.0",
+    "later": "^1.2.0",
     "morgan": "^1.8.2",
     "nodemailer": "^4.1.0",
     "passport": "^0.4.0",

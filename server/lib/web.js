@@ -95,6 +95,9 @@ exports.init = (serve) => {
 
   app.post('/api/webbooks/wufoo',routes.webhooks.wufoo); //TODO test
 
+  app.get('/api/importer/paused',authenticate,routes.importer.getPause); //TODO test
+  app.post('/api/importer/paused',authenticate,routes.importer.setPause); //TODO test
+
   app.use((err,req,res,next) => {
     if (err) {
       const status = res.statusCode || 500;
