@@ -23,7 +23,8 @@ import {
   getFavorite,
   round,
   SubmissionContents,
-  actualFlagsForSubmission
+  actualFlagsForSubmission,
+  pinnedSubmissions
 } from '../../misc/utils';
 import { Link } from 'react-router-dom';
 import FontAwesome from 'react-fontawesome';
@@ -111,6 +112,16 @@ class Submissions extends Component {
   }
 
   render() {
+    const pinnedSubmissionsCount = this.props.submissions.submissions ? pinnedSubmissions(this.props.submissions.submissions).length : 0;
+    const shouldEnablePinButton = (submission) => {
+      if (submission.pinned === true
+          || this.props.config.submissions.pinned_limit === null
+          || pinnedSubmissionsCount < this.props.config.submissions.pinned_limit) {
+        return true;
+      } else {
+        return false;
+      }
+    }
     return (
       <div>
         <PageWrapper title={'Submissions (' + (this.props.submissions.submissions && this.props.submissions.submissions.length) + ' Total)'}>
@@ -256,7 +267,7 @@ class Submissions extends Component {
                         }
                       </td>
                       <td className="text-center">
-                        <Button size="sm" color={submission.pinned ? 'success' : 'secondary'} onClick={() => this.props.togglePinSubmission(submission)}>
+                        <Button disabled={!shouldEnablePinButton(submission)} size="sm" color={submission.pinned ? 'success' : 'secondary'} onClick={() => this.props.togglePinSubmission(submission)}>
                           <FontAwesome name="circle" />
                         </Button>
                       </td>

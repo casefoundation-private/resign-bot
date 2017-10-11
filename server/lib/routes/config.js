@@ -19,7 +19,8 @@ const loadConfig = () => {
   return Promise.all([
     generateReviewConfig(config),
     generateHelpTextConfig(config),
-    generateFlagConfig(config)
+    generateFlagConfig(config),
+    generateSubmissionsConfig(config)
   ])
 }
 
@@ -89,6 +90,16 @@ const fetchGoogleDocsContent = (config) => {
         });
         resolve();
       }
-    })
-  })
+    });
+  });
+}
+
+const generateSubmissionsConfig = (config) => {
+  return new Promise((resolve,reject) => {
+    config.submissions = {
+      'pinned_limit': process.env.PINNED_LIMIT ? parseInt(process.env.PINNED_LIMIT) : null,
+      'review_limit': process.env.REVIEW_LIMIT ? parseInt(process.env.REVIEW_LIMIT) : null
+    };
+    resolve();
+  });
 }

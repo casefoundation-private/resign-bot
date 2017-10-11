@@ -16,6 +16,10 @@ export const summarizeSubmission = (submission) => {
   }
 }
 
+export const pinnedSubmissions = (submissions) => {
+  return submissions.filter((submission) => submission.pinned === true);
+}
+
 export const completedReviews = (submission) => {
   return submission.reviews.filter((review) => review.score !== null);
 }
