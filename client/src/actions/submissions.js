@@ -43,6 +43,7 @@ export const sortSubmissions = () => {
           }
           break;
         case 'autoFlagged':
+        case 'embargoed':
           aVal = a[getState().submissions.sort.field] ? 1 : 0;
           bVal = b[getState().submissions.sort.field] ? 1 : 0;
           break;

@@ -3,14 +3,14 @@ import {
 } from '../misc/constants';
 
 const initialImporterState = {
-  paused: null
+  embargoed: null
 };
 
 const importer = (state = initialImporterState, action) => {
   switch (action.type) {
-    case ACTION.IMPORTER.SET_PAUSED:
+    case ACTION.IMPORTER.SET_EMBARGOED:
       return Object.assign({},state,{
-        'paused': action.paused
+        'embargoed': action.embargoed
       });
     case ACTION.USER.LOGOUT:
       return Object.assign({},initialImporterState);

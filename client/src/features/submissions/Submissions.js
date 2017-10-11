@@ -29,8 +29,8 @@ import { Link } from 'react-router-dom';
 import FontAwesome from 'react-fontawesome';
 import SubmissionReviews from './SubmissionReviews';
 import {
-  loadImporterPausedState,
-  setImporterPaused
+  loadImporterEmbargoedState,
+  setImporterEmbargoed
 } from '../../actions/importer';
 
 //TODO create a setActiveSubmission call for this to sync with sub props
@@ -79,7 +79,7 @@ class Submissions extends Component {
 
   componentDidMount() {
     this.props.loadSubmissions();
-    this.props.loadImporterPausedState();
+    this.props.loadImporterEmbargoedState();
   }
 
   changeSort(name) {
@@ -132,10 +132,10 @@ class Submissions extends Component {
             </Col>
             <Col className="text-right">
               <ButtonGroup>
-                <Button color={this.props.importer.paused ? 'success' : 'danger'} onClick={() => this.props.setImporterPaused(!this.props.importer.paused)}>
-                  {this.props.importer.paused ?
-                    (<span><FontAwesome name="play" /> Resume Importing</span>)
-                    : (<span><FontAwesome name="pause" /> Pause Importing</span>)}
+                <Button color={this.props.importer.embargoed ? 'success' : 'danger'} onClick={() => this.props.setImporterEmbargoed(!this.props.importer.embargoed)}>
+                  {this.props.importer.embargoed ?
+                    (<span><FontAwesome name="play" /> Release Embargoed Submissions</span>)
+                    : (<span><FontAwesome name="pause" /> Embargo New Submissions</span>)}
                 </Button>
                 <Button color="primary" onClick={() => this.props.downloadSubmissions()}>
                   <FontAwesome name="download" /> Download Submissions
@@ -165,7 +165,15 @@ class Submissions extends Component {
                 }
                 <th>{this.generateSortableColumnHeader('Created','created_at')}</th>
                 <th className="text-center">
-                <FontAwesome name="question-circle" id="favorite-tooltip" />
+                  <FontAwesome name="question-circle" id="embargoed-tooltip" />
+                  <UncontrolledTooltip placement="bottom" target="embargoed-tooltip">
+                    Embargoed submissions are available for review in the Review-O-Mati but not published to the public stories feed until the embargo is released.
+                  </UncontrolledTooltip>
+                  {' '}
+                  {this.generateSortableColumnHeader('Embargoed','embargoed')}
+                </th>
+                <th className="text-center">
+                  <FontAwesome name="question-circle" id="favorite-tooltip" />
                   <UncontrolledTooltip placement="bottom" target="favorite-tooltip">
                     This is a marker that only you control. Your favorites are differnet than other users{'\''} favorites so that you can mark the submissions you are most interested in tracking.
                   </UncontrolledTooltip>
@@ -240,6 +248,7 @@ class Submissions extends Component {
                         })
                       }
                       <td>{submission.created_at && submission.created_at.toLocaleDateString ? submission.created_at.toLocaleDateString() : submission.created_at}</td>
+                      <td>{submission.embargoed === true ? 'Yes' : 'No'}</td>
                       <td className="text-center">
                         { !favorite ?
                           ( <Button size="sm" color="secondary" onClick={() => this.props.makeFavorite(submission)}><FontAwesome name="star" /></Button> )
@@ -326,9 +335,8 @@ const dispatchToProps = (dispatch) => {
     downloadSubmissions,
     setSubmissionSort,
     setSubmissionSearch,
-    loadImporterPausedState,
-    setImporterPaused,
-    clearAutoFlagSubmission
+    loadImporterEmbargoedState,
+    setImporterEmbargoed
   }, dispatch);
 }
 

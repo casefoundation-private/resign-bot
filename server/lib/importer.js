@@ -7,12 +7,12 @@ const importers = [];
 const importersByName = {};
 const embargoDate = process.env.EMBARGO_DATE ? new Date(process.env.EMBARGO_DATE) : false;
 let importLock = false;
-let importPause = false;
+let importEmbargo = false;
 
 exports.init = () => {
   if (!process.env.SUSPEND_IMPORTING) {
     setupImporters();
-    setupPauseSchedule();
+    setupEmbargoSchedule();
     setInterval(() => {
       runImporters().catch((err) => {
         console.log(err);
@@ -22,16 +22,25 @@ exports.init = () => {
   }
 }
 
-exports.isPaused = () => {
-  return importPause;
+exports.isEmbargoed = () => {
+  return importEmbargo;
 }
 
-const setPaused = exports.setPaused = (paused) => {
-  importPause = paused;
-  if (paused) {
-    console.log('Importing paused');
+const setEmbargoed = exports.setEmbargoed = (embargoed) => {
+  importEmbargo = embargoed;
+  if (embargoed) {
+    console.log('Importing embargoed');
   } else {
-    console.log('Importing resumed');
+    console.log('Importing resumed; embargoed stories released');
+    return Submission.embargoed()
+      .then((submissions) => {
+        return Promise.all(
+          submissions.map((submission) => {
+            submission.set('embargoed',false);
+            return submission.save();
+          })
+        )
+      });
   }
 }
 
@@ -42,28 +51,28 @@ const setupImporters = () => {
   }
 }
 
-const setupPauseSchedule = () => {
-  const schedulePause = (pauseStartString,pauseLength) => {
+const setupEmbargoSchedule = () => {
+  const scheduleEmbargo = (embargoStartString,embargoLength) => {
     const schedule = later
       .parse
-      .cron(pauseStartString);
+      .cron(embargoStartString);
     later.setInterval(() => {
-      setPaused(true);
+      setEmbargoed(true);
       setTimeout(() => {
-        setPaused(false);
-      },pauseLength)
+        setEmbargoed(false);
+      },embargoLength)
     },schedule);
   }
-  const pauses = parseInt(process.env.IMPORT_PAUSES || 0);
-  for(var i = 0; i < pauses; i++) {
-    const pauseStartString = process.env['IMPORT_PAUSE_' + i + '_START'];
-    const pauseLength = parseInt(process.env['IMPORT_PAUSE_' + i + '_LENGTH']);
-    schedulePause(pauseStartString,pauseLength);
+  const embargos = parseInt(process.env.IMPORT_PAUSES || 0);
+  for(var i = 0; i < embargos; i++) {
+    const embargoStartString = process.env['IMPORT_PAUSE_' + i + '_START'];
+    const embargoLength = parseInt(process.env['IMPORT_PAUSE_' + i + '_LENGTH']);
+    scheduleEmbargo(embargoStartString,embargoLength);
   }
 }
 
 const runImporters = () => {
-  if (!importLock && !importPause) {
+  if (!importLock) {
     importLock = true;
     console.log('Starting import batch');
     const nextImporter = (i) => {
@@ -110,13 +119,14 @@ const saveSubmissions = (newSubmissions) => {
             console.log(newSubmission.get('source') + '/' + newSubmission.get('external_id') + ' is new. Importing');
             let badLanguage = false;
             for(var key in newSubmission.get('data')) {
-              if (blFilter.contains(newSubmission.get('data')[key])) {
+              if (blFilter.contains(' ' + newSubmission.get('data')[key] + ' ')) {
                 badLanguage = true;
                 console.log('Flagging new submission for bad language.');
               }
             }
             newSubmission.set('flagged',JSON.parse(process.env.FLAGGED_BY_DEFAULT || false));
             newSubmission.set('autoFlagged',badLanguage);
+            newSubmission.set('embargoed',importEmbargo);
             return newSubmission.save();
           }
         })

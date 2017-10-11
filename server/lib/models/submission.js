@@ -67,6 +67,7 @@ module.exports = Submission = bookshelf.Model.extend({
     json.flagged = json.flagged === true || json.flagged === 1;
     json.autoFlagged = json.autoFlagged === true || json.autoFlagged === 1;
     json.pinned = json.pinned === true || json.pinned === 1;
+    json.embargoed = json.embargoed === true || json.embargoed === 1;
     return json;
   },
   'virtuals': {
@@ -188,6 +189,7 @@ module.exports = Submission = bookshelf.Model.extend({
       .query((qb) => {
         qb.where({'flagged':false})
         qb.where({'autoFlagged':false})
+        qb.where({'embargoed':false})
         const subquery = knex
           .select(['submission_id'])
           .from('reviews')
@@ -212,5 +214,13 @@ module.exports = Submission = bookshelf.Model.extend({
           return false;
         }
       });
+  },
+  'embargoed': function() {
+    return this
+      .forge()
+      .query((qb) => {
+        qb.where({'embargoed':true})
+      })
+      .fetchAll();
   }
 });
