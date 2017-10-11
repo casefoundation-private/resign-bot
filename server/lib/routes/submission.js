@@ -97,7 +97,7 @@ exports.saveSubmission = (req,res,next) => {
     submission.set('data',req.body.data);
     submission.set('flagged',req.body.flagged || false);
     submission.set('pinned',req.body.pinned || false);
-    submission.set('autoFlagged',req.body.autoFlagged || false);
+    submission.set('autoFlagged',req.body.autoFlagged || false); //TODO test
     submission.save()
       .then(() => {
         res.json(submission.toJSON());
