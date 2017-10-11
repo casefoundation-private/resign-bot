@@ -347,7 +347,8 @@ const dispatchToProps = (dispatch) => {
     setSubmissionSort,
     setSubmissionSearch,
     loadImporterEmbargoedState,
-    setImporterEmbargoed
+    setImporterEmbargoed,
+    clearAutoFlagSubmission
   }, dispatch);
 }
 
