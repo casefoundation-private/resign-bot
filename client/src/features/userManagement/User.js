@@ -12,6 +12,9 @@ import {
 import PageWrapper from '../../PageWrapper';
 import { Link } from 'react-router-dom';
 import FontAwesome from 'react-fontawesome';
+import {
+  Spinner
+} from '../../misc/utils';
 
 class User extends Component {
   componentDidMount() {
@@ -53,7 +56,7 @@ class User extends Component {
         { this.props.users.user && this.props.users.user.id !== this.props.user.user.id && (<p>
           <Link to='/users'><FontAwesome name="chevron-left" /> Back to Users</Link>
         </p>)}
-        { this.props.users.user && (<Form onSubmit={(event) => this.handleSave(event)}>
+        { this.props.users.user ? (<Form onSubmit={(event) => this.handleSave(event)}>
           <FormGroup>
             <Label for="email">Email</Label>
             <Input autoComplete={false} name="email" type="email" id="email" value={this.props.users.user.email} disabled={this.props.user.user.role!=='admin'} onChange={(event) => this.props.setActiveUserProp('email',event.target.value)} required/>
@@ -112,7 +115,7 @@ class User extends Component {
           }
           <br/>
           <Button color="primary" type="submit"><FontAwesome name="check-circle-o" /> Save</Button>
-        </Form>)}
+        </Form>) : (<Spinner />)}
       </PageWrapper>
     );
   }

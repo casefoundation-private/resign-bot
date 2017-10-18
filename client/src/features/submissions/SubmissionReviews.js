@@ -16,7 +16,8 @@ import {
   loadUsers
 } from '../../actions/users';
 import {
-  round
+  round,
+  Spinner
 } from '../../misc/utils';
 import FontAwesome from 'react-fontawesome';
 import ReviewSummary from './ReviewSummary';
@@ -79,7 +80,7 @@ class SubmissionReviews extends Component {
           </thead>
           <tbody>
             {
-              this.props.reviews.reviews && this.props.reviews.reviews.map((review) => {
+              this.props.reviews.reviews ? this.props.reviews.reviews.map((review) => {
                 return (
                   <tr key={review.id}>
                     <td>
@@ -103,7 +104,7 @@ class SubmissionReviews extends Component {
                     </td>
                   </tr>
                 )
-              })
+              }) : (<Spinner />)
             }
           </tbody>
         </Table>

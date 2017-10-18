@@ -14,7 +14,8 @@ import {
 import PageWrapper from '../../PageWrapper';
 import {
   summarizeSubmission,
-  SubmissionContents
+  SubmissionContents,
+  Spinner
 } from '../../misc/utils';
 import { Link } from 'react-router-dom';
 import FontAwesome from 'react-fontawesome';
@@ -54,7 +55,7 @@ class Review extends Component {
     return (
       <div>
         {
-          this.props.reviews.review.data && this.props.reviews.review.data.prompts && this.props.config.review.prompts.map((prompt,i) => {
+          this.props.reviews.review.data && this.props.reviews.review.data.prompts ? this.props.config.review.prompts.map((prompt,i) => {
             return (
               <FormGroup key={'prompt_'+i} className={this.state.showValidation && this.props.reviews.validation.invalidPrompts.indexOf(i) >= 0 ? 'has-danger' : null}>
                 <Label for={'review_prompt_'+i}>
@@ -74,10 +75,10 @@ class Review extends Component {
                 </Input>
               </FormGroup>
             )
-          })
+          }) : (<Spinner />)
         }
         {
-          this.props.reviews.review.data && this.props.reviews.review.data.categories && this.props.config.review.categories.map((category,i) => {
+          this.props.reviews.review.data && this.props.reviews.review.data.categories ? this.props.config.review.categories.map((category,i) => {
             return (
               <FormGroup key={'category_'+i} className={this.state.showValidation && this.props.reviews.validation.invalidCategories.indexOf(i) >= 0 ? 'has-danger' : null}>
                 <Label for={'review_category_'+i}>
@@ -97,7 +98,7 @@ class Review extends Component {
                 </Input>
               </FormGroup>
             )
-          })
+          }) : (<Spinner />)
         }
       </div>
     );

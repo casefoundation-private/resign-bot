@@ -6,6 +6,9 @@ import {
   loadNotifications
 } from '../../actions/notifications';
 import PageWrapper from '../../PageWrapper';
+import {
+  Spinner
+} from '../../misc/utils';
 
 class NotificationQueue extends Component {
   componentDidMount() {
@@ -28,7 +31,7 @@ class NotificationQueue extends Component {
           </thead>
           <tbody>
             {
-              this.props.notifications.notifications && this.props.notifications.notifications.map((notification) => {
+              this.props.notifications.notifications ? this.props.notifications.notifications.map((notification) => {
                 return (
                   <tr key={notification.id}>
                     <td>{new Date(notification.user.created_at).toLocaleString()}</td>
@@ -43,7 +46,7 @@ class NotificationQueue extends Component {
                     </td>
                   </tr>
                 )
-              })
+              }) : (<Spinner />)
             }
           </tbody>
         </Table>

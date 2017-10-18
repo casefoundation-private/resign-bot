@@ -9,7 +9,7 @@ export const loadReviewsForSubmission = (submissionId) => {
   return (dispatch,getState) => {
     dispatch({
       type: ACTION.REVIEWS.SET,
-      reviews: []
+      reviews: null
     });
     authenticatedRequest(dispatch,getState,'/api/submission/'+submissionId+'/reviews','GET',null,(reviews) => {
       dispatch({
@@ -24,7 +24,7 @@ export const loadReviewsForUser = (userId) => {
   return (dispatch,getState) => {
     dispatch({
       type: ACTION.REVIEWS.SET,
-      reviews: []
+      reviews: null
     });
     authenticatedRequest(dispatch,getState,'/api/user/'+userId+'/reviews','GET',null,(reviews) => {
       dispatch({

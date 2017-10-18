@@ -3,6 +3,7 @@ import getVideoId from 'get-video-id';
 import React from 'react';
 import { Button, ButtonGroup } from 'reactstrap';
 import FontAwesome from 'react-fontawesome';
+import './utils.css';
 
 const _ = require('lodash');
 const summaryCache = {};
@@ -68,7 +69,7 @@ export const paginate = (array,perPage,page,goToPageCallback,renderCallback) => 
     const nPages = Math.ceil(array.length / perPage);
     if (page < nPages) {
       const startIndex = page * perPage;
-      const endIndex = Math.min(array.length-1,startIndex + perPage);
+      const endIndex = Math.min(array.length,startIndex + perPage);
       const pageNums = [];
       for(var i = 0; i < nPages; i++) {
         pageNums.push(i);
@@ -84,7 +85,7 @@ export const paginate = (array,perPage,page,goToPageCallback,renderCallback) => 
               {
                 pageNums.map((pageNum) => {
                   return (
-                    <Button key={pageNum} onClick={() => goToPageCallback(pageNum)} className={pageNum === page && 'active'}>
+                    <Button key={pageNum} onClick={() => goToPageCallback(pageNum)} className={pageNum === page ? 'active' : null}>
                       {pageNum + 1}
                     </Button>
                   );
@@ -161,6 +162,25 @@ export const SubmissionContents = (props) => {
           return null;
         }
       })}
+    </div>
+  );
+}
+
+export const Spinner = (props) => {
+  return (
+    <div className="sk-fading-circle">
+      <div className="sk-circle1 sk-circle"></div>
+      <div className="sk-circle2 sk-circle"></div>
+      <div className="sk-circle3 sk-circle"></div>
+      <div className="sk-circle4 sk-circle"></div>
+      <div className="sk-circle5 sk-circle"></div>
+      <div className="sk-circle6 sk-circle"></div>
+      <div className="sk-circle7 sk-circle"></div>
+      <div className="sk-circle8 sk-circle"></div>
+      <div className="sk-circle9 sk-circle"></div>
+      <div className="sk-circle10 sk-circle"></div>
+      <div className="sk-circle11 sk-circle"></div>
+      <div className="sk-circle12 sk-circle"></div>
     </div>
   );
 }

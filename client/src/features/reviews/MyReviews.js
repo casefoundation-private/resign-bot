@@ -9,7 +9,8 @@ import {
 import PageWrapper from '../../PageWrapper';
 import {
   summarizeSubmission,
-  paginate
+  paginate,
+  Spinner
 } from '../../misc/utils';
 import { Link } from 'react-router-dom';
 import FontAwesome from 'react-fontawesome';
@@ -27,7 +28,7 @@ class MyReviews extends Component {
   }
 
   renderReviewList(reviews) {
-    return reviews && paginate(reviews,this.props.config.perPage,this.state.page,
+    return reviews ? paginate(reviews,this.props.config.perPage,this.state.page,
       (page) => {
         this.setState({page})
       },
@@ -66,7 +67,7 @@ class MyReviews extends Component {
           </Table>
         )
       }
-    );
+    ) : (<Spinner />);
   }
 
   render() {

@@ -9,7 +9,7 @@ export const loadUsers = () => {
   return (dispatch,getState) => {
     dispatch({
       type: ACTION.USERS.SET,
-      users: []
+      users: null
     });
     authenticatedRequest(dispatch,getState,'/api/user','GET',null,(users) => {
       dispatch({

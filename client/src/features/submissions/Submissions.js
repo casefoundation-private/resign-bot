@@ -25,7 +25,8 @@ import {
   SubmissionContents,
   actualFlagsForSubmission,
   pinnedSubmissions,
-  paginate
+  paginate,
+  Spinner
 } from '../../misc/utils';
 import { Link } from 'react-router-dom';
 import FontAwesome from 'react-fontawesome';
@@ -110,7 +111,7 @@ class Submissions extends Component {
         return this.props.submissions.submissions;
       }
     }
-    return [];
+    return null;
   }
 
   render() {
@@ -124,6 +125,7 @@ class Submissions extends Component {
         return false;
       }
     }
+    const submissionsArray = this.getSubmissions();
     return (
       <div>
         <PageWrapper title={'Submissions (' + (this.props.submissions.submissions && this.props.submissions.submissions.length) + ' Total)'}>
@@ -158,7 +160,7 @@ class Submissions extends Component {
           </Row>
           <br/>
           {
-            paginate(this.getSubmissions(),this.props.config.perPage,this.state.page,
+            submissionsArray ? paginate(submissionsArray,this.props.config.perPage,this.state.page,
               (page) => {
                 this.setState({page})
               },
@@ -309,7 +311,7 @@ class Submissions extends Component {
                     </tbody>
                   </Table>
                 )
-              })
+              }) : (<Spinner />)
           }
         </PageWrapper>
         <Modal isOpen={this.state.reviewEditorModal} toggle={() => this.closeReviewEditorModel()} size="lg">

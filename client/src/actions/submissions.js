@@ -147,7 +147,7 @@ export const loadSubmissions = () => {
   return (dispatch,getState) => {
     dispatch({
       type: ACTION.SUBMISSIONS.SET,
-      submissions: []
+      submissions: null
     });
     const url = '/api/submission';
     authenticatedRequest(dispatch,getState,url,'GET',null,(submissions) => {
