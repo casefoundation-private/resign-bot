@@ -93,9 +93,9 @@ exports.init = (serve) => {
   app.post('/api/review/:review',authenticate,routes.review.saveReview);
   app.post('/api/review/:review/recuse',authenticate,routes.review.recuseReview);
 
-  app.get('/api/notification',authenticate,routes.notification.getNotifications); //TODO test
+  app.get('/api/notification',authenticate,routes.notification.getNotifications);
 
-  app.get('/api/config',authenticate,routes.config.getConfig); //TODO test
+  app.get('/api/config',authenticate,routes.config.getConfig);
 
   app.post('/api/webbooks/wufoo',routes.webhooks.wufoo); //TODO test
 

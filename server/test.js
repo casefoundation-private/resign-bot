@@ -1014,4 +1014,37 @@ describe('API',() => {
         });
     });
   });
+
+  describe('Notification',() => {
+    it('GET /api/notification',(done) => {
+      chai.request(api)
+        .get('/api/notification')
+        .set('Authorization','JWT ' + token)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('array');
+          res.body.length.should.eq(submissions.length * 2 + 1);
+          done();
+        });
+    });
+  });
+
+  describe('Config',() => {
+    it('GET /api/config',(done) => {
+      chai.request(api)
+        .get('/api/config')
+        .set('Authorization','JWT ' + token)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.perPage.should.eq(0);
+          res.body.flaggedByDefault.should.eq(false);
+          res.body.review.prompts.length.should.eq(0);
+          res.body.review.categories.length.should.eq(0);
+          res.body.submissions.pinned_limit.should.eq(1);
+          assert.equal(res.body.submissions.review_limit,null);
+          done();
+        });
+    });
+  });
 });
