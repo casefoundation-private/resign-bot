@@ -65,7 +65,6 @@ exports.saveReview = (req,res,next) => {
             });
             save(review);
           } else {
-            res.status(400);
             throw new Error('Review already exists for that user and submission.');
           }
         })
@@ -93,7 +92,7 @@ exports.saveReview = (req,res,next) => {
 
 exports.recuseReview = (req,res,next) => {
   if (req.user.getReviewPermissions(req.review).edit) {
-    req.review.recuse()
+    req.review.recuse(null,null)
       .then(() => {
         return req.review.save();
       })

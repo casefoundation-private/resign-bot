@@ -1,5 +1,6 @@
 process.env.NODE_ENV = 'test';
 
+const parse = require('csv-parse');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const web = require('./lib/web');
@@ -36,6 +37,7 @@ describe('API',() => {
   });
 
   beforeEach(() => {
+    process.env.PINNED_LIMIT = 1;
     return database.knex('reviews').delete()
       .then(() => {
         return database.knex('submissions').delete();
@@ -69,8 +71,11 @@ describe('API',() => {
               'field1': randomstring.generate(),
               'field2': randomstring.generate()
             },
+            'external_id': randomstring.generate(),
             'flagged': randomBoolean(),
-            'pinned': randomBoolean()
+            'embargoed': randomBoolean(),
+            'pinned': false,
+            'autoFlagged': false
           });
           submissions.push(object);
         }
@@ -533,6 +538,8 @@ describe('API',() => {
           res.body.data.field2.should.be.eq(submissions[0].get('data').field2);
           res.body.flagged.should.be.eq(submissions[0].get('flagged'));
           res.body.pinned.should.be.eq(submissions[0].get('pinned'));
+          res.body.autoFlagged.should.be.eq(submissions[0].get('autoFlagged'));
+          res.body.external_id.should.be.eq(submissions[0].get('external_id'));
           done();
         });
     });
@@ -572,6 +579,8 @@ describe('API',() => {
           res.body.data.field2.should.be.eq(newSubmission.data.field2);
           res.body.flagged.should.be.eq(newSubmission.flagged);
           res.body.pinned.should.be.eq(newSubmission.pinned);
+          res.body.autoFlagged.should.be.eq(false);
+          assert.equal(res.body.external_id,null);
 
           Review.forSubmission(res.body.id)
             .then((reviews) => {
@@ -614,7 +623,68 @@ describe('API',() => {
           res.body.data.field2.should.be.eq(updatedSubmission.data.field2);
           res.body.flagged.should.be.eq(updatedSubmission.flagged);
           res.body.pinned.should.be.eq(updatedSubmission.pinned);
+          res.body.autoFlagged.should.be.eq(false);
+          res.body.external_id.should.be.eq(submissions[0].get('external_id'));
           done();
+        });
+    });
+
+    it('POST /api/submission/:submission (Clear autoFlagged)',(done) => {
+      submissions[0].set('autoFlagged',true);
+      submissions[0].save()
+        .then(() => {
+          const updateJSON = submissions[0].toJSON();
+          updateJSON.autoFlagged = false;
+          chai.request(api)
+            .post('/api/submission/' + submissions[0].get('id'))
+            .set('Authorization','JWT ' + token)
+            .send(updateJSON)
+            .end((err, res) => {
+              res.should.have.status(200);
+              res.body.should.be.a('object');
+              res.body.autoFlagged.should.be.eq(false);
+              done();
+            });
+        })
+        .catch((err) => done(err));
+    });
+
+    it('POST /api/submission/:submission (Ignore autoFlagged)',(done) => {
+      const updateJSON = submissions[0].toJSON();
+      updateJSON.autoFlagged = true;
+      chai.request(api)
+        .post('/api/submission/' + submissions[0].get('id'))
+        .set('Authorization','JWT ' + token)
+        .send(updateJSON)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.autoFlagged.should.be.eq(false);
+          done();
+        });
+    });
+
+    it('POST /api/submission/:submission (Pinned Limited)',(done) => {
+      const submissionJSON = submissions[0].toJSON();
+      submissionJSON.pinned = true;
+
+      chai.request(api)
+        .post('/api/submission/' + submissions[0].get('id'))
+        .set('Authorization','JWT ' + token)
+        .send(submissionJSON)
+        .end((err, res) => {
+          res.should.have.status(200);
+
+          const submissionJSON1 = submissions[1].toJSON();
+          submissionJSON1.pinned = true;
+          chai.request(api)
+            .post('/api/submission/' + submissions[1].get('id'))
+            .set('Authorization','JWT ' + token)
+            .send(submissionJSON1)
+            .end((err, res) => {
+              res.should.have.status(400);
+              done();
+            });
         });
     });
 
@@ -668,6 +738,128 @@ describe('API',() => {
         })
         .catch((err) => done(err));
     });
+
+    it('OPTIONS /api/submission/public',(done) => {
+      chai.request(api)
+        .options('/api/submission/public')
+        .set('Authorization','JWT ' + token)
+        .set('origin','localhost:8000')
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.should.have.header('access-control-allow-origin');
+          res.headers['access-control-allow-origin'].should.eq('localhost:8000');
+          res.should.have.header('access-control-allow-methods');
+          res.headers['access-control-allow-methods'].should.eq('GET,OPTIONS');
+          res.should.have.header('access-control-allow-headers');
+          res.headers['access-control-allow-headers'].should.eq('Origin, X-Requested-With, Content-Type, Accept');
+          done();
+        });
+    });
+
+    it('GET /api/submission/public',(done) => {
+      const adminFlaggedSubmission = submissions[0];
+      const reviewFlaggedSubmission = submissions[1];
+      const autoFlaggedSubmission = submissions[2];
+      const embargoedSubmssion = submissions[3];
+      const eliminatedSubmissions = [
+        adminFlaggedSubmission,
+        reviewFlaggedSubmission,
+        autoFlaggedSubmission,
+        embargoedSubmssion
+      ].map((submission) => {
+        return submission.get('id');
+      });
+
+      adminFlaggedSubmission.set('flagged',true);
+      autoFlaggedSubmission.set('autoFlagged',true);
+      embargoedSubmssion.set('embargoed',true);
+
+      const pinnedSubmissions = submissions
+        .filter((submission) => submission.get('pinned') === true)
+        .sort((a,b) => {
+          return b.get('created_at').getTime() - a.get('created_at').getTime();
+        })
+        .map((submission) => submission.get('id'));
+
+      reviewFlaggedSubmission.fetch({'withRelated':['reviews']})
+        .then(() => {
+          const review = reviewFlaggedSubmission.related('reviews').at(0);
+          review.set({
+            'score': 0,
+            'flagged': true
+          });
+          return Promise.all([
+            review.save(),
+            adminFlaggedSubmission.save(),
+            autoFlaggedSubmission.save(),
+            embargoedSubmssion.save()
+          ]);
+        })
+        .then(() => {
+          chai.request(api)
+            .get('/api/submission/public')
+            .set('Authorization','JWT ' + token)
+            .end((err, res) => {
+              res.should.have.status(200);
+              res.body.should.be.a('array');
+              pinnedSubmissions.forEach((submission,i) => {
+                res.body[i].id.should.eq(submission);
+              });
+              res.body.forEach((submission) => {
+                eliminatedSubmissions.forEach((id) => {
+                  submission.id.should.not.eq(id);
+                });
+              });
+              done();
+            });
+        });
+    });
+
+    it('GET /api/submission/export',(done) => {
+      chai.request(api)
+        .get('/api/submission/export')
+        .set('Authorization','JWT ' + token)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.csv.should.be.a('string');
+          parse(res.body.csv, {'columns': true},(err, output) => {
+            output.should.be.a('array');
+            output.forEach((row) => {
+              const submission = submissions.find((submission) => submission.get('id') === parseInt(row.id));
+              assert(submission);
+              [
+                'external_id',
+                'source',
+                'ip'
+              ].forEach((prop) => {
+                row[prop].should.eq(submission.get(prop));
+              });
+              [
+                'pinned',
+                'flagged',
+                'embargoed',
+                'autoFlagged'
+              ].forEach((prop) => {
+                (row[prop] === '1' ? true : false).should.eq(submission.get(prop));
+              });
+              [
+                'field1',
+                'field2',
+              ].forEach((prop) => {
+                row[prop].should.eq(submission.get('data')[prop]);
+              });
+              [
+                'created_at',
+                'updated_at',
+              ].forEach((prop) => {
+                row[prop].should.eq(submission.get(prop).toLocaleString());
+              });
+            });
+            done();
+          });
+        });
+    })
   });
 
   describe('Review',() => {
@@ -777,6 +969,48 @@ describe('API',() => {
           res.body.data.should.be.a('object');
           res.body.data.subfield1.should.be.eq(updatedReview.data.subfield1);
           done();
+        });
+    });
+
+    it('POST /api/review/:review/recuse',(done) => {
+      const user2 = new User({
+        'email': randomstring.generate(),
+        'password': randomstring.generate(),
+      });
+      user2.save()
+        .then(() => {
+          chai.request(api)
+            .post('/api/review/' + review.get('id') + '/recuse')
+            .set('Authorization','JWT ' + token)
+            .end((err, res) => {
+              res.should.have.status(200);
+              Review
+                .forge()
+                .query({where:{id:review.get('id')}})
+                .fetch()
+                .then((review) => {
+                  assert.equal(review.get('user_id'),user2.get('id'));
+                })
+              done();
+            });
+        })
+        .catch((err) => done(err));
+    });
+
+    it('DELETE /api/review/:review',(done) => {
+      chai.request(api)
+        .delete('/api/review/' + review.get('id'))
+        .set('Authorization','JWT ' + token)
+        .end((err, res) => {
+          res.should.have.status(200);
+          Review
+            .forge()
+            .query({where: {id: review.get('id')}})
+            .fetch()
+            .then((review) => {
+              assert.equal(review,null);
+              done();
+            });
         });
     });
   });

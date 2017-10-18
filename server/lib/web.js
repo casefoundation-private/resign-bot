@@ -77,9 +77,9 @@ exports.init = (serve) => {
   app.post('/api/user/:user',authenticate,routes.user.saveUser);
 
   app.get('/api/submission',authenticate,routes.submission.getSubmissions);
-  app.options('/api/submission/public',routes.submission.getPublicSubmissionsOptions); //TODO test
-  app.get('/api/submission/public',routes.submission.getPublicSubmissions); //TODO test
-  app.get('/api/submission/export',authenticate,routes.submission.submissionsSpreadsheet); //TODO test
+  app.options('/api/submission/public',routes.submission.getPublicSubmissionsOptions);
+  app.get('/api/submission/public',routes.submission.getPublicSubmissions);
+  app.get('/api/submission/export',authenticate,routes.submission.submissionsSpreadsheet);
   app.get('/api/submission/:submission',authenticate,routes.submission.getSubmission);
   app.get('/api/submission/:submission/reviews',authenticate,routes.submission.getSubmissionReviews);
   app.put('/api/submission',authenticate,routes.submission.saveSubmission);
@@ -88,14 +88,14 @@ exports.init = (serve) => {
   app.delete('/api/submission/:submission/favorite',authenticate,routes.submission.deleteFavorite);
 
   app.get('/api/review/:review',authenticate,routes.review.getReview);
-  app.delete('/api/review/:review',authenticate,routes.review.deleteReview); //TODO test
+  app.delete('/api/review/:review',authenticate,routes.review.deleteReview);
   app.put('/api/review',authenticate,routes.review.saveReview);
   app.post('/api/review/:review',authenticate,routes.review.saveReview);
-  app.post('/api/review/:review/recuse',authenticate,routes.review.recuseReview); //TODO test
+  app.post('/api/review/:review/recuse',authenticate,routes.review.recuseReview);
 
   app.get('/api/notification',authenticate,routes.notification.getNotifications); //TODO test
 
-  app.get('/api/config',authenticate,routes.config.getConfig);
+  app.get('/api/config',authenticate,routes.config.getConfig); //TODO test
 
   app.post('/api/webbooks/wufoo',routes.webhooks.wufoo); //TODO test
 
@@ -104,7 +104,7 @@ exports.init = (serve) => {
 
   app.use((err,req,res,next) => {
     if (err) {
-      const status = res.statusCode || 500;
+      const status = !res.statusCode || res.statusCode === 200 ? 400 : statusCode;
       res.status(status).json({
         'error': err.message || err
       });

@@ -2,7 +2,7 @@ const Submission = require('../models/submission');
 const Favorite = require('../models/favorite');
 const stringify = require('csv-stringify-as-promised');
 const _ = require('lodash');
-const allowedPublicSubmissionOrigins = process.env.ALLOWED_SUBMISSION_ORIGINS ? process.env.ALLOWED_SUBMISSION_ORIGINS.split(',') : [];
+const allowedPublicSubmissionOrigins = process.env.ALLOWED_SUBMISSION_ORIGINS ? process.env.ALLOWED_SUBMISSION_ORIGINS.split(',') : ['localhost:'+(process.env.PORT || 8000)];
 
 exports.getSubmissions = (req,res,next) => {
   Submission.all('created_at','desc')
@@ -23,7 +23,7 @@ const corsHeaders = (req,res) => {
     if (allowedPublicSubmissionOrigins.indexOf(origin) >= 0) {
       res.header('Access-Control-Allow-Origin', req.headers.origin);
       res.header('Access-Control-Allow-Methods', 'GET,OPTIONS');
-      res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+      res.header("Access-Control-Allow-Headers", 'Origin, X-Requested-With, Content-Type, Accept');
     }
   }
 }
@@ -97,7 +97,9 @@ exports.saveSubmission = (req,res,next) => {
     submission.set('data',req.body.data);
     submission.set('flagged',req.body.flagged || false);
     submission.set('pinned',req.body.pinned || false);
-    submission.set('autoFlagged',req.body.autoFlagged || false); //TODO test
+    if (req.body.autoFlagged === false) {
+      submission.set('autoFlagged',false);
+    }
     submission.save()
       .then(() => {
         res.json(submission.toJSON());
@@ -113,7 +115,8 @@ exports.saveSubmission = (req,res,next) => {
   } else {
     const submission = new Submission({
       'ip': req.headers['x-forwarded-for'] || req.connection.remoteAddress,
-      'source': 'api'
+      'source': 'api',
+      'external_id': null
     });
     save(submission);
   }
@@ -162,8 +165,8 @@ exports.submissionsSpreadsheet = (req,res,next) => {
         const returnObject = Object.assign({},baseObject.data || {});
         delete baseObject.data;
         delete baseObject.reviews;
-        baseObject.created_at = new Date(Date.parse(baseObject.created_at)).toLocaleString();
-        baseObject.updated_at = new Date(Date.parse(baseObject.updated_at)).toLocaleString();
+        baseObject.created_at = new Date(baseObject.created_at).toLocaleString();
+        baseObject.updated_at = new Date(baseObject.updated_at).toLocaleString();
         return Object.assign(returnObject,baseObject);
       });
     })
@@ -171,7 +174,6 @@ exports.submissionsSpreadsheet = (req,res,next) => {
       return new Promise((resolve,reject) => {
         req.user.fetch({'withRelated':'favorites'})
           .then(() => {
-            console.log('here');
             flattend.forEach((submission) => {
               const favorite = req.user.related('favorites').find((_submission) => _submission.get('id') === submission.id);
               submission.favorite = !(!favorite);
