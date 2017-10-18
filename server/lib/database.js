@@ -41,15 +41,6 @@ exports.init = () => {
         table.json('notificationPreferences').notNullable().defaultTo(JSON.stringify(defaultNotificationPreferences));
         table.timestamps();
       });
-    } else {
-      return knex.schema.hasColumn('users','notificationPreferences')
-        .then((hasNotificationPreferences) => {
-          if (!hasNotificationPreferences) {
-            return knex.schema.alterTable('users', function(table) {
-              table.json('notificationPreferences').notNullable().defaultTo(JSON.stringify(defaultNotificationPreferences));
-            });
-          }
-        });
     }
   }).then(() => {
     return knex.schema.hasTable('submissions').then(function(exists) {
@@ -66,25 +57,6 @@ exports.init = () => {
           table.boolean('embargoed').notNullable().defaultTo(false);
           table.timestamps();
         });
-      } else {
-        return knex.schema.hasColumn('submissions','autoFlagged')
-          .then((hasAutoFlagged) => {
-            if (!hasAutoFlagged) {
-              return knex.schema.alterTable('submissions', function(table) {
-                table.boolean('autoFlagged').notNullable().defaultTo(false);
-              });
-            }
-          })
-          .then(() => {
-            return knex.schema.hasColumn('submissions','embargoed')
-          })
-          .then((hasEmbargoed) => {
-            if (!hasEmbargoed) {
-              return knex.schema.alterTable('submissions', function(table) {
-                table.boolean('embargoed').notNullable().defaultTo(false);
-              });
-            }
-          })
       }
     })
   }).then(() => {
