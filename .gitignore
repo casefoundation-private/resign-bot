@@ -9,3 +9,4 @@ server/*.sqlite
 */coverage.lcov
 .DS_Store
 */.DS_Store
+.env

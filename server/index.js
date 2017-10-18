@@ -1,3 +1,4 @@
+require('dotenv').config();
 const web = require('./lib/web');
 const database = require('./lib/database');
 const User = require('./lib/models/user');
