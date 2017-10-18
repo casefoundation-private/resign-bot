@@ -17,11 +17,19 @@ exports.getConfig = (req,res,next) => {
 const loadConfig = () => {
   config = {};
   return Promise.all([
+    generateGeneralConfig(config),
     generateReviewConfig(config),
     generateHelpTextConfig(config),
     generateFlagConfig(config),
     generateSubmissionsConfig(config)
   ])
+}
+
+const generateGeneralConfig = (config) => {
+  return new Promise((resolve,reject) => {
+    config.perPage = parseInt(process.env.PER_PAGE || 0);
+    resolve();
+  })
 }
 
 const generateReviewConfig = (config) => {

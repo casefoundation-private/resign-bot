@@ -73,7 +73,7 @@ export const sortSubmissions = () => {
           break;
         default:
           if (getState().submissions.sort.field.indexOf('category_') === 0) {
-            const categoryIndex = parseInt(getState().submissions.sort.field.replace('category_',''));
+            const categoryIndex = parseInt(getState().submissions.sort.field.replace('category_',''),10);
             const categoryName = getState().config.review.categories[categoryIndex].prompt;
             aVal = a.categories[categoryName] || null;
             bVal = b.categories[categoryName] || null;

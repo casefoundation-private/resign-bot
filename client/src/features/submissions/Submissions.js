@@ -24,7 +24,8 @@ import {
   round,
   SubmissionContents,
   actualFlagsForSubmission,
-  pinnedSubmissions
+  pinnedSubmissions,
+  paginate
 } from '../../misc/utils';
 import { Link } from 'react-router-dom';
 import FontAwesome from 'react-fontawesome';
@@ -42,7 +43,8 @@ class Submissions extends Component {
     this.state = {
       reviewEditorModal: false,
       submissionDetailModal: false,
-      submission: null
+      submission: null,
+      page: 0
     };
   }
 
@@ -155,150 +157,160 @@ class Submissions extends Component {
             </Col>
           </Row>
           <br/>
-          <Table striped>
-            <thead>
-              <tr>
-                <th>{this.generateSortableColumnHeader('ID','id')}</th>
-                <th>{this.generateSortableColumnHeader('Name','summary')}</th>
-                <th>{this.generateSortableColumnHeader('Score','score')}</th>
-                <th>{this.generateSortableColumnHeader('Std Deviation','deviation')}</th>
-                <th>{this.generateSortableColumnHeader('Completed Reviews','completedReviews')}</th>
-                <th>{this.generateSortableColumnHeader('Assigned Reviews','assignedReviews')}</th>
-                <th>{this.generateSortableColumnHeader('Flags','flags')}</th>
-                {
-                  this.props.config.review.categories.map((category,i) => {
-                    return (
-                      <th key={'category_'+i}>
-                        {this.generateSortableColumnHeader(category.prompt,'category_'+i)}
-                      </th>
-                    );
-                  })
-                }
-                <th>{this.generateSortableColumnHeader('Created','created_at')}</th>
-                <th className="text-center">
-                  <FontAwesome name="question-circle" id="embargoed-tooltip" />
-                  <UncontrolledTooltip placement="bottom" target="embargoed-tooltip">
-                    Embargoed submissions are available for review in the Review-O-Mati but not published to the public stories feed until the embargo is released.
-                  </UncontrolledTooltip>
-                  {' '}
-                  {this.generateSortableColumnHeader('Embargoed','embargoed')}
-                </th>
-                <th className="text-center">
-                  <FontAwesome name="question-circle" id="favorite-tooltip" />
-                  <UncontrolledTooltip placement="bottom" target="favorite-tooltip">
-                    This is a marker that only you control. Your favorites are differnet than other users{'\''} favorites so that you can mark the submissions you are most interested in tracking.
-                  </UncontrolledTooltip>
-                  {' '}
-                  {this.generateSortableColumnHeader('Favorite','favorite')}
-                </th>
-                <th className="text-center">
-                  <FontAwesome name="question-circle" id="pinned-tooltip" />
-                  <UncontrolledTooltip placement="bottom" target="pinned-tooltip">
-                    Pinning a submission is a global change. If you pin a submisison here, it will be pinned for all other users.
-                  </UncontrolledTooltip>
-                  {' '}
-                  {this.generateSortableColumnHeader('Pinned','pinned')}
-                </th>
-                <th className="text-center">
-                  { this.props.config.flaggedByDefault ?
-                    (
-                      <div>
-                        <FontAwesome name="question-circle" id="approved-tooltip" />
-                        <UncontrolledTooltip placement="bottom" target="approved-tooltip">
-                          Approving a submission is a global change. If you approve a submisison here, it will be approved for all other users.
-                        </UncontrolledTooltip>
-                        {' '}
-                        {this.generateSortableColumnHeader('Approved','flagged')}
-                      </div>
-                    )
-                    : (
-                      <div>
-                        <FontAwesome name="question-circle" id="flagged-tooltip" />
-                        <UncontrolledTooltip placement="bottom" target="flagged-tooltip">
-                          Flagging a submission is a global change. If you flag a submisison here, it will be flagged for all other users.
-                        </UncontrolledTooltip>
-                        {' '}
-                        {this.generateSortableColumnHeader('Flagged','flagged')}
-                      </div>
-                    )
-                  }
-                </th>
-                <th className="text-center">
-                  <FontAwesome name="question-circle" id="auto-flagged-tooltip" />
-                  <UncontrolledTooltip placement="bottom" target="auto-flagged-tooltip">
-                    Auto-flagged submissions are those which the computer flagged as inappropriate. If a submission has been automatically flagged, an admin can remove the flag but not reinstate it. To do that, use the regular "Flagged" field.
-                  </UncontrolledTooltip>
-                  {' '}
-                  {this.generateSortableColumnHeader('Auto Flagged','autoFlagged')}
-                </th>
-                <th className="text-center">Options</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                this.getSubmissions().map((submission) => {
-                  const favorite = getFavorite(this.props.user.favorites,submission);
-                  return (
-                    <tr key={submission.id}>
-                      <td>{submission.id}</td>
-                      <td>{summarizeSubmission(submission)}</td>
-                      <td>{submission.score === null ? 'N/A' : round(submission.score)}</td>
-                      <td>{submission.deviation === null ? 'N/A' : round(submission.deviation)}</td>
-                      <td>{completedReviews(submission).length}</td>
-                      <td>{incompletedReviews(submission).length}</td>
-                      <td>{actualFlagsForSubmission(this.props.config,submission)}</td>
+          {
+            paginate(this.getSubmissions(),this.props.config.perPage,this.state.page,
+              (page) => {
+                this.setState({page})
+              },
+              (array) => {
+                return (
+                  <Table striped>
+                    <thead>
+                      <tr>
+                        <th>{this.generateSortableColumnHeader('ID','id')}</th>
+                        <th>{this.generateSortableColumnHeader('Name','summary')}</th>
+                        <th>{this.generateSortableColumnHeader('Score','score')}</th>
+                        <th>{this.generateSortableColumnHeader('Std Deviation','deviation')}</th>
+                        <th>{this.generateSortableColumnHeader('Completed Reviews','completedReviews')}</th>
+                        <th>{this.generateSortableColumnHeader('Assigned Reviews','assignedReviews')}</th>
+                        <th>{this.generateSortableColumnHeader('Flags','flags')}</th>
+                        {
+                          this.props.config.review.categories.map((category,i) => {
+                            return (
+                              <th key={'category_'+i}>
+                                {this.generateSortableColumnHeader(category.prompt,'category_'+i)}
+                              </th>
+                            );
+                          })
+                        }
+                        <th>{this.generateSortableColumnHeader('Created','created_at')}</th>
+                        <th className="text-center">
+                          <FontAwesome name="question-circle" id="embargoed-tooltip" />
+                          <UncontrolledTooltip placement="bottom" target="embargoed-tooltip">
+                            Embargoed submissions are available for review in the Review-O-Mati but not published to the public stories feed until the embargo is released.
+                          </UncontrolledTooltip>
+                          {' '}
+                          {this.generateSortableColumnHeader('Embargoed','embargoed')}
+                        </th>
+                        <th className="text-center">
+                          <FontAwesome name="question-circle" id="favorite-tooltip" />
+                          <UncontrolledTooltip placement="bottom" target="favorite-tooltip">
+                            This is a marker that only you control. Your favorites are differnet than other users{'\''} favorites so that you can mark the submissions you are most interested in tracking.
+                          </UncontrolledTooltip>
+                          {' '}
+                          {this.generateSortableColumnHeader('Favorite','favorite')}
+                        </th>
+                        <th className="text-center">
+                          <FontAwesome name="question-circle" id="pinned-tooltip" />
+                          <UncontrolledTooltip placement="bottom" target="pinned-tooltip">
+                            Pinning a submission is a global change. If you pin a submisison here, it will be pinned for all other users.
+                          </UncontrolledTooltip>
+                          {' '}
+                          {this.generateSortableColumnHeader('Pinned','pinned')}
+                        </th>
+                        <th className="text-center">
+                          { this.props.config.flaggedByDefault ?
+                            (
+                              <div>
+                                <FontAwesome name="question-circle" id="approved-tooltip" />
+                                <UncontrolledTooltip placement="bottom" target="approved-tooltip">
+                                  Approving a submission is a global change. If you approve a submisison here, it will be approved for all other users.
+                                </UncontrolledTooltip>
+                                {' '}
+                                {this.generateSortableColumnHeader('Approved','flagged')}
+                              </div>
+                            )
+                            : (
+                              <div>
+                                <FontAwesome name="question-circle" id="flagged-tooltip" />
+                                <UncontrolledTooltip placement="bottom" target="flagged-tooltip">
+                                  Flagging a submission is a global change. If you flag a submisison here, it will be flagged for all other users.
+                                </UncontrolledTooltip>
+                                {' '}
+                                {this.generateSortableColumnHeader('Flagged','flagged')}
+                              </div>
+                            )
+                          }
+                        </th>
+                        <th className="text-center">
+                          <FontAwesome name="question-circle" id="auto-flagged-tooltip" />
+                          <UncontrolledTooltip placement="bottom" target="auto-flagged-tooltip">
+                            Auto-flagged submissions are those which the computer flagged as inappropriate. If a submission has been automatically flagged, an admin can remove the flag but not reinstate it. To do that, use the regular "Flagged" field.
+                          </UncontrolledTooltip>
+                          {' '}
+                          {this.generateSortableColumnHeader('Auto Flagged','autoFlagged')}
+                        </th>
+                        <th className="text-center">Options</th>
+                      </tr>
+                    </thead>
+                    <tbody>
                       {
-                        this.props.config.review.categories.map((category,i) => {
+                        array.map((submission) => {
+                          const favorite = getFavorite(this.props.user.favorites,submission);
                           return (
-                            <td key={'category_'+i}>
-                              { submission.categories && submission.categories[category.prompt] ?
-                                submission.categories[category.prompt]
-                                : 'N/A'}
-                            </td>
-                          );
+                            <tr key={submission.id}>
+                              <td>{submission.id}</td>
+                              <td>{summarizeSubmission(submission)}</td>
+                              <td>{submission.score === null ? 'N/A' : round(submission.score)}</td>
+                              <td>{submission.deviation === null ? 'N/A' : round(submission.deviation)}</td>
+                              <td>{completedReviews(submission).length}</td>
+                              <td>{incompletedReviews(submission).length}</td>
+                              <td>{actualFlagsForSubmission(this.props.config,submission)}</td>
+                              {
+                                this.props.config.review.categories.map((category,i) => {
+                                  return (
+                                    <td key={'category_'+i}>
+                                      { submission.categories && submission.categories[category.prompt] ?
+                                        submission.categories[category.prompt]
+                                        : 'N/A'}
+                                    </td>
+                                  );
+                                })
+                              }
+                              <td>{submission.created_at && submission.created_at.toLocaleDateString ? submission.created_at.toLocaleDateString() : submission.created_at}</td>
+                              <td>{submission.embargoed === true ? 'Yes' : 'No'}</td>
+                              <td className="text-center">
+                                { !favorite ?
+                                  ( <Button size="sm" color="secondary" onClick={() => this.props.makeFavorite(submission)}><FontAwesome name="star" /></Button> )
+                                  : ( <Button size="sm" color="success" onClick={() => this.props.deleteFavorite(favorite)}><FontAwesome name="star" /></Button> )
+                                }
+                              </td>
+                              <td className="text-center">
+                                <Button disabled={!shouldEnablePinButton(submission)} size="sm" color={submission.pinned ? 'success' : 'secondary'} onClick={() => this.props.togglePinSubmission(submission)}>
+                                  <FontAwesome name="circle" />
+                                </Button>
+                              </td>
+                              <td className="text-center">
+                                <Button size="sm" color={submission.flagged ? (this.props.config.flaggedByDefault ? 'secondary' : 'danger') : (this.props.config.flaggedByDefault ? 'success' : 'secondary')} onClick={() => this.props.toggleFlagSubmission(submission)}>
+                                  { this.props.config.flaggedByDefault ?
+                                    (<FontAwesome name="thumbs-up" />)
+                                    : (<FontAwesome name="exclamation-triangle" />) }
+                                </Button>
+                              </td>
+                              <td className="text-center">
+                                <Button
+                                  size="sm"
+                                  color={submission.autoFlagged ? 'danger' : 'secondary' }
+                                  onClick={() => this.props.clearAutoFlagSubmission(submission)}
+                                  disabled={!submission.autoFlagged}>
+                                  <FontAwesome name="exclamation-triangle" />
+                                </Button>
+                              </td>
+                              <td className="text-center">
+                                <ButtonGroup>
+                                  <Button onClick={() => this.openSubmissionDetailModal(submission)} color="primary" size="sm"><FontAwesome name="eye" /> View Submission</Button>
+                                  <Button onClick={() => this.openReviewEditorModel(submission)} color="primary" size="sm"><FontAwesome name="list" /> Manage Reviews</Button>
+                                </ButtonGroup>
+                              </td>
+                            </tr>
+                          )
                         })
                       }
-                      <td>{submission.created_at && submission.created_at.toLocaleDateString ? submission.created_at.toLocaleDateString() : submission.created_at}</td>
-                      <td>{submission.embargoed === true ? 'Yes' : 'No'}</td>
-                      <td className="text-center">
-                        { !favorite ?
-                          ( <Button size="sm" color="secondary" onClick={() => this.props.makeFavorite(submission)}><FontAwesome name="star" /></Button> )
-                          : ( <Button size="sm" color="success" onClick={() => this.props.deleteFavorite(favorite)}><FontAwesome name="star" /></Button> )
-                        }
-                      </td>
-                      <td className="text-center">
-                        <Button disabled={!shouldEnablePinButton(submission)} size="sm" color={submission.pinned ? 'success' : 'secondary'} onClick={() => this.props.togglePinSubmission(submission)}>
-                          <FontAwesome name="circle" />
-                        </Button>
-                      </td>
-                      <td className="text-center">
-                        <Button size="sm" color={submission.flagged ? (this.props.config.flaggedByDefault ? 'secondary' : 'danger') : (this.props.config.flaggedByDefault ? 'success' : 'secondary')} onClick={() => this.props.toggleFlagSubmission(submission)}>
-                          { this.props.config.flaggedByDefault ?
-                            (<FontAwesome name="thumbs-up" />)
-                            : (<FontAwesome name="exclamation-triangle" />) }
-                        </Button>
-                      </td>
-                      <td className="text-center">
-                        <Button
-                          size="sm"
-                          color={submission.autoFlagged ? 'danger' : 'secondary' }
-                          onClick={() => this.props.clearAutoFlagSubmission(submission)}
-                          disabled={!submission.autoFlagged}>
-                          <FontAwesome name="exclamation-triangle" />
-                        </Button>
-                      </td>
-                      <td className="text-center">
-                        <ButtonGroup>
-                          <Button onClick={() => this.openSubmissionDetailModal(submission)} color="primary" size="sm"><FontAwesome name="eye" /> View Submission</Button>
-                          <Button onClick={() => this.openReviewEditorModel(submission)} color="primary" size="sm"><FontAwesome name="list" /> Manage Reviews</Button>
-                        </ButtonGroup>
-                      </td>
-                    </tr>
-                  )
-                })
-              }
-            </tbody>
-          </Table>
+                    </tbody>
+                  </Table>
+                )
+              })
+          }
         </PageWrapper>
         <Modal isOpen={this.state.reviewEditorModal} toggle={() => this.closeReviewEditorModel()} size="lg">
           <ModalHeader toggle={() => this.closeReviewEditorModel()}>Submission Reviews for {summarizeSubmission(this.state.submission)}</ModalHeader>

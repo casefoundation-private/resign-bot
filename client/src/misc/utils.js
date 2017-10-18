@@ -1,6 +1,9 @@
 import url from 'url';
 import getVideoId from 'get-video-id';
 import React from 'react';
+import { Button, ButtonGroup } from 'reactstrap';
+import FontAwesome from 'react-fontawesome';
+
 const _ = require('lodash');
 const summaryCache = {};
 
@@ -58,6 +61,50 @@ export const actualFlagsForSubmission = (config,submission) => {
     total++;
   }
   return total === null ? 'N/A' : total;
+}
+
+export const paginate = (array,perPage,page,goToPageCallback,renderCallback) => {
+  if (perPage > 0) {
+    const nPages = Math.ceil(array.length / perPage);
+    if (page < nPages) {
+      const startIndex = page * perPage;
+      const endIndex = Math.min(array.length-1,startIndex + perPage);
+      const pageNums = [];
+      for(var i = 0; i < nPages; i++) {
+        pageNums.push(i);
+      }
+      return (
+        <div>
+          { renderCallback(array.slice(startIndex,endIndex)) }
+          <div className="text-center">
+            <ButtonGroup>
+              <Button onClick={() => goToPageCallback(page - 1)} disabled={page === 0}>
+                <FontAwesome name="chevron-left" />
+              </Button>
+              {
+                pageNums.map((pageNum) => {
+                  return (
+                    <Button key={pageNum} onClick={() => goToPageCallback(pageNum)} className={pageNum === page && 'active'}>
+                      {pageNum + 1}
+                    </Button>
+                  );
+                })
+              }
+              <Button onClick={() => goToPageCallback(page + 1)} disabled={page + 1 >= nPages}>
+                <FontAwesome name="chevron-right" />
+              </Button>
+            </ButtonGroup>
+          </div>
+        </div>
+      );
+    } else if (nPages > 0) {
+      return paginate(array,perPage,0,goToPageCallback,renderCallback);
+    } else {
+      return null;
+    }
+  } else {
+    return renderCallback(array);
+  }
 }
 
 export const SubmissionContents = (props) => {
