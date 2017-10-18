@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const logger = require('morgan');
+const morgan = require('morgan');
 const http = require('http');
 const User = require('./models/user');
 const Review = require('./models/review');
@@ -8,6 +8,10 @@ const Submission = require('./models/submission');
 const routes = require('./routes');
 const passport = require('passport');
 const auth = require('./auth');
+
+morgan.token('user-id',(req, res) => {
+  return req.user ? req.user.get('id') : 'none';
+});
 
 exports.init = (serve) => {
   const app = express();
@@ -20,7 +24,7 @@ exports.init = (serve) => {
   auth.init(app);
   if (process.env.NODE_ENV !== 'test') {
     app.use(express.static('./build'));
-    app.use(logger('combined'));
+    app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" user\::user-id'));
   }
 
   [
