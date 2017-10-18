@@ -10,8 +10,10 @@ install:
 script:
   - cd $TRAVIS_BUILD_DIR/server
   - npm test
+  - rm database_test.sqlite
   - npm run coverage
   - codecov
+  - rm database_test.sqlite
   - cd $TRAVIS_BUILD_DIR/client
   - npm build
 env:
