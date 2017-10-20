@@ -19,15 +19,15 @@ The Review-O-Matic is a tool developed by the Case Foundation to handle the job 
 
 ## Installation
 
-See [doc/Installation.md](Installation)
+See [Installation](doc/Installation.md)
 
 ## End User Guide
 
-See [doc/End User Guide.md](End User Guide)
+See [End User Guide](doc/End User Guide.md)
 
 ## Development
 
-See [doc/Development.md](Development)
+See [Development](doc/Development.md)
 
 ## ToDo
 
