@@ -97,7 +97,7 @@ exports.init = (serve) => {
 
   app.get('/api/config',authenticate,routes.config.getConfig);
 
-  app.post('/api/webbooks/wufoo',routes.webhooks.wufoo); //TODO test
+  app.post('/api/webbooks/wufoo',routes.webhooks.wufoo);
 
   app.get('/api/importer/embargoed',authenticate,routes.importer.getEmbargoed); //TODO test
   app.post('/api/importer/embargoed',authenticate,routes.importer.setEmbargoed); //TODO test
