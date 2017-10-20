@@ -22,6 +22,11 @@ Then run the image using Docker's run command:
 
 To support extensive customization, Review-O-Matic has supports environment variables that dictate how the application functions. Specify those on the command line when running the Docker image or via your container service's configuration tool.
 
+### Web Server
+
+* **URL_ROOT** The base URL for the site. (i.e. https://reviewomatic.com)
+* **PORT** The port on which the web server should listen.
+
 ### Email
 
 * **MAIL_HOST** Hostname of SMTP server
@@ -33,10 +38,17 @@ To support extensive customization, Review-O-Matic has supports environment vari
 
 ### Database
 
-* **DB** "sqlite" or "postgres" to set the type of database to connect to
+* **DB** "sqlite" or "postgres" to set the type of database to connect to.
+* **DB_HOST** If using PostgreSQL, specify the database server's hostname.
+* **DB_USERNAME** If using PostgreSQL, specify the database server's username.
+* **DB_PASSWORD** If using PostgreSQL, specify the database server's password.
+* **DB_DATABASE** If using PostgreSQL, specify the database server's database name.
 
-### Importers
+### Importing
 
+* **SUSPEND_IMPORTING** Set to anything to disable automated importing. Omit to allow automated importing.
+* **IMPORT_INTERVAL** Interval in milliseconds in which to run automated imports.
+* **REVIEWS_PER_SUBMISSION** Per each new submission created, specify the number of reviews to assign. Cannot be greater than REVIEW_LIMIT.
 * **WUFOO_KEY** Wufoo API key
 * **WUFOO_FORM_ID** Wufoo form ID to pull submissions from
 * **WUFOO_SUBDOMAIN** Wufoo account subdomain
@@ -54,9 +66,10 @@ To support extensive customization, Review-O-Matic has supports environment vari
 * **REVIEW_LIMIT** Set an integer to be the total number of reviews allowed for any one submission. Omit to disable limiting.
 * **PINNED_LIMIT** Set an integer to be the total number of submissions that may be pinned at any one time. Omit to disable limiting.
 
-### Public Access
+### Security
 
 * **ALLOWED_SUBMISSION_ORIGINS** When using the public submissions feed, you may set the CORS policy for that endpoint's access so that other front-end applications may make direct calls. Specify each host origin that may make cross-domain requests and separate each host with with a comma ",".  Omit to disable CORS policy.
+* **JWT_SECRET** TODO
 
 ### Review Prompt Grading Customization
 
@@ -77,3 +90,4 @@ To support extensive customization, Review-O-Matic has supports environment vari
 * **PER_PAGE** Set the number of entries that should appear per-page on the front end. Omit to disable pagination.
 * **HELP_GOOGLE_DOC_ID** ID of the Google Doc to use for the help screen. Omit to disable help screen.
 * **GOOGLE_API_KEY** Google API key with Google Drive API enabled to use when accessing HELP_GOOGLE_DOC_ID. Required if HELP_GOOGLE_DOC_ID is specified.
+* **HELP_HTML** Instead of a Google Doc, directly provide the HTML for the content of the help page.

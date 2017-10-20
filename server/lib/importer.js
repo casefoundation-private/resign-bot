@@ -124,7 +124,6 @@ const saveSubmissions = (newSubmissions) => {
                 console.log('Flagging new submission for bad language.');
               }
             }
-            newSubmission.set('flagged',JSON.parse(process.env.FLAGGED_BY_DEFAULT || false));
             newSubmission.set('autoFlagged',badLanguage);
             newSubmission.set('embargoed',importEmbargo);
             return newSubmission.save();

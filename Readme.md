@@ -10,8 +10,8 @@ The Review-O-Matic is a tool developed by the Case Foundation to handle the job 
 ### Other Features
 
 * Public feed of approved stories
-* Administrators and reviewers can manually flag inappropriate stories.
-* The system will also automatically flag submitted content if it contains bad language.
+* Administrators and reviewers can manually flag inappropriate stories
+* The system will also automatically flag submitted content if it contains bad language
 * Ability to set "embargo" schedules where new content is held from the public for a period such as over nights and weekends
 * CSV export of all submitted stories
 * Ability to reassign reviews
