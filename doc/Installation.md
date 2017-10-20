@@ -22,6 +22,20 @@ Then run the image using Docker's run command:
 
 To support extensive customization, Review-O-Matic has supports environment variables that dictate how the application functions. Specify those on the command line when running the Docker image or via your container service's configuration tool.
 
+### Required Variables
+
+The required environment variables are:
+
+* PORT
+* All MAIL_ variables
+* DB
+* WUFOO_KEY
+* WUFOO_FORM_ID
+* WUFOO_SUBDOMAIN
+* WUFOO_HANDSHAKE_KEY
+* JWT_SECRET
+* All REVIEW_PROMPT variables.
+
 ### Web Server
 
 * **URL_ROOT** The base URL for the site. (i.e. https://reviewomatic.com)
@@ -69,7 +83,7 @@ To support extensive customization, Review-O-Matic has supports environment vari
 ### Security
 
 * **ALLOWED_SUBMISSION_ORIGINS** When using the public submissions feed, you may set the CORS policy for that endpoint's access so that other front-end applications may make direct calls. Specify each host origin that may make cross-domain requests and separate each host with with a comma ",".  Omit to disable CORS policy.
-* **JWT_SECRET** TODO
+* **JWT_SECRET** Secret string used to encrypt the JWT keys.
 
 ### Review Prompt Grading Customization
 
