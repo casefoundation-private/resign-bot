@@ -90,14 +90,14 @@ The required environment variables are:
 * **REVIEW_PROMPTS_COUNT** The total number of grading prompts to show on the review screen.
 * **REVIEW_PROMPT_LABELS_COUNT** The total number of options for each review prompt.
 * **REVIEW_PROMPT_[N]** For each review prompt, specify the text for the prompt. [N] should be an integer from 0 up to, but not including, the value of REVIEW_PROMPTS_COUNT.
-* **REVIEW_PROMPT_[N]_LABEL_[K]** For each prompt, specify each text value for the dropdown. [N] should be an integer from 0 up to, but not including, the value of REVIEW_PROMPTS_COUNT and [K] should be an integer from 0 up to, but not including, the value of REVIEW_PROMPT_LABELS_COUNT.
+* **REVIEW_PROMPT_[N]\_LABEL_[K]** For each prompt, specify each text value for the dropdown. [N] should be an integer from 0 up to, but not including, the value of REVIEW_PROMPTS_COUNT and [K] should be an integer from 0 up to, but not including, the value of REVIEW_PROMPT_LABELS_COUNT.
 
 ### Review Categorization Customization
 
 * **REVIEW_CATEGORIES_COUNT** The total number of categorization prompts to show on the review screen.
 * **REVIEW_CATEGORY_[N]** For each categorization prompt, specify the text for the prompt. [N] should be an integer from 0 up to, but not including, the value of REVIEW_CATEGORIES_COUNT.
-* **REVIEW_CATEGORY_[N]_LABELS_COUNT**  For each categorization prompt, specify the number of options that will be in the dropdown. [N] should be an integer from 0 up to, but not including, the value of REVIEW_CATEGORIES_COUNT.
-* **REVIEW_CATEGORY_[N]_LABEL_[K]** For each categorization prompt, specify each dropdown option's value.  [N] should be an integer from 0 up to, but not including, the value of REVIEW_CATEGORIES_COUNT and [K] should be an integer from 0 up to, but not including, the value of REVIEW_CATEGORY_[N]\_LABELS_COUNT.
+* **REVIEW_CATEGORY_[N]\_LABELS_COUNT**  For each categorization prompt, specify the number of options that will be in the dropdown. [N] should be an integer from 0 up to, but not including, the value of REVIEW_CATEGORIES_COUNT.
+* **REVIEW_CATEGORY_[N]\_LABEL_[K]** For each categorization prompt, specify each dropdown option's value. [N] should be an integer from 0 up to, but not including, the value of REVIEW_CATEGORIES_COUNT and [K] should be an integer from 0 up to, but not including, the value of REVIEW_CATEGORY_[N]\_LABELS_COUNT.
 
 ### User Interface
 
