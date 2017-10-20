@@ -49,12 +49,10 @@ export const actualFlagsForSubmission = (config,submission) => {
   if (submission.flags !== null) {
     total = submission.flags;
   }
-  if (!config.flaggedByDefault) {
-    if (submission.flagged === true && total === null) {
-      total = 1;
-    } else if (submission.flagged === true) {
-      total++;
-    }
+  if (submission.flagged === true && total === null) {
+    total = 1;
+  } else if (submission.flagged === true) {
+    total++;
   }
   if (submission.autoFlagged === true && total === null) {
     total = 1;

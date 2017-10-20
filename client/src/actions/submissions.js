@@ -30,18 +30,7 @@ export const sortSubmissions = () => {
           bVal = actualFlagsForSubmission(getState().config,b) === 'N/A' ? -1 : actualFlagsForSubmission(getState().config,b);
           break;
         case 'pinned':
-          aVal = a[getState().submissions.sort.field] ? 1 : 0;
-          bVal = b[getState().submissions.sort.field] ? 1 : 0;
-          break;
         case 'flagged':
-          if (getState().config.flaggedByDefault) {
-            aVal = a[getState().submissions.sort.field] ? 0 : 1;
-            bVal = b[getState().submissions.sort.field] ? 0 : 1;
-          } else {
-            aVal = a[getState().submissions.sort.field] ? 1 : 0;
-            bVal = b[getState().submissions.sort.field] ? 1 : 0;
-          }
-          break;
         case 'autoFlagged':
         case 'embargoed':
           aVal = a[getState().submissions.sort.field] ? 1 : 0;

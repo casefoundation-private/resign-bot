@@ -1038,7 +1038,6 @@ describe('API',() => {
           res.should.have.status(200);
           res.body.should.be.a('object');
           res.body.perPage.should.eq(0);
-          res.body.flaggedByDefault.should.eq(false);
           res.body.review.prompts.length.should.eq(0);
           res.body.review.categories.length.should.eq(0);
           res.body.submissions.pinned_limit.should.eq(1);

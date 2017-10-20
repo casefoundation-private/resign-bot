@@ -20,7 +20,6 @@ const loadConfig = () => {
     generateGeneralConfig(config),
     generateReviewConfig(config),
     generateHelpTextConfig(config),
-    generateFlagConfig(config),
     generateSubmissionsConfig(config)
   ])
 }
@@ -72,13 +71,6 @@ const generateHelpTextConfig = (config) => {
     setInterval(() => fetchGoogleDocsContent(config).catch((err) => console.error(err)),(1000 * 60 * 60));
     return fetchGoogleDocsContent(config);
   }
-}
-
-const generateFlagConfig = (config) => {
-  return new Promise((resolve,reject) => {
-    config.flaggedByDefault = JSON.parse(process.env.FLAGGED_BY_DEFAULT || false);
-    resolve();
-  });
 }
 
 const fetchGoogleDocsContent = (config) => {
