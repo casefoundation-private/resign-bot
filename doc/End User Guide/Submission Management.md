@@ -26,7 +26,7 @@ To manage a review, visit the "submissions" page and find the entry you would li
 
 ## Pinning
 
-To pin a submission, click the button in the "Pinning" column cooresponding to that entry. Pinning a submission brings it to the top of the list, displaying it before all other reviews (which are listed in chronological order). Pinning is a global change - if you you pin a submission here, it will be pinned for all other users. 
+To pin a submission, click the button in the "Pinned" column cooresponding to that entry. Pinning a submission brings it to the top of the list, displaying it before all other reviews (which are listed in chronological order). Pinning is a global change - if you you pin a submission here, it will be pinned for all other users. 
 
 ## Embargoing
 
