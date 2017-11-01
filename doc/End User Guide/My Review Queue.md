@@ -15,9 +15,11 @@ To save a review (without submitting it), click the blue "Save" button at the bo
 
 ## Submitting a review
 
-TODO
+After completing the designated review tasks, the reviewer has two options.
+1. To save the review and submit it, click "Save and Submit." 
+2. To save the review without submitting it, click "Save." The reviewer may revisit the drafted review and "Save and Submit" at a later time. 
 
 
 ## Viewing old reviews
 
-TODO
+To view old reviews that the specific reviewer previously submitted, click the "My Review Queue." Under the "Completed Reviews" heading is list of all reviews that reviewer previously submitted. Click the "View Submission" blue button on the right (under the "Options" column) to show that review. Please note that you may not edit a review once it has been submitted.
