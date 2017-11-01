@@ -29,6 +29,14 @@ See [End User Guide](doc/End%20User%20Guide.md)
 
 See [Development](doc/Development.md)
 
+## Contributing
+
+See [Contributing](Contributing.md) for additional information.
+
+## License
+
+See [License](License.txt) for additional information.
+
 ## ToDo
 
 ### Short Term
