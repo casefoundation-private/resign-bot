@@ -1,13 +1,13 @@
-const Notification = require('../models/notification');
+const Notification = require('../models/notification')
 
-exports.getNotifications = (req,res,next) => {
+exports.getNotifications = (req, res, next) => {
   Notification.queue()
     .then((notifications) => {
       res.send(notifications.filter((notification) => {
-        return req.user.getNotificationPermissions(notification).view;
+        return req.user.getNotificationPermissions(notification).view
       }).map((notification) => {
-        return notification.toJSON();
-      }));
+        return notification.toJSON()
+      }))
     })
-    .catch((err) => next(err));
+    .catch((err) => next(err))
 }

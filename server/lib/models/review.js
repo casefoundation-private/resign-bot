@@ -1,115 +1,115 @@
-const knex = require('../database').knex;
-const bookshelf = require('bookshelf')(knex);
-const User = require('./user');
-const Notification = require('./notification');
-const jsonColumns = require('bookshelf-json-columns');
-bookshelf.plugin(jsonColumns);
+const knex = require('../database').knex
+const bookshelf = require('bookshelf')(knex)
+const User = require('./user')
+const Notification = require('./notification')
+const jsonColumns = require('bookshelf-json-columns')
+bookshelf.plugin(jsonColumns)
 
-module.exports = Review = bookshelf.Model.extend({
+const Review = module.exports = bookshelf.Model.extend({
   'tableName': 'reviews',
   'hasTimestamps': true,
-  'initialize': function() {
-    this.on('created',function() {
-      return Notification.reviewAssigned(this).save();
-    },this);
-    this.on('creating',function() {
+  'initialize': function () {
+    this.on('created', function () {
+      return Notification.reviewAssigned(this).save()
+    }, this)
+    this.on('creating', function () {
       return this.checkForReviewLimit()
         .then((limitReached) => {
           if (limitReached) {
-            throw new Error('Too many reviews for this submission.');
+            throw new Error('Too many reviews for this submission.')
           }
-        });
+        })
     })
-    this.on('updating',function() {
+    this.on('updating', function () {
       const notificationUpdate = () => {
-        if (this.get('user_id') != this.previous('user_id')) {
-          return Notification.reviewAssigned(this).save();
+        if (this.get('user_id') !== this.previous('user_id')) {
+          return Notification.reviewAssigned(this).save()
         }
       }
-      if (this.get('submission_id') != this.previous('submission_id')) {
+      if (this.get('submission_id') !== this.previous('submission_id')) {
         return this.checkForReviewLimit()
           .then((limitReached) => {
             if (limitReached) {
-              throw new Error('Too many reviews for this submission.');
+              throw new Error('Too many reviews for this submission.')
             }
           })
           .then(() => {
-            return notificationUpdate();
-          });
+            return notificationUpdate()
+          })
       } else {
-        return notificationUpdate();
+        return notificationUpdate()
       }
-    },this);
-    bookshelf.Model.prototype.initialize.apply(this, arguments);
+    }, this)
+    bookshelf.Model.prototype.initialize.apply(this, arguments)
   },
-  'user': function() {
-    return this.belongsTo(User);
+  'user': function () {
+    return this.belongsTo(User)
   },
-  'submission': function() {
-    const Submission = require('./submission');
-    return this.belongsTo(Submission);
+  'submission': function () {
+    const Submission = require('./submission')
+    return this.belongsTo(Submission)
   },
-  'recuse': function(failQuietly,targetUserId) {
+  'recuse': function (failQuietly, targetUserId) {
     if (targetUserId) {
-      return Review.reviewForUserAndSubmission(targetUserId,this.get('submission_id'))
+      return Review.reviewForUserAndSubmission(targetUserId, this.get('submission_id'))
         .then((review) => {
           if (review) {
             if (failQuietly) {
-              return false;
+              return false
             } else {
-              throw new Error('That user has or is already reviewing this submission!');
+              throw new Error('That user has or is already reviewing this submission!')
             }
           } else {
-            this.set('user_id',targetUserId);
-            return true;
+            this.set('user_id', targetUserId)
+            return true
           }
         })
     } else {
-      return User.nextAvailableUsers(1,[this.get('user_id')],[this.get('submission_id')])
+      return User.nextAvailableUsers(1, [this.get('user_id')], [this.get('submission_id')])
         .then((users) => {
           if (users && users.length > 0) {
-            this.set('user_id',users.at(0).get('id'));
-            return true;
+            this.set('user_id', users.at(0).get('id'))
+            return true
           } else if (failQuietly) {
-            return false;
+            return false
           } else {
-            throw new Error('No users ready!');
+            throw new Error('No users ready!')
           }
-        });
+        })
     }
   },
-  'toJSON': function(options) {
-    const sendOpts = options ? Object.assign(options,{'virtuals': true}) : {'virtuals': true};
-    const json = bookshelf.Model.prototype.toJSON.apply(this,sendOpts);
-    json.flagged = json.flagged === true || json.flagged === 1;
-    return json;
+  'toJSON': function (options) {
+    const sendOpts = options ? Object.assign(options, {'virtuals': true}) : {'virtuals': true}
+    const json = bookshelf.Model.prototype.toJSON.apply(this, sendOpts)
+    json.flagged = json.flagged === true || json.flagged === 1
+    return json
   },
-  'checkForReviewLimit': function() {
+  'checkForReviewLimit': function () {
     return knex('reviews')
       .count('*')
-      .where({'submission_id':this.get('submission_id')})
+      .where({'submission_id': this.get('submission_id')})
       .then((total) => {
         if (total[0]['count(*)'] >= parseInt(process.env.REVIEW_LIMIT) || total[0]['count'] >= parseInt(process.env.REVIEW_LIMIT)) {
-          return true;
+          return true
         } else {
-          return false;
+          return false
         }
-      });
+      })
   }
 }, {
   'jsonColumns': ['data'],
-  'reviewForUserAndSubmission': function(user,submission) {
-    let userId;
-    let submissionId;
+  'reviewForUserAndSubmission': function (user, submission) {
+    let userId
+    let submissionId
     if (typeof user === 'object') {
-      userId = user.get('id');
+      userId = user.get('id')
     } else {
-      userId = user;
+      userId = user
     }
     if (typeof submission === 'object') {
-      submissionId = submission.get('id');
+      submissionId = submission.get('id')
     } else {
-      submissionId = submission;
+      submissionId = submission
     }
     return this
       .forge()
@@ -120,15 +120,15 @@ module.exports = Review = bookshelf.Model.extend({
         }
       })
       .fetch({
-        'withRelated': ['user','submission']
-      });
+        'withRelated': ['user', 'submission']
+      })
   },
-  'forSubmission': function(submission) {
-    let submissionId;
+  'forSubmission': function (submission) {
+    let submissionId
     if (typeof submission === 'object') {
-      submissionId = submission.get('id');
+      submissionId = submission.get('id')
     } else {
-      submissionId = submission;
+      submissionId = submission
     }
     return this
       .forge()
@@ -137,10 +137,10 @@ module.exports = Review = bookshelf.Model.extend({
           'submission_id': submissionId
         }
       })
-      .fetchAll();
+      .fetchAll()
   },
-  'getQueueForUser': function(user) {
-    if (typeof user == 'object') {
+  'getQueueForUser': function (user) {
+    if (typeof user === 'object') {
       user = user.get('id')
     }
     return this
@@ -151,12 +151,12 @@ module.exports = Review = bookshelf.Model.extend({
           'score': null
         }
       })
-      .orderBy('created_at','DESC')
+      .orderBy('created_at', 'DESC')
       .fetchAll()
   },
-  'byId': function(id) {
-    return this.forge().query({where:{ id: id }}).fetch({
-      'withRelated': ['user','submission']
+  'byId': function (id) {
+    return this.forge().query({where: { id: id }}).fetch({
+      'withRelated': ['user', 'submission']
     })
   }
-});
+})
