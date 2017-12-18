@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha test.js",
+    "lint": "eslint .",
     "coverage": "nyc npm test && nyc report --reporter=text-lcov > coverage.lcov"
   },
   "author": "",
@@ -41,6 +42,8 @@
     "chai": "^4.1.1",
     "chai-http": "^3.0.0",
     "csv-parse": "^1.2.4",
-    "mocha": "^3.5.0"
+    "eslint": "^4.13.1",
+    "mocha": "^3.5.0",
+    "standard": "^10.0.3"
   }
 }
