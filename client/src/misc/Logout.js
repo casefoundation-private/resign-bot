@@ -1,22 +1,22 @@
-import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import React, { Component } from 'react'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 import {
   userLogout
-} from '../actions/user';
+} from '../actions/user'
+import PropTypes from 'prop-types'
 
 class Logout extends Component {
-
-  componentDidMount() {
-    this.props.userLogout();
+  componentDidMount () {
+    this.props.userLogout()
   }
 
-  render() {
+  render () {
     return (
-      <div className="text-center">
+      <div className='text-center'>
         Logging You Out
       </div>
-    );
+    )
   }
 }
 
@@ -29,7 +29,11 @@ const stateToProps = (state) => {
 const dispatchToProps = (dispatch) => {
   return bindActionCreators({
     userLogout
-  }, dispatch);
+  }, dispatch)
 }
 
-export default connect(stateToProps, dispatchToProps)(Logout);
+Logout.propTypes = {
+  userLogout: PropTypes.func.isRequired
+}
+
+export default connect(stateToProps, dispatchToProps)(Logout)

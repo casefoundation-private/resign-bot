@@ -1,109 +1,110 @@
-import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { Button,Form,Input,FormGroup,Label } from 'reactstrap';
+import React, { Component } from 'react'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { Button, Form, Input, FormGroup, Label } from 'reactstrap'
 import {
   loadUser,
   updateUser,
   newUser,
   setActiveUserProp,
   setActiveUserNotificationPreference
-} from '../../actions/users';
-import PageWrapper from '../../PageWrapper';
-import { Link } from 'react-router-dom';
-import FontAwesome from 'react-fontawesome';
+} from '../../actions/users'
+import PageWrapper from '../../PageWrapper'
+import { Link } from 'react-router-dom'
+import FontAwesome from 'react-fontawesome'
 import {
   Spinner
-} from '../../misc/utils';
+} from '../../misc/utils'
+import PropTypes from 'prop-types'
 
 class User extends Component {
-  componentDidMount() {
+  componentDidMount () {
     if (this.props.match.params.userId && this.props.match.params.userId !== 'new') {
-      this.props.loadUser(parseInt(this.props.match.params.userId,10));
+      this.props.loadUser(parseInt(this.props.match.params.userId, 10))
     } else {
-      this.props.newUser();
+      this.props.newUser()
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     if (this.props.match.params.userId === 'new' && nextProps.users.user.id > 0) {
-      this.props.history.push('/users/'+nextProps.users.user.id);
+      this.props.history.push('/users/' + nextProps.users.user.id)
     }
   }
 
-  handleSave(event) {
-    event.preventDefault();
-    this.props.updateUser();
+  handleSave (event) {
+    event.preventDefault()
+    this.props.updateUser()
   }
 
-  toggleNotificationPreferences(properties) {
-    let lastValue = null;
+  toggleNotificationPreferences (properties) {
+    let lastValue = null
     properties.forEach((property) => {
       if (lastValue === null) {
-        lastValue = this.props.users.user.notificationPreferences[property];
+        lastValue = this.props.users.user.notificationPreferences[property]
       } else {
-        lastValue = lastValue && this.props.users.user.notificationPreferences[property];
+        lastValue = lastValue && this.props.users.user.notificationPreferences[property]
       }
-    });
+    })
     properties.forEach((property) => {
-      this.props.setActiveUserNotificationPreference(property,!lastValue);
-    });
+      this.props.setActiveUserNotificationPreference(property, !lastValue)
+    })
   }
 
-  render() {
+  render () {
     return (
-      <PageWrapper title={this.props.match.params.userId !== 'new' ? "Edit User" : "New User"}>
+      <PageWrapper title={this.props.match.params.userId !== 'new' ? 'Edit User' : 'New User'}>
         { this.props.users.user && this.props.users.user.id !== this.props.user.user.id && (<p>
-          <Link to='/users'><FontAwesome name="chevron-left" /> Back to Users</Link>
+          <Link to='/users'><FontAwesome name='chevron-left' /> Back to Users</Link>
         </p>)}
         { this.props.users.user ? (<Form onSubmit={(event) => this.handleSave(event)}>
           <FormGroup>
-            <Label for="email">Email</Label>
-            <Input autoComplete={false} name="email" type="email" id="email" value={this.props.users.user.email} disabled={this.props.user.user.role!=='admin'} onChange={(event) => this.props.setActiveUserProp('email',event.target.value)} required/>
+            <Label for='email'>Email</Label>
+            <Input autoComplete={false} name='email' type='email' id='email' value={this.props.users.user.email} disabled={this.props.user.user.role !== 'admin'} onChange={(event) => this.props.setActiveUserProp('email', event.target.value)} required />
           </FormGroup>
           {
             this.props.users.user.id && (<FormGroup>
-              <Label for="password">Password</Label>
-              <Input autoComplete={false} type="password" name="password" id="password" value={this.props.users.user.password || ''} onChange={(event) => this.props.setActiveUserProp('password',event.target.value)} />
+              <Label for='password'>Password</Label>
+              <Input autoComplete={false} type='password' name='password' id='password' value={this.props.users.user.password || ''} onChange={(event) => this.props.setActiveUserProp('password', event.target.value)} />
             </FormGroup>)
           }
           <FormGroup>
-            <Label for="role">Role</Label>
-            <Input type="select" name="role" id="role" value={this.props.users.user.role} disabled={this.props.user.user.role!=='admin'} onChange={(event) => this.props.setActiveUserProp('role',event.target.value)} required>
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
+            <Label for='role'>Role</Label>
+            <Input type='select' name='role' id='role' value={this.props.users.user.role} disabled={this.props.user.user.role !== 'admin'} onChange={(event) => this.props.setActiveUserProp('role', event.target.value)} required>
+              <option value='user'>User</option>
+              <option value='admin'>Admin</option>
             </Input>
           </FormGroup>
           <FormGroup check>
             <Label check>
-              <Input type="checkbox" name="active" id="active" checked={this.props.users.user.active} disabled={this.props.user.user.role!=='admin'} onChange={(event) => this.props.setActiveUserProp('active',event.target.checked)} />
+              <Input type='checkbox' name='active' id='active' checked={this.props.users.user.active} disabled={this.props.user.user.role !== 'admin'} onChange={(event) => this.props.setActiveUserProp('active', event.target.checked)} />
               {' '}
               Active (Can Log In)
             </Label>
           </FormGroup>
           <FormGroup check>
             <Label check>
-              <Input type="checkbox" name="ready" id="ready" checked={this.props.users.user.ready} disabled={this.props.user.user.role!=='admin'} onChange={(event) => this.props.setActiveUserProp('ready',event.target.checked)} />
+              <Input type='checkbox' name='ready' id='ready' checked={this.props.users.user.ready} disabled={this.props.user.user.role !== 'admin'} onChange={(event) => this.props.setActiveUserProp('ready', event.target.checked)} />
               {' '}
               Review Queue is Open
             </Label>
           </FormGroup>
           {
             this.props.users.user.notificationPreferences && (
-              <FormGroup tag="fieldset">
+              <FormGroup tag='fieldset'>
                 <legend>Email Notification Preferences</legend>
                 <FormGroup check>
                   <Label check>
-                    <Input type="checkbox" name="active" id="active" checked={this.props.users.user.notificationPreferences.review_assigned && this.props.users.user.notificationPreferences.multiple_reviews_assigned} onChange={(event) => this.toggleNotificationPreferences(['review_assigned','multiple_reviews_assigned'])} />
+                    <Input type='checkbox' name='active' id='active' checked={this.props.users.user.notificationPreferences.review_assigned && this.props.users.user.notificationPreferences.multiple_reviews_assigned} onChange={(event) => this.toggleNotificationPreferences(['review_assigned', 'multiple_reviews_assigned'])} />
                     {' '}
                     Review(s) Assigned to Me
                   </Label>
                 </FormGroup>
                 {
-                  this.props.users.user.role==='admin' && (
+                  this.props.users.user.role === 'admin' && (
                     <FormGroup check>
                       <Label check>
-                        <Input type="checkbox" name="active" id="active" checked={this.props.users.user.notificationPreferences.submission_created && this.props.users.user.notificationPreferences.multiple_submissions_created} onChange={(event) => this.toggleNotificationPreferences(['submission_created','multiple_submissions_created'])} />
+                        <Input type='checkbox' name='active' id='active' checked={this.props.users.user.notificationPreferences.submission_created && this.props.users.user.notificationPreferences.multiple_submissions_created} onChange={(event) => this.toggleNotificationPreferences(['submission_created', 'multiple_submissions_created'])} />
                         {' '}
                         Submission(s) Added
                       </Label>
@@ -113,11 +114,11 @@ class User extends Component {
               </FormGroup>
             )
           }
-          <br/>
-          <Button color="primary" type="submit"><FontAwesome name="check-circle-o" /> Save</Button>
+          <br />
+          <Button color='primary' type='submit'><FontAwesome name='check-circle-o' /> Save</Button>
         </Form>) : (<Spinner />)}
       </PageWrapper>
-    );
+    )
   }
 }
 
@@ -135,7 +136,40 @@ const dispatchToProps = (dispatch) => {
     newUser,
     setActiveUserProp,
     setActiveUserNotificationPreference
-  }, dispatch);
+  }, dispatch)
 }
 
-export default connect(stateToProps, dispatchToProps)(User);
+User.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      userId: PropTypes.string
+    })
+  }),
+  loadUser: PropTypes.func.isRequired,
+  updateUser: PropTypes.func.isRequired,
+  newUser: PropTypes.func.isRequired,
+  setActiveUserProp: PropTypes.func.isRequired,
+  setActiveUserNotificationPreference: PropTypes.func.isRequired,
+  users: PropTypes.shape({
+    user: PropTypes.shape({
+      id: PropTypes.number,
+      notificationPreferences: PropTypes.object,
+      role: PropTypes.string,
+      password: PropTypes.password,
+      email: PropTypes.string,
+      active: PropTypes.bool,
+      ready: PropTypes.bool
+    })
+  }),
+  user: PropTypes.shape({
+    user: PropTypes.shape({
+      id: PropTypes.number,
+      role: PropTypes.sstring
+    })
+  }),
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired
+  })
+}
+
+export default connect(stateToProps, dispatchToProps)(User)

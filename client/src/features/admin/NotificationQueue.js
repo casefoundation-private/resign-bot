@@ -1,23 +1,24 @@
-import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { Table } from 'reactstrap';
+import React, { Component } from 'react'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { Table } from 'reactstrap'
 import {
   loadNotifications
-} from '../../actions/notifications';
-import PageWrapper from '../../PageWrapper';
+} from '../../actions/notifications'
+import PageWrapper from '../../PageWrapper'
 import {
   Spinner
-} from '../../misc/utils';
+} from '../../misc/utils'
+import PropTypes from 'prop-types'
 
 class NotificationQueue extends Component {
-  componentDidMount() {
-    this.props.loadNotifications();
+  componentDidMount () {
+    this.props.loadNotifications()
   }
 
-  render() {
+  render () {
     return (
-      <PageWrapper title="Notification Queue">
+      <PageWrapper title='Notification Queue'>
         <Table striped>
           <thead>
             <tr>
@@ -41,7 +42,7 @@ class NotificationQueue extends Component {
                     <td>{notification.errored ? 'Yes' : 'No'}</td>
                     <td>
                       <pre>
-                        {JSON.stringify(notification.data,null,'  ')}
+                        {JSON.stringify(notification.data, null, '  ')}
                       </pre>
                     </td>
                   </tr>
@@ -51,7 +52,7 @@ class NotificationQueue extends Component {
           </tbody>
         </Table>
       </PageWrapper>
-    );
+    )
   }
 }
 
@@ -65,7 +66,14 @@ const stateToProps = (state) => {
 const dispatchToProps = (dispatch) => {
   return bindActionCreators({
     loadNotifications
-  }, dispatch);
+  }, dispatch)
 }
 
-export default connect(stateToProps, dispatchToProps)(NotificationQueue);
+NotificationQueue.propTypes = {
+  notifications: PropTypes.shape({
+    notifications: PropTypes.array.isRequired
+  }),
+  loadNotifications: PropTypes.func.isRequired
+}
+
+export default connect(stateToProps, dispatchToProps)(NotificationQueue)

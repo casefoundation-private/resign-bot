@@ -1,32 +1,33 @@
-import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import React, { Component } from 'react'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 import {
   loadSubmission
-} from '../../actions/submissions';
-import PageWrapper from '../../PageWrapper';
-import { Link } from 'react-router-dom';
+} from '../../actions/submissions'
+import PageWrapper from '../../PageWrapper'
+import { Link } from 'react-router-dom'
 import {
   summarizeSubmission,
   SubmissionContents
-} from '../../misc/utils';
-import FontAwesome from 'react-fontawesome';
+} from '../../misc/utils'
+import FontAwesome from 'react-fontawesome'
+import PropTypes from 'prop-types'
 
 class Submission extends Component {
-  componentDidMount() {
-    const submissionId = parseInt(this.props.match.params.submissionId,10);
-    this.props.loadSubmission(submissionId);
+  componentDidMount () {
+    const submissionId = parseInt(this.props.match.params.submissionId, 10)
+    this.props.loadSubmission(submissionId)
   }
 
-  render() {
+  render () {
     return (
       <PageWrapper title={'Submission for ' + summarizeSubmission(this.props.submissions.submission)}>
         <p>
-          <Link to='/submissions'><FontAwesome name="chevron-left" /> Back to Submissions</Link>
+          <Link to='/submissions'><FontAwesome name='chevron-left' /> Back to Submissions</Link>
         </p>
         <SubmissionContents submission={this.props.submissions.submission} />
       </PageWrapper>
-    );
+    )
   }
 }
 
@@ -39,7 +40,19 @@ const stateToProps = (state) => {
 const dispatchToProps = (dispatch) => {
   return bindActionCreators({
     loadSubmission
-  }, dispatch);
+  }, dispatch)
 }
 
-export default connect(stateToProps, dispatchToProps)(Submission);
+Submission.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      submissionId: PropTypes.string.isRequired
+    })
+  }),
+  loadSubmission: PropTypes.func.isRequired,
+  submissions: PropTypes.shape({
+    submission: PropTypes.object
+  })
+}
+
+export default connect(stateToProps, dispatchToProps)(Submission)

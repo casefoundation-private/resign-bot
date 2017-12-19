@@ -1,6 +1,6 @@
 import {
   ACTION
-} from '../misc/constants';
+} from '../misc/constants'
 
 export const clearMessage = () => {
   return {
@@ -8,7 +8,7 @@ export const clearMessage = () => {
   }
 }
 
-export const setMessage = (message,messageType) => {
+export const setMessage = (message, messageType) => {
   return {
     type: ACTION.MESSAGE.SET,
     message,

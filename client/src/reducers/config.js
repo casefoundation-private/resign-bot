@@ -1,20 +1,20 @@
 import {
   ACTION
-} from '../misc/constants';
+} from '../misc/constants'
 
 const initialConfigState = {
   'prompts': []
-};
+}
 
 const config = (state = initialConfigState, action) => {
   switch (action.type) {
     case ACTION.CONFIG.SET:
-      return Object.assign({},state,action.config);
+      return Object.assign({}, state, action.config)
     case ACTION.USER.LOGOUT:
-      return initialConfigState;
+      return initialConfigState
     default:
-      return state;
+      return state
   }
 }
 
-export default config;
+export default config

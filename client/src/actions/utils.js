@@ -1,8 +1,9 @@
+/* global fetch */
 import {
   ACTION
-} from '../misc/constants';
+} from '../misc/constants'
 
-export const authenticatedRequest = (dispatch,getState,action,method,payload,complete,errored) => {
+export const authenticatedRequest = (dispatch, getState, action, method, payload, complete, errored) => {
   if (getState().user.token) {
     const params = {
       method: method,
@@ -13,9 +14,9 @@ export const authenticatedRequest = (dispatch,getState,action,method,payload,com
       }
     }
     if (payload) {
-      params.body = JSON.stringify(payload);
+      params.body = JSON.stringify(payload)
     }
-    fetch(action,params)
+    fetch(action, params)
       .then((response) => response.json())
       .then((responseData) => {
         if (responseData.error) {
@@ -23,9 +24,9 @@ export const authenticatedRequest = (dispatch,getState,action,method,payload,com
             type: ACTION.MESSAGE.SET,
             message: responseData.error,
             messageType: 'danger'
-          });
+          })
         } else {
-          complete(responseData);
+          complete(responseData)
         }
       })
       .catch((error) => {
@@ -33,13 +34,13 @@ export const authenticatedRequest = (dispatch,getState,action,method,payload,com
           type: ACTION.MESSAGE.SET,
           message: error.message || error.error || error,
           messageType: 'danger'
-        });
+        })
       })
   } else {
     dispatch({
       type: ACTION.MESSAGE.SET,
       message: 'Please log in to do that.',
       messageType: 'danger'
-    });
+    })
   }
 }

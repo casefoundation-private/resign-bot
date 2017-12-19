@@ -1,6 +1,6 @@
 import {
   ACTION
-} from '../misc/constants';
+} from '../misc/constants'
 
 const initialSubmissionsState = {
   submission: null,
@@ -13,39 +13,39 @@ const initialSubmissionsState = {
     str: null,
     indices: null
   }
-};
+}
 
 const submissions = (state = initialSubmissionsState, action) => {
   switch (action.type) {
     case ACTION.SUBMISSIONS.SET:
-      const list = action.submissions || state.submissions;
+      const list = action.submissions || state.submissions
       if (action.submission && list) {
-        const index = list.find((_submission) => _submission.id === action.submission.id);
-        list[index] = action.submission;
+        const index = list.find((_submission) => _submission.id === action.submission.id)
+        list[index] = action.submission
       }
-      return Object.assign({},state,{
+      return Object.assign({}, state, {
         'submission': action.submission || state.submission,
         'submissions': list
-      });
+      })
     case ACTION.SUBMISSIONS.SET_SORT:
-      return Object.assign({},state,{
-        'sort': Object.assign({},state.sort,{
+      return Object.assign({}, state, {
+        'sort': Object.assign({}, state.sort, {
           field: action.field,
           direction: action.direction
         })
-      });
+      })
     case ACTION.SUBMISSIONS.SET_SEARCH:
-      return Object.assign({},state,{
-        'search': Object.assign({},state.sort,{
+      return Object.assign({}, state, {
+        'search': Object.assign({}, state.sort, {
           str: action.str,
           indices: action.indices
         })
-      });
+      })
     case ACTION.USER.LOGOUT:
-      return initialSubmissionsState;
+      return initialSubmissionsState
     default:
-      return state;
+      return state
   }
 }
 
-export default submissions;
+export default submissions

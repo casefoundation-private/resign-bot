@@ -1,34 +1,35 @@
-import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { Table,ButtonGroup,Button } from 'reactstrap';
+import React, { Component } from 'react'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { Table, ButtonGroup, Button } from 'reactstrap'
 import {
   loadReviewsForUser,
   recuseReview
-} from '../../actions/reviews';
-import PageWrapper from '../../PageWrapper';
+} from '../../actions/reviews'
+import PageWrapper from '../../PageWrapper'
 import {
   summarizeSubmission,
   paginate,
   Spinner
-} from '../../misc/utils';
-import { Link } from 'react-router-dom';
-import FontAwesome from 'react-fontawesome';
+} from '../../misc/utils'
+import { Link } from 'react-router-dom'
+import FontAwesome from 'react-fontawesome'
+import PropTypes from 'prop-types'
 
 class MyReviews extends Component {
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super(props)
     this.state = {
       page: 0
-    };
+    }
   }
 
-  componentDidMount() {
-    this.props.loadReviewsForUser(this.props.user.user.id);
+  componentDidMount () {
+    this.props.loadReviewsForUser(this.props.user.user.id)
   }
 
-  renderReviewList(reviews) {
-    return reviews ? paginate(reviews,this.props.config.perPage,this.state.page,
+  renderReviewList (reviews) {
+    return reviews ? paginate(reviews, this.props.config.perPage, this.state.page,
       (page) => {
         this.setState({page})
       },
@@ -37,9 +38,9 @@ class MyReviews extends Component {
           <Table striped>
             <thead>
               <tr>
-                <th width="30%">Name</th>
-                <th width="30%">Created</th>
-                <th width="40%" className="text-center">Options</th>
+                <th width='30%'>Name</th>
+                <th width='30%'>Created</th>
+                <th width='40%' className='text-center'>Options</th>
               </tr>
             </thead>
             <tbody>
@@ -49,13 +50,13 @@ class MyReviews extends Component {
                     <tr key={review.id}>
                       <td>{summarizeSubmission(review.submission)}</td>
                       <td>{new Date(review.created_at).toLocaleDateString()}</td>
-                      <td className="text-center">
+                      <td className='text-center'>
                         <ButtonGroup>
-                          { review.score === null && (<Button size="sm" color="danger" onClick={() => this.props.recuseReview(review)}><FontAwesome name="ban" /> Recuse Myself</Button>)}
-                          <Link to={'/reviews/'+review.id} className="btn btn-primary btn-sm" disabled={review.score !== null}>
-                            { review.score === null ?
-                              (<span><FontAwesome name="check-square" />{ ' Review Submission'}</span>)
-                              : (<span><FontAwesome name="eye" />{ ' View Submission'}</span>)}
+                          { review.score === null && (<Button size='sm' color='danger' onClick={() => this.props.recuseReview(review)}><FontAwesome name='ban' /> Recuse Myself</Button>)}
+                          <Link to={'/reviews/' + review.id} className='btn btn-primary btn-sm' disabled={review.score !== null}>
+                            { review.score === null
+                              ? (<span><FontAwesome name='check-square' />{ ' Review Submission'}</span>)
+                              : (<span><FontAwesome name='eye' />{ ' View Submission'}</span>)}
                           </Link>
                         </ButtonGroup>
                       </td>
@@ -67,17 +68,17 @@ class MyReviews extends Component {
           </Table>
         )
       }
-    ) : (<Spinner />);
+    ) : (<Spinner />)
   }
 
-  render() {
+  render () {
     return (
-      <PageWrapper title="My Review Queue">
+      <PageWrapper title='My Review Queue'>
         { this.renderReviewList(this.props.reviews.reviews && this.props.reviews.reviews.filter((review) => review.score === null)) }
         <h4>Completed Reviews</h4>
         { this.renderReviewList(this.props.reviews.reviews && this.props.reviews.reviews.filter((review) => review.score !== null)) }
       </PageWrapper>
-    );
+    )
   }
 }
 
@@ -93,7 +94,23 @@ const dispatchToProps = (dispatch) => {
   return bindActionCreators({
     loadReviewsForUser,
     recuseReview
-  }, dispatch);
+  }, dispatch)
 }
 
-export default connect(stateToProps, dispatchToProps)(MyReviews);
+MyReviews.propTypes = {
+  loadReviewsForUser: PropTypes.func.isRequired,
+  recuseReview: PropTypes.func.isRequired,
+  user: PropTypes.shape({
+    user: PropTypes.shape({
+      id: PropTypes.number.isRequired
+    })
+  }),
+  config: PropTypes.shape({
+    perPage: PropTypes.number.isRequired
+  }),
+  reviews: PropTypes.shape({
+    reviews: PropTypes.array.isRequired
+  })
+}
+
+export default connect(stateToProps, dispatchToProps)(MyReviews)
