@@ -3,6 +3,9 @@
 **WARNING: UNDER ACTIVE DEVELOPMENT**
 
 [![Build Status](https://travis-ci.org/casefoundation/review-o-matic.svg?branch=master)](https://travis-ci.org/casefoundation/review-o-matic)
+[![Maintainability](https://api.codeclimate.com/v1/badges/1c6705598432dbb288c0/maintainability)](https://codeclimate.com/github/casefoundation/review-o-matic/maintainability)
+
+[![JavaScript Style Guide](https://cdn.rawgit.com/standard/standard/master/badge.svg)](https://github.com/standard/standard)
 
 ## About
 
