@@ -130,13 +130,9 @@ describe('API', () => {
         chai.request(api)
           .get('/api/user')
           .set('Authorization', 'JWT ' + token)
-          .end((err, res) => {
-            if (err) {
-              done(err)
-            } else {
-              res.should.have.status(401)
-              done()
-            }
+          .end((err, res) => { // eslint-disable-line handle-callback-err
+            res.should.have.status(401)
+            done()
           })
       }).catch((err) => console.log(err))
     })
@@ -150,13 +146,9 @@ describe('API', () => {
             'email': user.get('email'),
             'password': password
           })
-          .end((err, res) => {
-            if (err) {
-              done(err)
-            } else {
-              res.should.have.status(401)
-              done()
-            }
+          .end((err, res) => { // eslint-disable-line handle-callback-err
+            res.should.have.status(401)
+            done()
           })
       }).catch((err) => console.log(err))
     })
@@ -167,13 +159,9 @@ describe('API', () => {
         chai.request(api)
           .get('/api/user')
           .set('Authorization', 'JWT ' + token)
-          .end((err, res) => {
-            if (err) {
-              done(err)
-            } else {
-              res.should.have.status(401)
-              done()
-            }
+          .end((err, res) => { // eslint-disable-line handle-callback-err
+            res.should.have.status(401)
+            done()
           })
       }).catch((err) => console.log(err))
     })
@@ -331,14 +319,10 @@ describe('API', () => {
         chai.request(api)
           .get('/api/user/reset/' + user.get('resetCode'))
           .set('Authorization', 'JWT ' + token)
-          .end((err, res) => {
-            if (err) {
-              done(err)
-            } else {
-              res.should.have.status(404)
-              res.body.should.be.a('object')
-              done()
-            }
+          .end((err, res) => { // eslint-disable-line handle-callback-err
+            res.should.have.status(404)
+            res.body.should.be.a('object')
+            done()
           })
       }).catch((err) => done(err))
     })
@@ -757,13 +741,9 @@ describe('API', () => {
               .post('/api/submission/' + submissions[1].get('id'))
               .set('Authorization', 'JWT ' + token)
               .send(submissionJSON1)
-              .end((err, res) => {
-                if (err) {
-                  done(err)
-                } else {
-                  res.should.have.status(400)
-                  done()
-                }
+              .end((err, res) => { // eslint-disable-line handle-callback-err
+                res.should.have.status(400)
+                done()
               })
           }
         })
@@ -1042,15 +1022,11 @@ describe('API', () => {
         .put('/api/review')
         .set('Authorization', 'JWT ' + token)
         .send(newReview)
-        .end((err, res) => {
-          if (err) {
-            done(err)
-          } else {
-            res.should.have.status(400)
-            res.body.should.be.a('object')
-            res.body.error.should.be.a('string')
-            done()
-          }
+        .end((err, res) => { // eslint-disable-line handle-callback-err
+          res.should.have.status(400)
+          res.body.should.be.a('object')
+          res.body.error.should.be.a('string')
+          done()
         })
     })
 
