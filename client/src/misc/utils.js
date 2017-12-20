@@ -44,24 +44,6 @@ export const round = (n) => {
   return (Math.round(n * 100) / 100)
 }
 
-export const actualFlagsForSubmission = (config, submission) => {
-  let total = null
-  if (submission.flags !== null) {
-    total = submission.flags
-  }
-  if (submission.flagged === true && total === null) {
-    total = 1
-  } else if (submission.flagged === true) {
-    total++
-  }
-  if (submission.autoFlagged === true && total === null) {
-    total = 1
-  } else if (submission.autoFlagged === true) {
-    total++
-  }
-  return total === null ? 'N/A' : total
-}
-
 export const paginate = (array, perPage, page, goToPageCallback, renderCallback) => {
   if (perPage > 0) {
     const nPages = Math.ceil(array.length / perPage)

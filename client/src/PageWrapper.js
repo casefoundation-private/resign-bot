@@ -110,7 +110,7 @@ PageWrapper.propTypes = {
     helpText: PropTypes.string
   }),
   title: PropTypes.string.isRequired,
-  children: PropTypes.element.isRequired
+  children: PropTypes.oneOfType([PropTypes.object, PropTypes.array])
 }
 
 export default connect(stateToProps, dispatchToProps)(PageWrapper)

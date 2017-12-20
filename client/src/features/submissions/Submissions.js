@@ -23,7 +23,6 @@ import {
   getFavorite,
   round,
   SubmissionContents,
-  actualFlagsForSubmission,
   pinnedSubmissions,
   paginate,
   Spinner
@@ -172,11 +171,12 @@ class Submissions extends Component {
                       <tr>
                         <th>{this.generateSortableColumnHeader('ID', 'id')}</th>
                         <th>{this.generateSortableColumnHeader('Name', 'summary')}</th>
+                        <th>{this.generateSortableColumnHeader('Is Flagged', 'isFlagged')}</th>
                         <th>{this.generateSortableColumnHeader('Score', 'score')}</th>
                         <th>{this.generateSortableColumnHeader('Std Deviation', 'deviation')}</th>
                         <th>{this.generateSortableColumnHeader('Completed Reviews', 'completedReviews')}</th>
                         <th>{this.generateSortableColumnHeader('Assigned Reviews', 'assignedReviews')}</th>
-                        <th>{this.generateSortableColumnHeader('Flags', 'flags')}</th>
+                        <th>{this.generateSortableColumnHeader('Flagged Reviews', 'flags')}</th>
                         {
                           this.props.config.review.categories.map((category, i) => {
                             return (
@@ -238,11 +238,12 @@ class Submissions extends Component {
                             <tr key={submission.id}>
                               <td>{submission.id}</td>
                               <td>{summarizeSubmission(submission)}</td>
+                              <td>{submission.isFlagged ? 'Yes' : 'No'}</td>
                               <td>{submission.score === null ? 'N/A' : round(submission.score)}</td>
                               <td>{submission.deviation === null ? 'N/A' : round(submission.deviation)}</td>
                               <td>{completedReviews(submission).length}</td>
                               <td>{incompletedReviews(submission).length}</td>
-                              <td>{actualFlagsForSubmission(this.props.config, submission)}</td>
+                              <td>{submission.flags}</td>
                               {
                                 this.props.config.review.categories.map((category, i) => {
                                   return (

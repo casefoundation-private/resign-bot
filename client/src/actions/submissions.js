@@ -9,8 +9,7 @@ import {
   summarizeSubmission,
   getFavorite,
   completedReviews,
-  incompletedReviews,
-  actualFlagsForSubmission
+  incompletedReviews
 } from '../misc/utils'
 
 export const sortSubmissions = () => {
@@ -26,9 +25,13 @@ export const sortSubmissions = () => {
           aVal = a[getState().submissions.sort.field] === null ? -1 : a[getState().submissions.sort.field]
           bVal = b[getState().submissions.sort.field] === null ? -1 : b[getState().submissions.sort.field]
           break
+        case 'isFlagged':
+          aVal = a.isFlagged ? 1 : 0
+          bVal = b.isFlagged ? 1 : 0
+          break
         case 'flags':
-          aVal = actualFlagsForSubmission(getState().config, a) === 'N/A' ? -1 : actualFlagsForSubmission(getState().config, a)
-          bVal = actualFlagsForSubmission(getState().config, b) === 'N/A' ? -1 : actualFlagsForSubmission(getState().config, b)
+          aVal = a.flags === null ? -1 : a.flags
+          bVal = b.flags === null ? -1 : b.flags
           break
         case 'pinned':
         case 'flagged':
@@ -141,9 +144,6 @@ export const loadSubmissions = () => {
     })
     const url = '/api/submission'
     authenticatedRequest(dispatch, getState, url, 'GET', null, (submissions) => {
-      submissions.forEach((submission) => {
-        submission.created_at = new Date(submission.created_at)
-      })
       dispatch({
         type: ACTION.SUBMISSIONS.SET,
         submissions
@@ -178,11 +178,16 @@ export const loadSubmission = (submissionId) => {
   }
 }
 
-// TODO this really isn't the right way to do this
 export const toggleFlagSubmission = (submission) => {
   return (dispatch, getState) => {
-    submission.flagged = !submission.flagged
-    authenticatedRequest(dispatch, getState, '/api/submission/' + submission.id, 'POST', submission, (submission) => {
+    dispatch({
+      type: ACTION.SUBMISSIONS.SET,
+      submission
+    })
+    dispatch({
+      type: ACTION.SUBMISSIONS.TOGGLE_FLAGGED
+    })
+    authenticatedRequest(dispatch, getState, '/api/submission/' + getState().submissions.submission.id, 'POST', getState().submissions.submission, (submission) => {
       dispatch({
         type: ACTION.SUBMISSIONS.SET,
         submission
@@ -197,11 +202,16 @@ export const toggleFlagSubmission = (submission) => {
   }
 }
 
-// TODO this really isn't the right way to do this
 export const togglePinSubmission = (submission) => {
   return (dispatch, getState) => {
-    submission.pinned = !submission.pinned
-    authenticatedRequest(dispatch, getState, '/api/submission/' + submission.id, 'POST', submission, (submission) => {
+    dispatch({
+      type: ACTION.SUBMISSIONS.SET,
+      submission
+    })
+    dispatch({
+      type: ACTION.SUBMISSIONS.TOGGLE_PINNED
+    })
+    authenticatedRequest(dispatch, getState, '/api/submission/' + getState().submissions.submission.id, 'POST', getState().submissions.submission, (submission) => {
       dispatch({
         type: ACTION.SUBMISSIONS.SET,
         submission
@@ -232,11 +242,16 @@ export const downloadSubmissions = () => {
   }
 }
 
-// TODO this really isn't the right way to do this
 export const clearAutoFlagSubmission = (submission) => {
   return (dispatch, getState) => {
-    submission.autoFlagged = false
-    authenticatedRequest(dispatch, getState, '/api/submission/' + submission.id, 'POST', submission, (submission) => {
+    dispatch({
+      type: ACTION.SUBMISSIONS.SET,
+      submission
+    })
+    dispatch({
+      type: ACTION.SUBMISSIONS.CLEAR_AUTO_FLAGGED
+    })
+    authenticatedRequest(dispatch, getState, '/api/submission/' + getState().submissions.submission.id, 'POST', getState().submissions.submission, (submission) => {
       dispatch({
         type: ACTION.SUBMISSIONS.SET,
         submission

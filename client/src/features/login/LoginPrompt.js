@@ -42,10 +42,10 @@ LoginPrompt.propTypes = {
   clearMessage: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
   message: PropTypes.shape({
-    message: PropTypes.string.isRequired,
-    messageType: PropTypes.string.isRequired
+    message: PropTypes.string,
+    messageType: PropTypes.string
   }),
-  children: PropTypes.element.isRequired
+  children: PropTypes.array
 }
 
 export default connect(stateToProps, dispatchToProps)(LoginPrompt)

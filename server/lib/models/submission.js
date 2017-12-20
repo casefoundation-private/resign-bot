@@ -71,6 +71,9 @@ const Submission = module.exports = bookshelf.Model.extend({
     return json
   },
   'virtuals': {
+    'isFlagged': function () {
+      return this.get('flags') > 0 || this.get('autoFlagged') || this.get('flagged')
+    },
     'flags': function () {
       const reviews = this.related('reviews')
       if (reviews && reviews.length > 0) {
@@ -165,7 +168,9 @@ const Submission = module.exports = bookshelf.Model.extend({
   'byId': function (id) {
     return this.forge().query((qb) => {
       qb.where('id', id)
-    }).fetch()
+    }).fetch({
+      'withRelated': 'reviews'
+    })
   },
   'bySourceAndExternalId': function (source, externalId) {
     return this

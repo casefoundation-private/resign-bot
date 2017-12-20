@@ -71,7 +71,7 @@ const dispatchToProps = (dispatch) => {
 
 NotificationQueue.propTypes = {
   notifications: PropTypes.shape({
-    notifications: PropTypes.array.isRequired
+    notifications: PropTypes.array
   }),
   loadNotifications: PropTypes.func.isRequired
 }

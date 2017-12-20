@@ -106,10 +106,10 @@ MyReviews.propTypes = {
     })
   }),
   config: PropTypes.shape({
-    perPage: PropTypes.number.isRequired
+    perPage: PropTypes.number
   }),
   reviews: PropTypes.shape({
-    reviews: PropTypes.array.isRequired
+    reviews: PropTypes.array
   })
 }
 

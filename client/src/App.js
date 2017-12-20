@@ -77,8 +77,8 @@ const dispatchToProps = (dispatch) => {
 
 App.propTypes = {
   user: PropTypes.shape({
-    token: PropTypes.string.isRequired,
-    needsPasswordReset: PropTypes.bool.isRequired,
+    token: PropTypes.string,
+    needsPasswordReset: PropTypes.bool,
     user: PropTypes.shape({
       role: PropTypes.string
     })

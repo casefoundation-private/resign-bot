@@ -162,9 +162,10 @@ exports.submissionsSpreadsheet = (req, res, next) => {
     })
     .then((array) => {
       return array.map((baseObject) => {
-        const returnObject = Object.assign({}, baseObject.data || {})
+        const returnObject = Object.assign({}, baseObject.data || {}, baseObject.categories || {})
         delete baseObject.data
         delete baseObject.reviews
+        delete baseObject.categories
         baseObject.created_at = new Date(baseObject.created_at).toLocaleString()
         baseObject.updated_at = new Date(baseObject.updated_at).toLocaleString()
         return Object.assign(returnObject, baseObject)
