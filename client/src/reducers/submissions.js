@@ -27,7 +27,9 @@ const submissions = (state = initialSubmissionsState, action) => {
       }
       if (list) {
         list.forEach((submission) => {
-          submission.created_at = new Date(submission.created_at)
+          if (typeof submission.created_at === 'string') {
+            submission.created_at = new Date(submission.created_at)
+          }
         })
       }
       if (action.submission && typeof action.submission.created_at === 'string') {
