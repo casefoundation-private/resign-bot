@@ -50,6 +50,11 @@ class PageWrapper extends Component {
                 { this.navLink('/notifications', 'Notification Queue') }
               </NavItem>
             ) }
+            { this.props.user.user && this.props.user.user.role === 'admin' && (
+              <NavItem>
+                { this.navLink('/config', 'Configuration') }
+              </NavItem>
+            ) }
             { this.props.user.user && (
               <NavItem>
                 { this.navLink('/reviews', 'My Review Queue') }
@@ -60,7 +65,7 @@ class PageWrapper extends Component {
                 { this.navLink('/users/' + this.props.user.user.id, 'My Account') }
               </NavItem>
             ) }
-            { this.props.user.user && this.props.config.helpText && (
+            { this.props.user.user && this.props.config.config.helpText && (
               <NavItem>
                 { this.navLink('/help', 'Help') }
               </NavItem>
@@ -107,7 +112,9 @@ PageWrapper.propTypes = {
     })
   }),
   config: PropTypes.shape({
-    helpText: PropTypes.string
+    config: PropTypes.shape({
+      helpText: PropTypes.string
+    })
   }),
   title: PropTypes.string.isRequired,
   children: PropTypes.oneOfType([PropTypes.object, PropTypes.array])

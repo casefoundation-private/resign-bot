@@ -52,12 +52,6 @@ export const loadUserDetails = () => {
         favorites
       })
     })
-    authenticatedRequest(dispatch, getState, '/api/config', 'GET', null, (config) => {
-      dispatch({
-        type: ACTION.CONFIG.SET,
-        config
-      })
-    })
   }
 }
 

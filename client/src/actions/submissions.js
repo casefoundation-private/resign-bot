@@ -67,7 +67,7 @@ export const sortSubmissions = () => {
         default:
           if (getState().submissions.sort.field.indexOf('category_') === 0) {
             const categoryIndex = parseInt(getState().submissions.sort.field.replace('category_', ''), 10)
-            const categoryName = getState().config.review.categories[categoryIndex].prompt
+            const categoryName = getState().config.config.review.categories[categoryIndex].prompt
             aVal = a.categories[categoryName] || null
             bVal = b.categories[categoryName] || null
             if (aVal && bVal) {

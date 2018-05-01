@@ -1,24 +1,35 @@
 const Submission = require('./models/submission')
 const later = require('later')
-const BadLanguageFilter = require('bad-language-filter')
-const blFilter = new BadLanguageFilter()
+const Configuration = require('./models/configuration')
 
-const importers = []
-const importersByName = {}
-const embargoDate = process.env.EMBARGO_DATE ? new Date(process.env.EMBARGO_DATE) : false
+let importers
+let importersByName
 let importLock = false
 let importEmbargo = false
+let schedules
+let interval
 
-exports.init = () => {
-  if (!process.env.SUSPEND_IMPORTING) {
+exports.init = (firstRun = true) => {
+  console.log('Setting up automated import')
+  if (interval) {
+    clearInterval(interval)
+  }
+  if (schedules) {
+    schedules.forEach(schedule => schedule.clear())
+  }
+  if (Configuration.getConfig('suspendImporting') === false) {
+    console.log('Automated import enabled')
     setupImporters()
     setupEmbargoSchedule()
-    setInterval(() => {
+    interval = setInterval(() => {
       runImporters().catch((err) => {
         console.log(err)
       })
-    }, (parseInt(process.env.IMPORT_INTERVAL) || (1000 * 60 * 60)))
-    return runImporters()
+    }, (Configuration.getConfig('importInterval') || (1000 * 60 * 60)))
+    return firstRun ? runImporters() : Promise.resolve()
+  } else {
+    console.log('Automated import disabled')
+    return Promise.resolve()
   }
 }
 
@@ -45,7 +56,9 @@ const setEmbargoed = exports.setEmbargoed = (embargoed) => {
 }
 
 const setupImporters = () => {
-  if (process.env.WUFOO_KEY) {
+  importers = []
+  importersByName = {}
+  if (Configuration.getConfig('wufooApiKey')) {
     importersByName.wufoo = importers.length
     importers.push(require('./importers/wufoo'))
   }
@@ -56,19 +69,18 @@ const setupEmbargoSchedule = () => {
     const schedule = later
       .parse
       .cron(embargoStartString)
-    later.setInterval(() => {
+    return later.setInterval(() => {
       setEmbargoed(true)
       setTimeout(() => {
         setEmbargoed(false)
       }, embargoLength)
     }, schedule)
   }
-  const embargos = parseInt(process.env.IMPORT_PAUSES || 0)
-  for (var i = 0; i < embargos; i++) {
-    const embargoStartString = process.env['IMPORT_PAUSE_' + i + '_START']
-    const embargoLength = parseInt(process.env['IMPORT_PAUSE_' + i + '_LENGTH'])
-    scheduleEmbargo(embargoStartString, embargoLength)
-  }
+  schedules = Configuration.getConfig('importPauses').map(pause => {
+    const embargoStartString = pause.start
+    const embargoLength = pause.length
+    return scheduleEmbargo(embargoStartString, embargoLength)
+  })
 }
 
 const runImporters = () => {
@@ -79,6 +91,8 @@ const runImporters = () => {
       if (i < importers.length) {
         return runImporter(importers[i])
           .then(() => nextImporter(i + 1))
+      } else {
+        return Promise.resolve()
       }
     }
     return nextImporter(0).then(() => {
@@ -98,13 +112,7 @@ exports.runImporters = runImporters
 
 const runImporter = (importer) => {
   return importer()
-    .then((newSubmissions) => saveSubmissions(newSubmissions.filter((newSubmission) => {
-      if (embargoDate) {
-        return newSubmission.get('created_at').getTime() > embargoDate.getTime()
-      } else {
-        return true
-      }
-    })))
+    .then((newSubmissions) => saveSubmissions(newSubmissions))
 }
 
 const saveSubmissions = (newSubmissions) => {
@@ -118,14 +126,6 @@ const saveSubmissions = (newSubmissions) => {
             console.log(existingSubmission.get('source') + '/' + existingSubmission.get('external_id') + ' is a duplicate. Skipping.')
           } else {
             console.log(newSubmission.get('source') + '/' + newSubmission.get('external_id') + ' is new. Importing')
-            let badLanguage = false
-            for (var key in newSubmission.get('data')) {
-              if (blFilter.contains(' ' + newSubmission.get('data')[key] + ' ')) {
-                badLanguage = true
-                console.log('Flagging new submission for bad language.')
-              }
-            }
-            newSubmission.set('autoFlagged', badLanguage)
             newSubmission.set('embargoed', importEmbargo)
             return newSubmission.save()
           }

@@ -27,12 +27,12 @@ const submissions = (state = initialSubmissionsState, action) => {
       }
       if (list) {
         list.forEach((submission) => {
-          if (typeof submission.created_at === 'string') {
+          if (typeof submission.created_at === 'string' || typeof submission.created_at === 'number') {
             submission.created_at = new Date(submission.created_at)
           }
         })
       }
-      if (action.submission && typeof action.submission.created_at === 'string') {
+      if (action.submission && (typeof action.submission.created_at === 'string' || typeof action.submission.created_at === 'number')) {
         action.submission.created_at = new Date(action.submission.created_at)
       }
       return Object.assign({}, state, {

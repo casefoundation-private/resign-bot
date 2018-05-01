@@ -100,5 +100,16 @@ exports.init = () => {
         })
       }
     })
+  }).then(() => {
+    return knex.schema.hasTable('configurations').then(function (exists) {
+      if (!exists) {
+        return knex.schema.createTable('configurations', function (table) {
+          table.increments('id').primary().notNullable()
+          table.string('key', 255).unique().notNullable()
+          table.json('value').notNullable().defaultTo('{}')
+          table.timestamps()
+        })
+      }
+    })
   })
 }

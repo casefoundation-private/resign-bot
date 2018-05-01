@@ -1,8 +1,8 @@
 const Submission = require('../models/submission')
 const Favorite = require('../models/favorite')
+const Configuration = require('../models/configuration')
 const stringify = require('csv-stringify-as-promised')
 const _ = require('lodash')
-const allowedPublicSubmissionOrigins = process.env.ALLOWED_SUBMISSION_ORIGINS ? process.env.ALLOWED_SUBMISSION_ORIGINS.split(',') : ['localhost:' + (process.env.PORT || 8000)]
 
 exports.getSubmissions = (req, res, next) => {
   Submission.all('created_at', 'desc')
@@ -20,7 +20,7 @@ exports.getSubmissions = (req, res, next) => {
 const corsHeaders = (req, res) => {
   if (req.headers.origin) {
     const origin = req.headers.origin.replace('http://', '').replace('https://', '')
-    if (allowedPublicSubmissionOrigins.indexOf(origin) >= 0) {
+    if (Configuration.getConfig('allowedPublicSubmissionOrigins').indexOf(origin) >= 0) {
       res.header('Access-Control-Allow-Origin', req.headers.origin)
       res.header('Access-Control-Allow-Methods', 'GET,OPTIONS')
       res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
@@ -29,33 +29,57 @@ const corsHeaders = (req, res) => {
 }
 
 exports.getPublicSubmissions = (req, res, next) => {
-  Submission.published()
-    .then((values) => {
-      corsHeaders(req, res)
-      res.json(values
-        .map((object) => {
-          const pojo = object.toJSON()
-          delete pojo.created_at
-          delete pojo.deviation
-          delete pojo.external_id
-          delete pojo.flagged
-          delete pojo.flags
-          delete pojo.ip
-          delete pojo.score
-          delete pojo.source
-          delete pojo.updated_at
-          delete pojo.reviews
-          if (pojo.data.email) {
-            delete pojo.data.email
-          }
-          if (pojo.data.Email) {
-            delete pojo.data.Email
-          }
-          return pojo
-        })
-      )
+  if (Configuration.getConfig('submissionPublicReadAccess')) {
+    Submission.published()
+      .then((values) => {
+        corsHeaders(req, res)
+        res.json(values
+          .map((object) => {
+            const pojo = object.toJSON()
+            delete pojo.created_at
+            delete pojo.deviation
+            delete pojo.external_id
+            delete pojo.flagged
+            delete pojo.flags
+            delete pojo.ip
+            delete pojo.score
+            delete pojo.source
+            delete pojo.updated_at
+            delete pojo.reviews
+            if (pojo.data.email) {
+              delete pojo.data.email
+            }
+            if (pojo.data.Email) {
+              delete pojo.data.Email
+            }
+            return pojo
+          })
+        )
+      })
+      .catch((err) => next(err))
+  } else {
+    res.send(401)
+  }
+}
+
+exports.savePublicSubmission = (req, res, next) => {
+  if (Configuration.getConfig('submissionPublicWriteAccess')) {
+    const submission = new Submission({
+      ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
+      source: 'public-api',
+      external_id: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
+      data: req.body,
+      flagged: false,
+      pinned: false
     })
-    .catch((err) => next(err))
+    submission.save()
+      .then(() => {
+        res.json(submission.get('data'))
+      })
+      .catch((err) => next(err))
+  } else {
+    res.send(401)
+  }
 }
 
 exports.getPublicSubmissionsOptions = (req, res, next) => {
@@ -68,10 +92,10 @@ exports.getSubmission = (req, res, next) => {
     if (req.user.getSubmissionPermissions(req.submission).view) {
       res.json(req.submission.toJSON())
     } else {
-      res.send(401)
+      res.sendStatus(401)
     }
   } else {
-    res.send(404)
+    res.sendStatus(404)
   }
 }
 
@@ -88,7 +112,7 @@ exports.getSubmissionReviews = (req, res, next) => {
     })
       .catch((err) => next(err))
   } else {
-    res.send(404)
+    res.sendStatus(404)
   }
 }
 
@@ -110,7 +134,7 @@ exports.saveSubmission = (req, res, next) => {
     if (req.user.getSubmissionPermissions(req.submission).edit) {
       save(req.submission)
     } else {
-      res.send(401)
+      res.sendStatus(401)
     }
   } else {
     const submission = new Submission({

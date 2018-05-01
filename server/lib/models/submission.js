@@ -2,7 +2,10 @@ const knex = require('../database').knex
 const bookshelf = require('bookshelf')(knex)
 const jsonColumns = require('bookshelf-json-columns')
 const Notification = require('./notification')
+const Configuration = require('./configuration')
 const _ = require('lodash')
+const BadLanguageFilter = require('bad-language-filter')
+const blFilter = new BadLanguageFilter()
 bookshelf.plugin(jsonColumns)
 bookshelf.plugin('virtuals')
 
@@ -24,7 +27,7 @@ const Submission = module.exports = bookshelf.Model.extend({
           )
         })
         .then(() => {
-          return User.nextAvailableUsers(process.env.REVIEWS_PER_SUBMISSION || 1, [])
+          return User.nextAvailableUsers(Configuration.getConfig('reviewsPerSubmission') || 1, [])
         })
         .then((users) => {
           if (users && users.length > 0) {
@@ -42,7 +45,7 @@ const Submission = module.exports = bookshelf.Model.extend({
         })
     }, this)
     this.on('updating', function () {
-      if (process.env.PINNED_LIMIT && this.get('pinned') && this.get('pinned') !== this.previous('pinned')) {
+      if (Configuration.getConfig('pinnedLimit') && this.get('pinned') && this.get('pinned') !== this.previous('pinned')) {
         return Submission.checkForPinLimit().then((limitReached) => {
           if (limitReached) {
             throw new Error('Too many submissions pinned.')
@@ -51,7 +54,14 @@ const Submission = module.exports = bookshelf.Model.extend({
       }
     }, this)
     this.on('creating', function () {
-      if (process.env.PINNED_LIMIT && this.get('pinned')) {
+      let badLanguage = false
+      for (var key in this.get('data')) {
+        if (blFilter.contains(' ' + this.get('data')[key] + ' ')) {
+          badLanguage = true
+        }
+      }
+      this.set('autoFlagged', badLanguage)
+      if (Configuration.getConfig('pinnedLimit') && this.get('pinned')) {
         return Submission.checkForPinLimit().then((limitReached) => {
           if (limitReached) {
             throw new Error('Too many submissions pinned.')
@@ -208,7 +218,7 @@ const Submission = module.exports = bookshelf.Model.extend({
       .count('*')
       .where({'pinned': true})
       .then((total) => {
-        if (total[0]['count(*)'] >= parseInt(process.env.PINNED_LIMIT) || total[0]['count'] >= parseInt(process.env.PINNED_LIMIT)) {
+        if (total[0]['count(*)'] >= Configuration.getConfig('pinnedLimit') || total[0]['count'] >= Configuration.getConfig('pinnedLimit')) {
           return true
         } else {
           return false

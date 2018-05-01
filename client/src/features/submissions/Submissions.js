@@ -118,8 +118,8 @@ class Submissions extends Component {
     const pinnedSubmissionsCount = this.props.submissions.submissions ? pinnedSubmissions(this.props.submissions.submissions).length : 0
     const shouldEnablePinButton = (submission) => {
       if (submission.pinned === true ||
-          this.props.config.submissions.pinned_limit === null ||
-          pinnedSubmissionsCount < this.props.config.submissions.pinned_limit) {
+          this.props.config.config.pinnedLimit === null ||
+          pinnedSubmissionsCount < this.props.config.config.pinnedLimit) {
         return true
       } else {
         return false
@@ -160,7 +160,7 @@ class Submissions extends Component {
           </Row>
           <br />
           {
-            submissionsArray ? paginate(submissionsArray, this.props.config.perPage, this.state.page,
+            submissionsArray ? paginate(submissionsArray, this.props.config.config.perPage, this.state.page,
               (page) => {
                 this.setState({page})
               },
@@ -178,7 +178,7 @@ class Submissions extends Component {
                         <th>{this.generateSortableColumnHeader('Assigned Reviews', 'assignedReviews')}</th>
                         <th>{this.generateSortableColumnHeader('Flagged Reviews', 'flags')}</th>
                         {
-                          this.props.config.review.categories.map((category, i) => {
+                          this.props.config.config.review.categories.map((category, i) => {
                             return (
                               <th key={'category_' + i}>
                                 {this.generateSortableColumnHeader(category.prompt, 'category_' + i)}
@@ -245,7 +245,7 @@ class Submissions extends Component {
                               <td>{incompletedReviews(submission).length}</td>
                               <td>{submission.flags}</td>
                               {
-                                this.props.config.review.categories.map((category, i) => {
+                                this.props.config.config.review.categories.map((category, i) => {
                                   return (
                                     <td key={'category_' + i}>
                                       { submission.categories && submission.categories[category.prompt]
@@ -374,14 +374,14 @@ Submissions.propTypes = {
     })
   }),
   config: PropTypes.shape({
-    submissions: PropTypes.shape({
-      pinned_limit: PropTypes.number
-    }),
-    review: PropTypes.shape({
-      prompts: PropTypes.array,
-      categories: PropTypes.array
-    }),
-    perPage: PropTypes.number
+    config: PropTypes.shape({
+      pinnedLimit: PropTypes.number,
+      review: PropTypes.shape({
+        prompts: PropTypes.array,
+        categories: PropTypes.array
+      }),
+      perPage: PropTypes.number
+    })
   }),
   importer: PropTypes.shape({
     embargoed: PropTypes.bool

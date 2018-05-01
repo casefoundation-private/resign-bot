@@ -58,7 +58,7 @@ class Users extends Component {
             <Link to='/users/new' className='btn btn-success btn-sm'><FontAwesome name='user-plus' /> Add User Profile</Link>
           </p>
           {
-            this.props.users.users ? paginate(this.props.users.users, this.props.config.perPage, this.state.page,
+            this.props.users.users ? paginate(this.props.users.users, this.props.config.config.perPage, this.state.page,
               (page) => {
                 this.setState({page})
               },
@@ -169,7 +169,9 @@ Users.propTypes = {
     })
   }),
   config: PropTypes.shape({
-    perPage: PropTypes.number
+    config: PropTypes.shape({
+      perPage: PropTypes.number
+    })
   })
 }
 

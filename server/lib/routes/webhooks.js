@@ -1,7 +1,8 @@
 const importer = require('../importer')
+const Configuration = require('../models/configuration')
 
 exports.wufoo = (req, res, next) => {
-  if (req.body.HandshakeKey === process.env.WUFOO_HANDSHAKE_KEY) {
+  if (req.body.HandshakeKey === Configuration.getConfig('wufooHandshakeKey')) {
     importer.runImporters().catch((err) => {
       console.log(err)
     })

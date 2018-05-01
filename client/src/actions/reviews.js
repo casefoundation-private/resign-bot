@@ -210,7 +210,7 @@ export const validateReview = () => {
         })
       } else {
         const invalidPrompts = []
-        for (var i = 0; i < getState().config.review.prompts.length; i++) {
+        for (var i = 0; i < getState().config.config.review.prompts.length; i++) {
           if (typeof getState().reviews.review.data.prompts[i] !== 'number') {
             dispatch({
               type: ACTION.REVIEWS.SET_PROMPT_VALUE,
@@ -223,7 +223,7 @@ export const validateReview = () => {
           }
         }
         const invalidCategories = []
-        for (i = 0; i < getState().config.review.categories.length; i++) {
+        for (i = 0; i < getState().config.config.review.categories.length; i++) {
           if (typeof getState().reviews.review.data.categories[i] !== 'string') {
             dispatch({
               type: ACTION.REVIEWS.SET_CATEGORY_VALUE,
@@ -260,7 +260,7 @@ export const validateReview = () => {
 export const generateReviewValidationFeedback = () => {
   return (dispatch, getState) => {
     if (getState().reviews.review.score === null) {
-      for (var i = 0; i < getState().config.review.prompts.length; i++) {
+      for (var i = 0; i < getState().config.config.review.prompts.length; i++) {
         if (getState().reviews.review.data.prompts[i] === null) {
           dispatch({
             type: ACTION.MESSAGE.SET,

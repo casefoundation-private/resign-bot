@@ -1,7 +1,7 @@
 import url from 'url'
 import getVideoId from 'get-video-id'
 import React from 'react'
-import { Button, ButtonGroup } from 'reactstrap'
+import { Button, ButtonGroup, FormGroup, Label, Input, FormText } from 'reactstrap'
 import FontAwesome from 'react-fontawesome'
 import './utils.css'
 import PropTypes from 'prop-types'
@@ -167,4 +167,68 @@ export const Spinner = (props) => {
       <div className='sk-circle12 sk-circle' />
     </div>
   )
+}
+
+export const ConfigurationField = (props) => {
+  if (props.type === 'checkbox') {
+    let val = false
+    if (props.transformOut) {
+      val = props.transformIn(props.tempConfig[props.name])
+    } else {
+      val = props.tempConfig[props.name] || false
+    }
+    const changed = (event) => {
+      const conf = {}
+      if (props.transformOut) {
+        conf[props.name] = props.transformOut(event.target.checked)
+      } else {
+        conf[props.name] = event.target.checked
+      }
+      props.setTempConfig(conf)
+    }
+    return (
+      <FormGroup check>
+        <Label check>
+          <Input type='checkbox' name={props.name} id={props.name} checked={val} onChange={changed} />{' '}
+          {props.label}
+        </Label>
+      </FormGroup>
+    )
+  } else {
+    let val = ''
+    if (props.transformOut) {
+      val = props.transformIn(props.tempConfig[props.name])
+    } else {
+      val = props.tempConfig[props.name] || ''
+    }
+    const changed = (event) => {
+      const conf = {}
+      if (props.transformOut) {
+        conf[props.name] = props.transformOut(event.target.value)
+      } else if (props.type === 'number') {
+        conf[props.name] = event.target.value.trim().length > 0 ? parseInt(event.target.value) : null
+      } else {
+        conf[props.name] = event.target.value
+      }
+      props.setTempConfig(conf)
+    }
+    return (
+      <FormGroup>
+        <Label for={props.name}>{props.label}</Label>
+        <Input type={props.type} name={props.name} id={props.name} value={val} onChange={changed} />
+        <FormText color='muted'>{props.help}</FormText>
+      </FormGroup>
+    )
+  }
+}
+
+ConfigurationField.propTypes = {
+  label: PropTypes.string,
+  name: PropTypes.string,
+  type: PropTypes.string,
+  tempConfig: PropTypes.object,
+  setTempConfig: PropTypes.func,
+  transformIn: PropTypes.func,
+  transformOut: PropTypes.func,
+  help: PropTypes.any
 }

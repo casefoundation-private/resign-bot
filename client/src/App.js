@@ -14,21 +14,27 @@ import Review from './features/reviews/Review'
 import NotificationQueue from './features/admin/NotificationQueue'
 import Help from './features/reviews/Help'
 import Submission from './features/submissions/Submission'
+import Configuration from './features/admin/Configuration'
 import {
   loadUserDetails
 } from './actions/user'
+import {
+  loadConfig
+} from './actions/config'
 import PropTypes from 'prop-types'
 
 class App extends Component {
   componentWillReceiveProps (nextProps) {
     if (!this.props.user.token && nextProps.user.token) {
       this.props.loadUserDetails()
+      this.props.loadConfig()
     }
   }
 
   componentDidMount () {
     if (this.props.user.token) {
       this.props.loadUserDetails()
+      this.props.loadConfig()
     }
   }
 
@@ -40,6 +46,7 @@ class App extends Component {
           <Route path='/logout' exact component={Logout} />
           { this.props.user.user && this.props.user.user.role === 'admin' && (<Route path='/users' exact component={Users} />) }
           { this.props.user.user && this.props.user.user.role === 'admin' && (<Route path='/notifications' exact component={NotificationQueue} />) }
+          { this.props.user.user && this.props.user.user.role === 'admin' && (<Route path='/config' exact component={Configuration} />) }
           <Route path='/users/:userId' exact component={User} />
           <Route path='/submissions' exact component={Submissions} />
           <Route path='/submissions/:submissionId' exact component={Submission} />
@@ -71,7 +78,8 @@ const stateToProps = (state) => {
 
 const dispatchToProps = (dispatch) => {
   return bindActionCreators({
-    loadUserDetails
+    loadUserDetails,
+    loadConfig
   }, dispatch)
 }
 
@@ -83,7 +91,8 @@ App.propTypes = {
       role: PropTypes.string
     })
   }),
-  loadUserDetails: PropTypes.func.isRequired
+  loadUserDetails: PropTypes.func.isRequired,
+  loadConfig: PropTypes.func.isRequired
 }
 
 export default connect(stateToProps, dispatchToProps)(App)

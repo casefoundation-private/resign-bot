@@ -114,7 +114,7 @@ class SubmissionReviews extends Component {
             Review Summary
           </ModalHeader>
           <ModalBody>
-            <ReviewSummary review={this.props.reviews.review} prompts={this.props.config.review.prompts} categories={this.props.config.review.categories} />
+            <ReviewSummary review={this.props.reviews.review} prompts={this.props.config.config.review.prompts} categories={this.props.config.config.review.categories} />
           </ModalBody>
           <ModalFooter>
             <Button color='primary' onClick={() => this.closeReviewSummaryModal()}>Done</Button>
@@ -173,9 +173,11 @@ SubmissionReviews.propTypes = {
     users: PropTypes.array
   }),
   config: PropTypes.shape({
-    review: PropTypes.shape({
-      prompts: PropTypes.array,
-      categories: PropTypes.array
+    config: PropTypes.shape({
+      review: PropTypes.shape({
+        prompts: PropTypes.array,
+        categories: PropTypes.array
+      })
     })
   })
 }

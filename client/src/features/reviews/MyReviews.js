@@ -29,7 +29,7 @@ class MyReviews extends Component {
   }
 
   renderReviewList (reviews) {
-    return reviews ? paginate(reviews, this.props.config.perPage, this.state.page,
+    return reviews ? paginate(reviews, this.props.config.config.perPage, this.state.page,
       (page) => {
         this.setState({page})
       },
@@ -106,7 +106,9 @@ MyReviews.propTypes = {
     })
   }),
   config: PropTypes.shape({
-    perPage: PropTypes.number
+    config: PropTypes.shape({
+      perPage: PropTypes.number
+    })
   }),
   reviews: PropTypes.shape({
     reviews: PropTypes.array

@@ -1,0 +1,34 @@
+.config-tab-panes {
+  padding: 1em;
+  border: solid 1px #ddd;
+  border-top: none;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  margin-bottom: 1em;
+}
+
+.editor-wrapper {
+  padding: 0.5em;
+  border: solid 1px #ccc;
+  border-radius: 3px;
+}
+
+.editor-wrapper .btn-toolbar {
+  margin-bottom: 0.5em;
+}
+
+.nav-tabs a {
+  cursor: pointer;
+}
+
+.config-fieldset {
+  padding-bottom: 1em;
+  margin-bottom: 1em;
+  border-bottom: solid 1px #ddd;
+}
+
+.config-fieldset:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}

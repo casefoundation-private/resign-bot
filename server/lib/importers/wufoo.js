@@ -1,5 +1,6 @@
 const request = require('request-promise-native')
 const Submission = require('../models/submission')
+const Configuration = require('../models/configuration')
 
 module.exports = () => {
   return getFormFields()
@@ -15,9 +16,9 @@ const ignoreFields = [
 
 const wufooRequest = (method, qs) => {
   return request({
-    'uri': 'https://' + process.env.WUFOO_SUBDOMAIN + '.wufoo.com/api/v3/' + method + '.json',
+    'uri': 'https://' + Configuration.getConfig('wufooSubdomain') + '.wufoo.com/api/v3/' + method + '.json',
     'auth': {
-      'user': process.env.WUFOO_KEY,
+      'user': Configuration.getConfig('wufooApiKey'),
       'pass': 'anything',
       'sendImmediately': true
     },
@@ -28,7 +29,7 @@ const wufooRequest = (method, qs) => {
 }
 
 const getFormFields = () => {
-  return wufooRequest('forms/' + process.env.WUFOO_FORM_ID + '/fields')
+  return wufooRequest('forms/' + Configuration.getConfig('wufooFormId') + '/fields')
     .then((body) => {
       if (body.Fields) {
         const fieldMap = {}
@@ -48,14 +49,14 @@ const getEntries = (fieldMap) => {
   const allEntries = []
   const makeRequest = (page) => {
     const pageSize = 100
-    return wufooRequest('forms/' + process.env.WUFOO_FORM_ID + '/entries', {
+    return wufooRequest('forms/' + Configuration.getConfig('wufooFormId') + '/entries', {
       'pageSize': pageSize,
       'pageStart': (pageSize * page)
     }).then((entrySet) => {
       if (entrySet.Entries && entrySet.Entries.length > 0) {
         entrySet.Entries.forEach((entry) => {
           const submissionData = {
-            'source': 'wufoo_' + process.env.WUFOO_SUBDOMAIN + '_' + process.env.WUFOO_FORM_ID,
+            'source': 'wufoo_' + Configuration.getConfig('wufooSubdomain') + '_' + Configuration.getConfig('wufooFormId'),
             'data': {},
             'external_id': entry.EntryId,
             'created_at': new Date(Date.parse(entry.DateCreated))

@@ -1,4 +1,5 @@
 const Notification = require('./models/notification')
+const Configuration = require('./models/configuration')
 const ejs = require('ejs')
 const nodemailer = require('nodemailer')
 
@@ -76,7 +77,7 @@ const generateEmailDetails = (notification) => {
     case 'account_reset':
       return new Promise((resolve, reject) => {
         ejs.renderFile('./emailTemplates/account_reset.ejs', {
-          'url': (process.env.URL_ROOT || 'http://localhost:3000') + '/#/reset/' + notification.related('user').get('resetCode')
+          'url': (Configuration.getConfig('urlRoot') || 'http://localhost:3000') + '/#/reset/' + notification.related('user').get('resetCode')
         }, (err, html) => {
           if (err) {
             reject(err)
@@ -91,7 +92,7 @@ const generateEmailDetails = (notification) => {
     case 'account_welcome':
       return new Promise((resolve, reject) => {
         ejs.renderFile('./emailTemplates/account_welcome.ejs', {
-          'url': (process.env.URL_ROOT || 'http://localhost:3000') + '/#/reset/' + notification.related('user').get('resetCode')
+          'url': (Configuration.getConfig('urlRoot') || 'http://localhost:3000') + '/#/reset/' + notification.related('user').get('resetCode')
         }, (err, html) => {
           if (err) {
             reject(err)
@@ -106,7 +107,7 @@ const generateEmailDetails = (notification) => {
     case 'review_assigned':
       return new Promise((resolve, reject) => {
         ejs.renderFile('./emailTemplates/review_assigned.ejs', {
-          'url': (process.env.URL_ROOT || 'http://localhost:3000') + '#/reviews/' + notification.get('data').review_id
+          'url': (Configuration.getConfig('urlRoot') || 'http://localhost:3000') + '#/reviews/' + notification.get('data').review_id
         }, (err, html) => {
           if (err) {
             reject(err)
@@ -121,7 +122,7 @@ const generateEmailDetails = (notification) => {
     case 'multiple_reviews_assigned':
       return new Promise((resolve, reject) => {
         ejs.renderFile('./emailTemplates/multiple_reviews_assigned.ejs', {
-          'url': (process.env.URL_ROOT || 'http://localhost:3000') + '#/reviews'
+          'url': (Configuration.getConfig('urlRoot') || 'http://localhost:3000') + '#/reviews'
         }, (err, html) => {
           if (err) {
             reject(err)
@@ -136,7 +137,7 @@ const generateEmailDetails = (notification) => {
     case 'submission_created':
       return new Promise((resolve, reject) => {
         ejs.renderFile('./emailTemplates/submissions_created.ejs', {
-          'url': (process.env.URL_ROOT || 'http://localhost:3000') + '#/submissions/' + notification.get('data').submission_id
+          'url': (Configuration.getConfig('urlRoot') || 'http://localhost:3000') + '#/submissions/' + notification.get('data').submission_id
         }, (err, html) => {
           if (err) {
             reject(err)
@@ -151,7 +152,7 @@ const generateEmailDetails = (notification) => {
     case 'multiple_submissions_created':
       return new Promise((resolve, reject) => {
         ejs.renderFile('./emailTemplates/multiple_submissions_created.ejs', {
-          'url': (process.env.URL_ROOT || 'http://localhost:3000') + '#/submissions'
+          'url': (Configuration.getConfig('urlRoot') || 'http://localhost:3000') + '#/submissions'
         }, (err, html) => {
           if (err) {
             reject(err)

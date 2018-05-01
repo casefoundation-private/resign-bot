@@ -8,7 +8,7 @@ class Help extends Component {
   render () {
     return (
       <PageWrapper title={null}>
-        <div className='help-content' dangerouslySetInnerHTML={{__html: this.props.config.helpText}} />
+        <div className='help-content' dangerouslySetInnerHTML={{__html: this.props.config.config.helpText}} />
       </PageWrapper>
     )
   }
@@ -27,7 +27,9 @@ const dispatchToProps = (dispatch) => {
 
 Help.propTypes = {
   config: PropTypes.shape({
-    helpText: PropTypes.string.isRequird
+    config: PropTypes.shape({
+      helpText: PropTypes.string.isRequird
+    })
   })
 }
 

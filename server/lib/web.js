@@ -75,9 +75,11 @@ exports.init = (serve) => {
   app.put('/api/user', authenticate, routes.user.saveUser)
   app.post('/api/user/:user', authenticate, routes.user.saveUser)
 
-  app.get('/api/submission', authenticate, routes.submission.getSubmissions)
   app.options('/api/submission/public', routes.submission.getPublicSubmissionsOptions)
-  app.get('/api/submission/public', routes.submission.getPublicSubmissions)
+  app.get('/api/submission/public', routes.submission.getPublicSubmissions) // TODO retest
+  app.put('/api/submission/public', routes.submission.savePublicSubmission) // TODO test
+
+  app.get('/api/submission', authenticate, routes.submission.getSubmissions)
   app.get('/api/submission/export', authenticate, routes.submission.submissionsSpreadsheet)
   app.get('/api/submission/:submission', authenticate, routes.submission.getSubmission)
   app.get('/api/submission/:submission/reviews', authenticate, routes.submission.getSubmissionReviews)
@@ -95,6 +97,7 @@ exports.init = (serve) => {
   app.get('/api/notification', authenticate, routes.notification.getNotifications)
 
   app.get('/api/config', authenticate, routes.config.getConfig)
+  app.post('/api/config', authenticate, routes.config.saveConfig) // TODO test
 
   app.post('/api/webbooks/wufoo', routes.webhooks.wufoo)
 

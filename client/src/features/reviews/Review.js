@@ -55,7 +55,7 @@ class Review extends Component {
     return (
       <div>
         {
-          this.props.reviews.review.data && this.props.reviews.review.data.prompts ? this.props.config.review.prompts.map((prompt, i) => {
+          this.props.reviews.review.data && this.props.reviews.review.data.prompts ? this.props.config.config.review.prompts.map((prompt, i) => {
             return (
               <FormGroup key={'prompt_' + i} className={this.state.showValidation && this.props.reviews.validation.invalidPrompts.indexOf(i) >= 0 ? 'has-danger' : null}>
                 <Label for={'review_prompt_' + i}>
@@ -78,7 +78,7 @@ class Review extends Component {
           }) : (<Spinner />)
         }
         {
-          this.props.reviews.review.data && this.props.reviews.review.data.categories ? this.props.config.review.categories.map((category, i) => {
+          this.props.reviews.review.data && this.props.reviews.review.data.categories ? this.props.config.config.review.categories.map((category, i) => {
             return (
               <FormGroup key={'category_' + i} className={this.state.showValidation && this.props.reviews.validation.invalidCategories.indexOf(i) >= 0 ? 'has-danger' : null}>
                 <Label for={'review_category_' + i}>
@@ -109,7 +109,7 @@ class Review extends Component {
       if (this.props.reviews.review.flagged) {
         return (<Badge color='danger'>Review flagged as inappropriate</Badge>)
       } else {
-        return (<ReviewSummary review={this.props.reviews.review} prompts={this.props.config.review.prompts} categories={this.props.config.review.categories} />)
+        return (<ReviewSummary review={this.props.reviews.review} prompts={this.props.config.config.review.prompts} categories={this.props.config.config.review.categories} />)
       }
     }
     return null
@@ -231,9 +231,11 @@ Review.propTypes = {
     })
   }),
   config: PropTypes.shape({
-    review: PropTypes.shape({
-      prompts: PropTypes.array,
-      categories: PropTypes.array
+    config: PropTypes.shape({
+      review: PropTypes.shape({
+        prompts: PropTypes.array,
+        categories: PropTypes.array
+      })
     })
   })
 }

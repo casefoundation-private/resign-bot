@@ -29,6 +29,7 @@ describe('API', () => {
   const Review = require('./lib/models/review')
   const Notification = require('./lib/models/notification')
   const Favorite = require('./lib/models/favorite')
+  const Configuration = require('./lib/models/configuration')
 
   before(() => {
     return database.init()
@@ -39,7 +40,6 @@ describe('API', () => {
   })
 
   beforeEach(() => {
-    process.env.PINNED_LIMIT = 1
     return database.knex('reviews').delete()
       .then(() => {
         return database.knex('submissions').delete()
@@ -52,6 +52,12 @@ describe('API', () => {
       })
       .then(() => {
         return database.knex('favorites').delete()
+      })
+      .then(() => {
+        return database.knex('configurations').delete()
+      })
+      .then(() => {
+        return Configuration.loadStatic()
       })
       .then(() => {
         user = new User({
@@ -725,28 +731,38 @@ describe('API', () => {
       const submissionJSON = submissions[0].toJSON()
       submissionJSON.pinned = true
 
-      chai.request(api)
-        .post('/api/submission/' + submissions[0].get('id'))
-        .set('Authorization', 'JWT ' + token)
-        .send(submissionJSON)
-        .end((err, res) => {
-          if (err) {
-            done(err)
-          } else {
-            res.should.have.status(200)
-
-            const submissionJSON1 = submissions[1].toJSON()
-            submissionJSON1.pinned = true
-            chai.request(api)
-              .post('/api/submission/' + submissions[1].get('id'))
-              .set('Authorization', 'JWT ' + token)
-              .send(submissionJSON1)
-              .end((err, res) => { // eslint-disable-line handle-callback-err
-                res.should.have.status(400)
-                done()
-              })
-          }
+      Configuration.updateConfigByKey('pinnedLimit', 1)
+        .then(() => {
+          return Configuration.loadStatic()
         })
+        .then(() => {
+          return new Promise((resolve, reject) => {
+            chai.request(api)
+              .post('/api/submission/' + submissions[0].get('id'))
+              .set('Authorization', 'JWT ' + token)
+              .send(submissionJSON)
+              .end((err, res) => {
+                if (err) {
+                  reject(err)
+                } else {
+                  res.should.have.status(200)
+
+                  const submissionJSON1 = submissions[1].toJSON()
+                  submissionJSON1.pinned = true
+                  chai.request(api)
+                    .post('/api/submission/' + submissions[1].get('id'))
+                    .set('Authorization', 'JWT ' + token)
+                    .send(submissionJSON1)
+                    .end((err, res) => { // eslint-disable-line handle-callback-err
+                      res.should.have.status(400)
+                      resolve()
+                    })
+                }
+              })
+          })
+        })
+        .then(() => done())
+        .catch((err) => done(err))
     })
 
     it('PUT /api/submission/:submission/favorite', (done) => {
@@ -807,7 +823,7 @@ describe('API', () => {
     it('OPTIONS /api/submission/public', (done) => {
       chai.request(api)
         .options('/api/submission/public')
-        .set('Authorization', 'JWT ' + token)
+        // .set('Authorization', 'JWT ' + token)
         .set('origin', 'localhost:8000')
         .end((err, res) => {
           if (err) {
@@ -865,9 +881,15 @@ describe('API', () => {
           ])
         })
         .then(() => {
+          return Configuration.updateConfigByKey('submissionPublicReadAccess', true)
+        })
+        .then(() => {
+          return Configuration.loadStatic()
+        })
+        .then(() => {
           chai.request(api)
             .get('/api/submission/public')
-            .set('Authorization', 'JWT ' + token)
+            // .set('Authorization', 'JWT ' + token)
             .end((err, res) => {
               if (err) {
                 done(err)
@@ -1145,11 +1167,7 @@ describe('API', () => {
           } else {
             res.should.have.status(200)
             res.body.should.be.a('object')
-            res.body.perPage.should.eq(0)
-            res.body.review.prompts.length.should.eq(0)
-            res.body.review.categories.length.should.eq(0)
-            res.body.submissions.pinned_limit.should.eq(1)
-            assert.equal(res.body.submissions.review_limit, null)
+            assert.equal(JSON.stringify(Configuration.defaultConfigurations), JSON.stringify(res.body))
             done()
           }
         })

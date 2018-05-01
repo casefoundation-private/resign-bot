@@ -2,6 +2,7 @@ const knex = require('../database').knex
 const bookshelf = require('bookshelf')(knex)
 const User = require('./user')
 const Notification = require('./notification')
+const Configuration = require('./configuration')
 const jsonColumns = require('bookshelf-json-columns')
 bookshelf.plugin(jsonColumns)
 
@@ -89,7 +90,7 @@ const Review = module.exports = bookshelf.Model.extend({
       .count('*')
       .where({'submission_id': this.get('submission_id')})
       .then((total) => {
-        if (total[0]['count(*)'] >= parseInt(process.env.REVIEW_LIMIT) || total[0]['count'] >= parseInt(process.env.REVIEW_LIMIT)) {
+        if (Configuration.getConfig('reviewLimit') !== null && (total[0]['count(*)'] >= Configuration.getConfig('reviewLimit') || total[0]['count'] >= Configuration.getConfig('reviewLimit'))) {
           return true
         } else {
           return false
