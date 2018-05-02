@@ -8,8 +8,8 @@ const transporter = nodemailer.createTransport({
   'port': parseInt(process.env.MAIL_PORT),
   'secure': JSON.parse(process.env.MAIL_SECURE || false),
   'auth': {
-    'user': process.env.MAIL_USERNAME,
-    'pass': process.env.MAIL_PASSWORD
+    'user': process.env.MAIL_USERNAME || process.env.SENDGRID_USERNAME,
+    'pass': process.env.MAIL_PASSWORD || process.env.SENDGRID_PASSWORD
   }
 })
 
@@ -56,7 +56,7 @@ const processNotification = (notification) => {
     return generateEmailDetails(notification)
       .then((emailDetails) => {
         const mailOptions = {
-          'from': process.env.MAIL_FROM,
+          'from': Configuration.getConfig('mailFrom') || ('admin@' + process.env.HEROKU_APP_NAME + '.heroku.com'),
           'to': notification.related('user').get('email'),
           'subject': emailDetails.subject,
           'html': emailDetails.body

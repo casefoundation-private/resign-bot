@@ -27,12 +27,9 @@ This is an index of all configurable environment variables used by the back end 
 * **MAIL_SECURE** TRUE/FALSE to use SSL when connecting to SMTP server
 * **MAIL_USERNAME** SMTP server username
 * **MAIL_PASSWORD** SMTP server password
-* **MAIL_FROM** SMTP send address
 
 ### Database
 
-* **DB** "sqlite" or "postgres" to set the type of database to connect to.
-* **DB_HOST** If using PostgreSQL, specify the database server's hostname.
-* **DB_USERNAME** If using PostgreSQL, specify the database server's username.
-* **DB_PASSWORD** If using PostgreSQL, specify the database server's password.
-* **DB_DATABASE** If using PostgreSQL, specify the database server's database name.
+* **DB** "sqlite3" or "postgres" to set the type of database to connect to.
+* **DATABASE_URL** If using PostgreSQL, the URL to the database.
+* **DATABASE_FILE_PATH** If using sqlite3, the path to where the sqlite file should be saved.

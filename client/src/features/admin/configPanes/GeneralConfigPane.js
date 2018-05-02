@@ -50,6 +50,14 @@ class GeneralConfigPane extends Component {
           help={'URL root of the site. (ie. https://reviewomatic.com)'}
         />
         <ConfigurationField
+          label={'From Address'}
+          name={'mailFrom'}
+          type={'email'}
+          tempConfig={this.props.tempConfig}
+          setTempConfig={this.props.setTempConfig}
+          help={'Email address from which notifications should come from.'}
+        />
+        <ConfigurationField
           label={'Rows Per Page'}
           name={'perPage'}
           type={'number'}

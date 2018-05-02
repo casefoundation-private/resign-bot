@@ -55,7 +55,8 @@ const Configuration = module.exports = bookshelf.Model.extend({
     urlRoot: 'http://localhost:3000',
     suspendImporting: false,
     importInterval: 1000 * 60 * 60,
-    importPauses: []
+    importPauses: [],
+    mailFrom: 'admin@' + process.env.HEROKU_APP_NAME + '.heroku.com'
   },
   'allMapped': function () {
     return Configuration

@@ -1,22 +1,22 @@
-const pgConfig = {
-  'host': process.env.DB_HOST,
-  'user': process.env.DB_USERNAME,
-  'password': process.env.DB_PASSWORD,
-  'database': process.env.DB_DATABASE
+const config = {
+  sqlite3: {
+    filename: process.env.DATABASE_FILE_PATH || './database.sqlite'
+  },
+  pg: {
+    connectionString: process.env.DATABASE_URL
+  }
 }
 
-const sqliteConfig = {
-  'filename': './database.sqlite'
-}
+const driver = process.env.DB || 'sqlite3'
 
 const testSqliteConfig = {
-  'filename': './database_test.sqlite'
+  filename: './database_test.sqlite'
 }
 
 const knex = exports.knex = require('knex')({
-  'client': process.env.NODE_ENV === 'test' || process.env.DB === 'sqlite' ? 'sqlite3' : 'pg',
-  'connection': process.env.NODE_ENV === 'test' ? testSqliteConfig : (process.env.DB === 'sqlite' ? sqliteConfig : pgConfig),
-  'useNullAsDefault': true
+  client: process.env.NODE_ENV === 'test' ? 'sqlite' : driver,
+  connection: process.env.NODE_ENV === 'test' ? testSqliteConfig : config[driver],
+  useNullAsDefault: true
 })
 
 const defaultNotificationPreferences = {
