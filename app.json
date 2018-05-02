@@ -22,10 +22,10 @@
       "value": "smtp.sendgrid.net"
     },
     "MAIL_PORT": {
-      "value": 587
+      "value": "587"
     },
     "MAIL_SECURE": {
-      "value": true
+      "value": "true"
     }
   }
 }
