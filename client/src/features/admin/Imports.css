@@ -1,0 +1,6 @@
+.import-area {
+  padding: 1em;
+  border: dashed 3px #888;
+  border-radius: 10px;
+  text-align: center;
+}
