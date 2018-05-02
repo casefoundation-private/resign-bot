@@ -12,12 +12,20 @@
     }
   ],
   "env": {
-    "DB": "pg",
+    "DB": {
+      "value": "pg" 
+    },
     "JWT_SECRET": {
       "generator": "secret"
     },
-    "MAIL_HOST": "smtp.sendgrid.net",
-    "MAIL_PORT": 587,
-    "MAIL_SECURE": true
+    "MAIL_HOST": {
+      "value": "smtp.sendgrid.net"
+    },
+    "MAIL_PORT": {
+      "value": 587
+    },
+    "MAIL_SECURE": {
+      "value": true
+    }
   }
 }
