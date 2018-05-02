@@ -289,11 +289,11 @@ const User = module.exports = bookshelf.Model.extend({
       .then((users) => {
         if (!users || users.length === 0) {
           const user = new User({
-            'email': 'johnj@casefoundation.org',
+            'email': process.env.ADMIN_EMAIL || 'admin@' + process.env.HEROKU_APP_NAME + '.heroku.com',
             'role': 'admin',
             'active': true
           })
-          const password = randomstring.generate()
+          const password = process.env.ADMIN_PASSWORD || randomstring.generate()
           user.setPassword(password)
           return user.save().then(() => {
             console.log('Seeded an admin user:\nEmail: ' + user.get('email') + '\nPassword: ' + password)
