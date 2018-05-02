@@ -6,9 +6,6 @@
   "addons": [
     {
       "plan": "heroku-postgresql"
-    },
-    {
-      "plan": "sendgrid"
     }
   ],
   "env": {
@@ -17,15 +14,6 @@
     },
     "JWT_SECRET": {
       "generator": "secret"
-    },
-    "MAIL_HOST": {
-      "value": "smtp.sendgrid.net"
-    },
-    "MAIL_PORT": {
-      "value": "587"
-    },
-    "MAIL_SECURE": {
-      "value": "true"
     }
   }
 }
