@@ -2,6 +2,8 @@
 
 **WARNING: UNDER ACTIVE DEVELOPMENT**
 
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/casefoundation/review-o-matic)
+
 [![Build Status](https://travis-ci.org/casefoundation/review-o-matic.svg?branch=master)](https://travis-ci.org/casefoundation/review-o-matic)
 [![Maintainability](https://api.codeclimate.com/v1/badges/1c6705598432dbb288c0/maintainability)](https://codeclimate.com/github/casefoundation/review-o-matic/maintainability)
 
@@ -53,5 +55,3 @@ See [License](License.txt) for additional information.
 * Build out front end unit tests
 * Add a GUI for settings
 * Build additional importers
-
-
