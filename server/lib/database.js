@@ -14,7 +14,7 @@ const testSqliteConfig = {
 }
 
 const knex = exports.knex = require('knex')({
-  client: process.env.NODE_ENV === 'test' ? 'sqlite' : driver,
+  client: process.env.NODE_ENV === 'test' ? 'sqlite3' : driver,
   connection: process.env.NODE_ENV === 'test' ? testSqliteConfig : config[driver],
   useNullAsDefault: true
 })
@@ -107,6 +107,20 @@ exports.init = () => {
           table.increments('id').primary().notNullable()
           table.string('key', 255).unique().notNullable()
           table.json('value').notNullable().defaultTo('{}')
+          table.timestamps()
+        })
+      }
+    })
+  }).then(() => {
+    return knex.schema.hasTable('imports').then(function (exists) {
+      if (!exists) {
+        return knex.schema.createTable('imports', function (table) {
+          table.increments('id').primary().notNullable()
+          table.string('importer', 64).notNullable()
+          table.integer('total').defaultTo(0).notNullable()
+          table.integer('new').defaultTo(0).notNullable()
+          table.integer('duplicates').defaultTo(0).notNullable()
+          table.integer('errors').defaultTo(0).notNullable()
           table.timestamps()
         })
       }

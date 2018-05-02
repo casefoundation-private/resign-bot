@@ -3,7 +3,7 @@ import {
   ACTION
 } from '../misc/constants'
 
-export const authenticatedRequest = (dispatch, getState, action, method, payload, complete, errored) => {
+export const authenticatedRequest = (dispatch, getState, action, method, payload, complete) => {
   if (getState().user.token) {
     const params = {
       method: method,
@@ -26,7 +26,7 @@ export const authenticatedRequest = (dispatch, getState, action, method, payload
             messageType: 'danger'
           })
         } else {
-          complete(responseData)
+          complete && complete(responseData)
         }
       })
       .catch((error) => {

@@ -55,6 +55,11 @@ class PageWrapper extends Component {
                 { this.navLink('/config', 'Configuration') }
               </NavItem>
             ) }
+            { this.props.user.user && this.props.user.user.role === 'admin' && (
+              <NavItem>
+                { this.navLink('/imports', 'Imports') }
+              </NavItem>
+            ) }
             { this.props.user.user && (
               <NavItem>
                 { this.navLink('/reviews', 'My Review Queue') }

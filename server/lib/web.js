@@ -7,6 +7,7 @@ const Submission = require('./models/submission')
 const routes = require('./routes')
 const passport = require('passport')
 const auth = require('./auth')
+const multer = require('multer')
 
 morgan.token('user-id', (req, res) => {
   return req.user ? req.user.get('id') : 'none'
@@ -101,8 +102,14 @@ exports.init = (serve) => {
 
   app.post('/api/webbooks/wufoo', routes.webhooks.wufoo)
 
-  app.get('/api/importer/embargoed', authenticate, routes.importer.getEmbargoed) // TODO test
-  app.post('/api/importer/embargoed', authenticate, routes.importer.setEmbargoed) // TODO test
+  app.get('/api/import/embargoed', authenticate, routes.importer.getEmbargoed) // TODO test
+  app.post('/api/import/embargoed', authenticate, routes.importer.setEmbargoed) // TODO test
+
+  app.get('/api/import', authenticate, routes.importer.getImports)
+  const upload = multer({
+    storage: multer.memoryStorage()
+  })
+  app.post('/api/import', authenticate, upload.single('file'), routes.importer.runImport)
 
   app.use((err, req, res, next) => {
     if (err) {

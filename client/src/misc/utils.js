@@ -12,10 +12,14 @@ const summaryCache = {}
 export const summarizeSubmission = (submission) => {
   if (!submission || !submission.data) {
     return null
-  } else if (!summaryCache[submission.id] && submission.data['First Name'] && submission.data['Last Name']) {
-    summaryCache[submission.id] = (submission.data['First Name'] + ' ' + submission.data['Last Name'])
   } else if (!summaryCache[submission.id]) {
-    summaryCache[submission.id] = (submission.source + '/' + submission.external_id)
+    if (submission.data['First Name'] && submission.data['Last Name']) {
+      summaryCache[submission.id] = (submission.data['First Name'] + ' ' + submission.data['Last Name'])
+    } else if (submission.data['Name']) {
+      summaryCache[submission.id] = submission.data['Name']
+    } else {
+      summaryCache[submission.id] = (submission.source + '/' + submission.external_id)
+    }
   }
   return summaryCache[submission.id]
 }

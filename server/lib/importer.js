@@ -1,9 +1,9 @@
 const Submission = require('./models/submission')
 const later = require('later')
 const Configuration = require('./models/configuration')
+const Wufoo = require('./importers/wufoo')
 
 let importers
-let importersByName
 let importLock = false
 let importEmbargo = false
 let schedules
@@ -57,10 +57,9 @@ const setEmbargoed = exports.setEmbargoed = (embargoed) => {
 
 const setupImporters = () => {
   importers = []
-  importersByName = {}
-  if (Configuration.getConfig('wufooApiKey')) {
-    importersByName.wufoo = importers.length
-    importers.push(require('./importers/wufoo'))
+  const wufoo = new Wufoo()
+  if (wufoo.isReady()) {
+    importers.push(wufoo)
   }
 }
 
@@ -108,30 +107,9 @@ const runImporters = () => {
   }
 }
 
-exports.runImporters = runImporters
-
 const runImporter = (importer) => {
-  return importer()
-    .then((newSubmissions) => saveSubmissions(newSubmissions))
+  return importer.run(importEmbargo)
 }
 
-const saveSubmissions = (newSubmissions) => {
-  const nextSubmission = (i) => {
-    if (i < newSubmissions.length) {
-      const newSubmission = newSubmissions[i]
-      return Submission
-        .bySourceAndExternalId(newSubmission.get('source'), newSubmission.get('external_id'))
-        .then((existingSubmission) => {
-          if (existingSubmission) {
-            console.log(existingSubmission.get('source') + '/' + existingSubmission.get('external_id') + ' is a duplicate. Skipping.')
-          } else {
-            console.log(newSubmission.get('source') + '/' + newSubmission.get('external_id') + ' is new. Importing')
-            newSubmission.set('embargoed', importEmbargo)
-            return newSubmission.save()
-          }
-        })
-        .then(() => nextSubmission(i + 1))
-    }
-  }
-  return nextSubmission(0)
-}
+exports.runImporters = runImporters
+exports.runImporter = runImporter

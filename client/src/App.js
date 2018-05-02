@@ -15,6 +15,7 @@ import NotificationQueue from './features/admin/NotificationQueue'
 import Help from './features/reviews/Help'
 import Submission from './features/submissions/Submission'
 import Configuration from './features/admin/Configuration'
+import Imports from './features/admin/Imports'
 import {
   loadUserDetails
 } from './actions/user'
@@ -47,6 +48,7 @@ class App extends Component {
           { this.props.user.user && this.props.user.user.role === 'admin' && (<Route path='/users' exact component={Users} />) }
           { this.props.user.user && this.props.user.user.role === 'admin' && (<Route path='/notifications' exact component={NotificationQueue} />) }
           { this.props.user.user && this.props.user.user.role === 'admin' && (<Route path='/config' exact component={Configuration} />) }
+          { this.props.user.user && this.props.user.user.role === 'admin' && (<Route path='/imports' exact component={Imports} />) }
           <Route path='/users/:userId' exact component={User} />
           <Route path='/submissions' exact component={Submissions} />
           <Route path='/submissions/:submissionId' exact component={Submission} />
