@@ -41,7 +41,8 @@ ReviewSummary.propTypes = {
   prompts: PropTypes.array.isRequired,
   review: PropTypes.shape({
     data: PropTypes.shape({
-      categories: PropTypes.array.isRequired
+      categories: PropTypes.array.isRequired,
+      prompts: PropTypes.array.isRequired
     })
   }),
   categories: PropTypes.array.isRequired
