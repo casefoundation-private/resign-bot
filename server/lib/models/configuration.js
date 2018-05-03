@@ -52,7 +52,7 @@ const Configuration = module.exports = bookshelf.Model.extend({
     allowedPublicSubmissionOrigins: [],
     submissionPublicReadAccess: false,
     submissionPublicWriteAccess: false,
-    urlRoot: 'https://' + process.env.HEROKU_APP_NAME + '.heroku.com',
+    urlRoot: '',
     suspendImporting: false,
     importInterval: 1000 * 60 * 60,
     importPauses: [],
