@@ -821,24 +821,31 @@ describe('API', () => {
     })
 
     it('OPTIONS /api/submission/public', (done) => {
-      chai.request(api)
-        .options('/api/submission/public')
-        // .set('Authorization', 'JWT ' + token)
-        .set('origin', 'localhost:8000')
-        .end((err, res) => {
-          if (err) {
-            done(err)
-          } else {
-            res.should.have.status(200)
-            res.should.have.header('access-control-allow-origin')
-            res.headers['access-control-allow-origin'].should.eq('localhost:8000')
-            res.should.have.header('access-control-allow-methods')
-            res.headers['access-control-allow-methods'].should.eq('GET,OPTIONS')
-            res.should.have.header('access-control-allow-headers')
-            res.headers['access-control-allow-headers'].should.eq('Origin, X-Requested-With, Content-Type, Accept')
-            done()
-          }
+      Configuration.updateConfigByKey('allowedPublicSubmissionOrigins', ['localhost:8000'])
+        .then(() => {
+          return Configuration.loadStatic()
         })
+        .then(() => {
+          chai.request(api)
+            .options('/api/submission/public')
+            // .set('Authorization', 'JWT ' + token)
+            .set('origin', 'localhost:8000')
+            .end((err, res) => {
+              if (err) {
+                done(err)
+              } else {
+                res.should.have.status(200)
+                res.should.have.header('access-control-allow-origin')
+                res.headers['access-control-allow-origin'].should.eq('localhost:8000')
+                res.should.have.header('access-control-allow-methods')
+                res.headers['access-control-allow-methods'].should.eq('GET,OPTIONS')
+                res.should.have.header('access-control-allow-headers')
+                res.headers['access-control-allow-headers'].should.eq('Origin, X-Requested-With, Content-Type, Accept')
+                done()
+              }
+            })
+        })
+        .catch((err) => done(err))
     })
 
     it('GET /api/submission/public', (done) => {
