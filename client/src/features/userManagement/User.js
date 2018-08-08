@@ -164,7 +164,7 @@ User.propTypes = {
   user: PropTypes.shape({
     user: PropTypes.shape({
       id: PropTypes.number,
-      role: PropTypes.sstring
+      role: PropTypes.string
     })
   }),
   history: PropTypes.shape({

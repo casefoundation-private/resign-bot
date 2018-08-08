@@ -2,6 +2,8 @@
 
 ## Table of Contents
 
-1. [User Management](End%20User%20Guide/User%20Management.md)
-2. [Submission Management](End%20User%20Guide/Submission%20Management.md)
-3. [My Review Queue](End%20User%20Guide/My%20Review%20Queue.md)
+1. [Getting Started](Getting%20Started.md)
+1. [Global Configuration](Global%20Configuration.md)
+1. [User Management](User%20Management.md)
+1. [Submission Management](Submission%20Management.md)
+1. [Reviewing](Reviewing.md)
