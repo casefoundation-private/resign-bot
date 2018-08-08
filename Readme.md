@@ -29,7 +29,12 @@ See [Installation](doc/Installation.md)
 
 ## End User Guide
 
-See [End User Guide](doc/End%20User%20Guide.md)
+1. [Getting Started](doc/Getting%20Started.md)
+1. [Global Settings](doc/Global%20Settings.md)
+1. [Managing Users](doc/Managing%20Users.md)
+1. [Creating Submissions](doc/Creating%20Submissions.md)
+1. [Managing Submissions](doc/Managing%20Submissions.md)
+1. [Reviewing Submissions](doc/Reviewing%20Submissions.md)
 
 ## Development
 

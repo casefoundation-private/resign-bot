@@ -1,5 +1,4 @@
-# My Review Queue
-
+# Reviewing
 Once logged into the Review-O-Matic system, click the "My Review Queue" tab to show submissions that are assigned to you for review. From this queue, you will be able to access your pending submissions to review, and completed submissions in the system.
 
 ## Performing a review
