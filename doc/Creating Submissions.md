@@ -24,9 +24,9 @@ There are three ways to create new submissions for review. The first is via impo
 1. Adjust the _Import Interval_ setting to the desired number of minutes to pause between checking Wufoo for new data.
 1. Review-O-Matic will then begin polling Wufoo for new form data. Upon import, Review-O-Matic will analyze the data to automatically determine the submission fields.
 
-![API](api.png)
-
 # API
+
+![API](api.png)
 
 1. Go to the _Configuration_ page, and under the _Submissions_ tab, enable "Allow public write access to submissions".
 1. The site now accepts `PUT` requests with a JSON or URL encoded body of submission data to `/api/submission/public`. (One submission per request.)
