@@ -17,9 +17,9 @@ There are three ways to create new submissions for review. The first is via impo
 ![Wufoo](wufoo.png)
 
 1. To connect to a Wufoo account, obtain an API key, Form ID, and Wufoo Subdomain.
-  1. **API Key:** go to the Forms page in Wufoo, then select More > API Information on the desired form row, and then copy the code next to API Key.
-  1. **Form ID:** go to the Forms page in Wufoo, then select More > API Information on the desired form row, and then copy the code next to Hash.
-  1. **Subdomain:** go to the Account > My Account page, then copy red text between https:// and .wufoo.com.
+   1. **API Key:** go to the Forms page in Wufoo, then select More > API Information on the desired form row, and then copy the code next to API Key.
+   1. **Form ID:** go to the Forms page in Wufoo, then select More > API Information on the desired form row, and then copy the code next to Hash.
+   1. **Subdomain:** go to the Account > My Account page, then copy red text between https:// and .wufoo.com.
 1. Enter the obtained information in the form on the _Configuration_ page under the tab _Importing & External Services_.
 1. Adjust the _Import Interval_ setting to the desired number of minutes to pause between checking Wufoo for new data.
 1. Review-O-Matic will then begin polling Wufoo for new form data. Upon import, Review-O-Matic will analyze the data to automatically determine the submission fields.
