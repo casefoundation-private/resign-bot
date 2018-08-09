@@ -67,7 +67,7 @@ exports.savePublicSubmission = (req, res, next) => {
     const submission = new Submission({
       ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
       source: 'public-api',
-      external_id: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
+      external_id: 'API ' + (req.headers['x-forwarded-for'] || req.connection.remoteAddress) + ' at ' + (new Date().toString()),
       data: req.body,
       flagged: false,
       pinned: false

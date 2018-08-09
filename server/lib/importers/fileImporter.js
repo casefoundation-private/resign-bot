@@ -41,7 +41,7 @@ class FileImporter extends Importer {
   processRecords (records) {
     return records.map((record, i) => {
       const submission = new Submission({
-        'source': 'file ' + this.filename,
+        'source': 'file ' + this.filename + ' at ' + (new Date().toString()),
         'external_id': i,
         'created_at': new Date()
       })
