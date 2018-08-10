@@ -10,7 +10,7 @@ The following workflow describes how submissions flow through Review-O-Matic fro
 
 ## Table of Contents
 
-1. [Global Settings](Global%20Settings.md)
+1. [Configuration](Configuration.md)
 1. [Managing Users](Managing%20Users.md)
 1. [Creating Submissions](Creating%20Submissions.md)
 1. [Managing Submissions](Managing%20Submissions.md)

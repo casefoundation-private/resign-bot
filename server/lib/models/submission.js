@@ -136,7 +136,7 @@ const Submission = module.exports = bookshelf.Model.extend({
         reviews.filter((review) => review.get('score') !== null).forEach((review) => {
           if (review.get('data') && review.get('data').categories) {
             review.get('data').categories.forEach((category, i) => {
-              const categoryName = process.env['REVIEW_CATEGORY_' + i]
+              const categoryName = Configuration.getConfig('review').categories[i].prompt
               if (!categoryVoteMap[categoryName]) {
                 categoryVoteMap[categoryName] = {}
               }

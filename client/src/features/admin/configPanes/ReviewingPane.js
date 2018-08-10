@@ -92,7 +92,6 @@ const ReviewingPane = (props) => {
                         <FormGroup key={j}>
                           <Label for={'category_' + i + '_label_' + j} className='sr-only'>Prompt</Label>
                           <InputGroup>
-                            <InputGroupAddon>{j} points</InputGroupAddon>
                             <Input type='text' name={'category_' + i + '_label_' + j} id={'category_' + i + '_label_' + j} value={label || ''} onChange={(event) => props.setTempConfigCategoryLabelText(i, j, event.target.value)} />
                             <InputGroupAddon>
                               <Button color='danger' size='sm' onClick={() => props.removeTempConfigCategoryLabel(i, j)}><FontAwesome name='trash' /> Remove Label</Button>
