@@ -32,3 +32,7 @@ There are three ways to create new submissions for review. The first is via impo
 1. The site now accepts `PUT` requests with a JSON or URL encoded body of submission data to `/api/submission/public`. (One submission per request.)
 1. Review-O-Matic automatically parses the data in the request body to automatically determine the submission fields.
 1. To allow a Cross-origin-request from another form, add the hostname where the form lives to the field "Cross-origin-request allowed domains (One per line)".
+
+---
+
+For more documentation, visit the [Getting Started](Getting%20Started.md) guide.

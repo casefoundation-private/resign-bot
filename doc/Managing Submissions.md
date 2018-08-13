@@ -39,3 +39,7 @@ TODO
 ## Exporting
 
 TODO
+
+---
+
+For more documentation, visit the [Getting Started](Getting%20Started.md) guide.

@@ -33,3 +33,7 @@ This is an index of all configurable environment variables used by the back end 
 * **DB** "sqlite3" or "postgres" to set the type of database to connect to.
 * **DATABASE_URL** If using PostgreSQL, the URL to the database.
 * **DATABASE_FILE_PATH** If using sqlite3, the path to where the sqlite file should be saved.
+
+---
+
+For more documentation, visit the [Getting Started](Getting%20Started.md) guide.

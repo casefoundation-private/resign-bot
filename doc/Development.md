@@ -38,3 +38,7 @@ This will be our front end React app tab:
 ```
 
 After that, the npm script will automatically open up a window with the application's frontend.
+
+---
+
+For more documentation, visit the [Getting Started](Getting%20Started.md) guide.

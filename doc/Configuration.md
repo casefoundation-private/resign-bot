@@ -43,3 +43,7 @@ Categories are the classifying dropdowns reviewers use to organize submissions. 
 * **Allow public read access to submissions** enables public `GET` requests to `/api/submission/public`. This returns a JSON array of all unflagged submissions.
 * **Allow public write access to submissions** enables public `PUT` requests to `/api/submission/public`. See [Creating Submissions / API](Creating%20Submissions.md#API) for more information.
 * **Cross-origin-request allowed domains (One per line)** Add hostnames (one per line) to this field to enable cross-origin-requests to `/api/submission/public`. This is useful for publicly displaying submissions or submitting submissions via AJAX without processing through a separate backend server.
+
+---
+
+For more documentation, visit the [Getting Started](Getting%20Started.md) guide.

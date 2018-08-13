@@ -49,3 +49,7 @@ On the _Users_ page, there is a table of all users in the system along with the 
 1. Should there be a need to reassign a user's incomplete (pending) reviews, go to _Users_ and select _Reassign Reviews_ for the user.
 1. In the modal window, specify how many reviews to reassign. By default, the number set is the user's total number of reviews.
 1. To reassign the user's reviews to another specific user, specify that user in the _Preferred New User_ dropdown. If no user is selected, the system will evenly distribute the specified number of reviews to all other users who are active and whose review queues are set to open.
+
+---
+
+For more documentation, visit the [Getting Started](Getting%20Started.md) guide.

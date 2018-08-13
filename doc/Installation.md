@@ -19,3 +19,7 @@ Then run the image using Docker's run command:
 ```
 
 To support extensive customization, Review-O-Matic has supports environment variables that dictate how the application functions. Specify those on the command line using the `--env` directive when running the Docker image or via your container service's configuration tool. For a definition of each variable available, please see [Environment Variables](Environment%20Variables.md).
+
+---
+
+For more documentation, visit the [Getting Started](Getting%20Started.md) guide.

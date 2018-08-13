@@ -20,3 +20,7 @@ TODO
 ## Viewing old reviews
 
 TODO
+
+---
+
+For more documentation, visit the [Getting Started](Getting%20Started.md) guide.
