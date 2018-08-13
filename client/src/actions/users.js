@@ -101,7 +101,13 @@ export const newUser = () => {
       'password': '',
       'role': 'user',
       'active': true,
-      'ready': true
+      'ready': true,
+      'notificationPreferences': {
+        'review_assigned': true,
+        'multiple_reviews_assigned': true,
+        'submission_created': true,
+        'multiple_submissions_created': true
+      }
     }
   }
 }
