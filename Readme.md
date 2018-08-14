@@ -60,3 +60,7 @@ See [License](License.txt) for additional information.
 * Build out front end unit tests
 * Add a GUI for settings
 * Build additional importers
+
+---
+
+Are you using part or all of this code we've shared? We'd love to hear about it! Email us at [opensource@casefoundation.org](mailto:opensource@casefoundation.org) and tell us about how you're using this open source project.
