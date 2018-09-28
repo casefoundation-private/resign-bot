@@ -1,7 +1,5 @@
 # Review-O-Matic
 
-**WARNING: UNDER ACTIVE DEVELOPMENT**
-
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/casefoundation/review-o-matic)
 
 [![Build Status](https://travis-ci.org/casefoundation/review-o-matic.svg?branch=master)](https://travis-ci.org/casefoundation/review-o-matic)
