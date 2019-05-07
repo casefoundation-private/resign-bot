@@ -7,6 +7,8 @@
 
 [![JavaScript Style Guide](https://cdn.rawgit.com/standard/standard/master/badge.svg)](https://github.com/standard/standard)
 
+![Screenshot](doc/screenshot.png)
+
 ## About
 
 The Review-O-Matic is a tool developed by the Case Foundation to handle the job of collecting and vetting user-submitted content. The system collects submissions via direct input or via an import from another service such as Wufoo. Once in the Review-O-Matic, the newly submitted content goes to a user for review. That reviewer grades and categorizes the content based on customizable prompts. Administrators can then explore the reviewed (and unreviewed) stories as part of a final vetting process.
